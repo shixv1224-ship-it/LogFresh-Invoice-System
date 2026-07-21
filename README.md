@@ -2,6 +2,16 @@
 
 Google Forms + Google Sheets + Google Docs + Apps Script automation for LogFresh order confirmations, invoices, customer approvals, shipping updates, PDF generation, and email notifications.
 
+## Language / 语言
+
+- English: this file
+- 中文说明: [README.zh-CN.md](README.zh-CN.md)
+- Setup guide: [docs/setup-guide.md](docs/setup-guide.md)
+- 中文部署指南: [docs/setup-guide.zh-CN.md](docs/setup-guide.zh-CN.md)
+- Version archive / 版本归档: [versions/](versions/)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+- 中文更新日志: [CHANGELOG.zh-CN.md](CHANGELOG.zh-CN.md)
+
 ## What this system does
 
 This workflow supports two sales paths:

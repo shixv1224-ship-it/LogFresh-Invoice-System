@@ -1,0 +1,91 @@
+# LogFresh Invoice System 中文说明
+
+这是一个基于 Google Forms、Google Sheets、Google Docs 和 Apps Script 的 LogFresh 订单自动化系统。
+
+系统支持：
+
+- 销售填写订单表单；
+- 自动生成 Order Confirmation；
+- 自动生成 Invoice；
+- 客户无需登录 Google 点击确认；
+- 客户确认后通知对应销售补 shipping / tracking；
+- 通过 Form 2 更新 shipping 和 invoice 信息；
+- 自动保存 PDF 到 Google Drive；
+- 按设置自动发送客户邮件和内部提醒邮件。
+
+## 两种工作流
+
+### Invoice Only
+
+适用于客户已经确认订单的情况。
+
+系统会直接生成 invoice PDF，并根据发送选项决定是否发给客户。
+
+### Confirmation First
+
+适用于客户需要先确认订单的情况。
+
+系统会先生成 Order Confirmation，客户点击确认后，对应销售会收到内部提醒，再通过 Form 2 补充 shipping / tracking，最后生成 invoice。
+
+## 主要文件
+
+```text
+apps-script/LogFresh_Two_Stage_Order_Invoice_Automation.gs
+templates/
+docs/setup-guide.md
+versions/
+README.md
+README.zh-CN.md
+CHANGELOG.md
+CHANGELOG.zh-CN.md
+```
+
+## 编号规则
+
+```text
+ORD-YYYYMMDD-###
+INV-YYYYMMDD-###
+```
+
+例如：
+
+```text
+ORD-20260720-001
+INV-20260720-001
+```
+
+## 日期规则
+
+日期输出格式：
+
+```text
+dd/MM/yyyy
+```
+
+如果 `Due Date` 留空，系统会自动使用：
+
+```text
+Invoice Date + 30 days
+```
+
+如果 `Invoice Date` 也为空，则使用：
+
+```text
+今天 + 30 days
+```
+
+## 部署说明
+
+详细部署步骤见：
+
+```text
+docs/setup-guide.md
+```
+
+## 历史版本
+
+历史脚本快照见：
+
+```text
+versions/
+```
