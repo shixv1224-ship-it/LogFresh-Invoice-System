@@ -207,7 +207,7 @@ Dates are output as:
 日期输出格式：
 
 ```text
-dd/MM/yyyy
+MM/dd/yyyy
 ```
 
 Due date logic:

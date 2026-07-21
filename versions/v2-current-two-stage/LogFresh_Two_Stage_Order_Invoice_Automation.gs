@@ -605,22 +605,22 @@ function shouldSendAutomatically_(data) {
 }
 
 function today_() {
-  return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy');
+  return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'MM/dd/yyyy');
 }
 
 function addDaysToDateText_(dateText, days) {
   const date = parseDateText_(dateText) || new Date();
   date.setDate(date.getDate() + days);
-  return Utilities.formatDate(date, Session.getScriptTimeZone(), 'dd/MM/yyyy');
+  return Utilities.formatDate(date, Session.getScriptTimeZone(), 'MM/dd/yyyy');
 }
 
 function parseDateText_(dateText) {
   const text = String(dateText || '').trim();
   if (!text) return null;
 
-  const ddmmyyyy = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (ddmmyyyy) {
-    return new Date(Number(ddmmyyyy[3]), Number(ddmmyyyy[2]) - 1, Number(ddmmyyyy[1]));
+  const mmddyyyy = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (mmddyyyy) {
+    return new Date(Number(mmddyyyy[3]), Number(mmddyyyy[1]) - 1, Number(mmddyyyy[2]));
   }
 
   const yyyymmdd = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);

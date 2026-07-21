@@ -50,7 +50,7 @@
   - `ORD-YYYYMMDD-###`
   - `INV-YYYYMMDD-###`
 - 增加 Due Date 自动逻辑：留空时默认为 Invoice Date + 30 天。
-- 更新日期输出格式为 `dd/MM/yyyy`。
+- 更新日期输出格式为 `MM/dd/yyyy`。
 - 更新公司信息、模板 ID、输出文件夹 ID。
 - 创建 GitHub 项目结构。
 - 增加 README、CHANGELOG、setup guide。

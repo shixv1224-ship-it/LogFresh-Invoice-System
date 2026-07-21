@@ -59,7 +59,7 @@ INV-20260720-001
 日期输出格式：
 
 ```text
-dd/MM/yyyy
+MM/dd/yyyy
 ```
 
 如果 `Due Date` 留空，系统会自动使用：

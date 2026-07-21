@@ -66,7 +66,7 @@ The system supports two sales workflows:
 - Kept Form 2 sending behavior separate:
   - `Send Invoice Automatically = Yes` sends the final invoice.
   - `Send Invoice Automatically = No` generates/updates PDF only.
-- Changed date output format to `dd/MM/yyyy`.
+- Changed date output format to `MM/dd/yyyy`.
 - Added due date fallback:
   - blank due date defaults to invoice date + 30 days.
 - Changed order/invoice numbering format:
