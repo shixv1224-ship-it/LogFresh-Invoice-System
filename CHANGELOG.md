@@ -1,8 +1,8 @@
 # Changelog
 
-## Repository Version Timeline
+## GitHub Commit Version Timeline
 
-This section maps the major GitHub versions to the project history preserved in this repository.
+This section only tracks GitHub commits and repository-level version history.
 
 ### 2026-07-20 · `a5dcef5` - Initial LogFresh invoice automation system
 
@@ -82,6 +82,12 @@ This section maps the major GitHub versions to the project history preserved in 
 - Updated the English and Chinese changelogs with customer info deployment details.
 - Documented the separate customer info spreadsheet configuration.
 - Documented the Apps Script source cleanup after `clasp` deployment.
+
+---
+
+## Functional / Business Change History
+
+This section tracks the actual workflow, template, form, email, and customer-data changes made for the LogFresh automation system.
 
 ## Customer Info Sync - 2026-07-22
 

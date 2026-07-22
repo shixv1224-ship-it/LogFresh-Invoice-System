@@ -1,8 +1,8 @@
 # 更新日志
 
-## GitHub 版本时间线
+## GitHub Commit 版本时间线
 
-这一部分根据当前 GitHub repo 中保留的 commit 和 `versions/` 归档整理。
+这一部分只记录 GitHub commit 和 repo 层面的版本历史。
 
 ### 2026-07-20 · `a5dcef5` - Initial LogFresh invoice automation system
 
@@ -82,6 +82,12 @@
 - 更新中英文 changelog，补充 customer info 部署细节。
 - 记录独立客户资料表的配置。
 - 记录 `clasp` 部署后 Apps Script 源码目录清理。
+
+---
+
+## 功能 / 业务更新记录
+
+这一部分记录 LogFresh 自动化系统本身的流程、模板、表单、邮件和客户资料功能变化。
 
 ## 2026-07-22
 
