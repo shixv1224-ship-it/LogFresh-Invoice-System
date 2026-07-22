@@ -57,6 +57,7 @@
 
 - 增加 `客户有效信息` 客户汇总页自动维护。
 - 增加可选 `CUSTOMER_INFO_SPREADSHEET_ID` 配置，使客户有效信息可以写入独立 Google Sheets 文件。
+- 已创建并配置独立的 `LogFresh Customer Info` Google Sheet 用于客户汇总数据。
 - 每次生成 Order Confirmation 后自动新增/更新客户信息。
 - 每次生成 Invoice 后自动新增/更新客户信息，包括 Form 2 触发的 invoice 生成。
 - 在 `LogFresh` 菜单中增加 `Rebuild Customer Info Sheet`，可从历史订单重建客户汇总页。

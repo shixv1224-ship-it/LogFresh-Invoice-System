@@ -59,6 +59,7 @@ This section maps the major GitHub versions to the project history preserved in 
 
 - Added automatic `客户有效信息` customer summary sheet maintenance.
 - Added optional `CUSTOMER_INFO_SPREADSHEET_ID` support so customer info can live in a separate Google Sheets file.
+- Created and configured a separate `LogFresh Customer Info` Google Sheet for customer summary data.
 - Added customer summary upsert after Order Confirmation generation.
 - Added customer summary upsert after Invoice generation, including Form 2 invoice generation.
 - Added `Rebuild Customer Info Sheet` to the custom `LogFresh` spreadsheet menu.

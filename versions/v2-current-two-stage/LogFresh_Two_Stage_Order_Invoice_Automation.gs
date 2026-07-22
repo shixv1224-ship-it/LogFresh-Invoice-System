@@ -12,7 +12,7 @@ const CONFIG = {
 
   // Optional: set this to a separate Google Sheets spreadsheet ID if customer info should live in its own file.
   // Leave blank to keep using a tab in the main response spreadsheet.
-  CUSTOMER_INFO_SPREADSHEET_ID: '',
+  CUSTOMER_INFO_SPREADSHEET_ID: '1J-5LH2qpLD7jpPPRB-XpEKfODC7YOgrJFM6z6b3TSpk',
   CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
 
   // Create a Google Form 2 pre-filled link with sample values:
