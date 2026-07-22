@@ -10,6 +10,25 @@
 - 自动排除明显测试/内部记录，包括 Barry Foley 和 LogFresh/AWT 内部邮箱记录。
 - 客户匹配优先使用邮箱；缺少邮箱时使用姓名+公司或姓名+电话。
 
+## 2026-07-21
+
+- 根据实际 invoice 细节反馈，更新 Invoice 和 Order Confirmation 模板。
+- 将模板中的公司名大小写更新为：
+  - `Logfresh Biotechnology Co., Ltd`
+- 将模板地址统一为：
+  - `708 N 29th Avenue, Unit 2, Yakima, WA 98902`
+- 将 invoice 日期输出格式改为美国标准：
+  - `MM/dd/yyyy`
+- 更新日期解析逻辑，使斜杠日期按美国 `MM/dd/yyyy` 读取。
+- 用最新提供的 Word 模板替换 GitHub 项目中的模板文件。
+- 将 GitHub 主页 README 改为中英双语对照介绍。
+- 将上述更新推送到 GitHub。
+
+备注：
+
+- GitHub 中的模板文件已更新。
+- 如果 Google Drive 里的生产 Google Docs 模板还没有替换，需要在 Drive 中单独更新模板文件。
+
 ## 2026-07-08
 
 - 规划最初的 invoice 模板和 Google Form 自动化思路。

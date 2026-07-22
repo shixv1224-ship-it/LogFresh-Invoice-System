@@ -15,6 +15,26 @@
 - Customer summary excludes obvious test/internal rows and Barry Foley/internal LogFresh or AWT email rows.
 - Customer matching now prioritizes email, then falls back to name/company or name/phone when email is missing.
 
+## 2026-07-21
+
+### Changed
+
+- Updated invoice and order confirmation templates based on detail review feedback.
+- Updated company name casing in templates to:
+  - `Logfresh Biotechnology Co., Ltd`
+- Updated template address text to use:
+  - `708 N 29th Avenue, Unit 2, Yakima, WA 98902`
+- Updated invoice date output format to U.S. standard:
+  - `MM/dd/yyyy`
+- Updated date parsing to treat slash-based dates as U.S. `MM/dd/yyyy`.
+- Replaced the GitHub template files with the latest provided Word templates.
+- Updated bilingual homepage README formatting for side-by-side English/Chinese project introduction.
+
+### Notes
+
+- These template updates were pushed to GitHub.
+- The Google Docs template files in Drive still need to be updated separately if the production Google Docs templates are not already replaced.
+
 ## Initial Build - 2026-07-20
 
 ### Overview
