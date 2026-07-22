@@ -53,6 +53,30 @@ This section maps the major GitHub versions to the project history preserved in 
 - Preserved customer info sync changelog entries from the remote branch.
 - Rebased and pushed the combined changelog updates.
 
+### `8e35385` - Separate customer info spreadsheet support
+
+- Added script support for storing customer summary records outside the main Form response workbook.
+- Added helper logic to open the configured customer info spreadsheet by ID.
+- Preserved fallback behavior so the customer info sheet can still live inside the active response workbook when no separate spreadsheet ID is configured.
+
+### `34ac08a` - Configure separate customer info spreadsheet
+
+- Created and connected the standalone `LogFresh Customer Info` Google Sheet.
+- Configured `CUSTOMER_INFO_SPREADSHEET_ID` to write customer records into the separate customer database workbook.
+- Updated the output script copy so GitHub, local files, and the production Apps Script source stay aligned.
+
+### `02d8a3f` - Apps Script deployment support
+
+- Added `clasp` configuration for direct local-to-Google Apps Script deployment.
+- Added the Apps Script manifest file.
+- Connected the repository to the production Apps Script project ID for future script sync.
+
+### `13fc87d` - Remove duplicate clasp script file
+
+- Removed the duplicate `Code.js` file from the Apps Script source folder.
+- Re-pushed Apps Script with only the manifest and main automation script.
+- Prevented duplicate top-level script definitions in the Apps Script editor.
+
 ## Customer Info Sync - 2026-07-22
 
 ### Added
@@ -60,15 +84,19 @@ This section maps the major GitHub versions to the project history preserved in 
 - Added automatic `客户有效信息` customer summary sheet maintenance.
 - Added optional `CUSTOMER_INFO_SPREADSHEET_ID` support so customer info can live in a separate Google Sheets file.
 - Created and configured a separate `LogFresh Customer Info` Google Sheet for customer summary data.
+- Connected the separate customer info spreadsheet:
+  - `1J-5LH2qpLD7jpPPRB-XpEKfODC7YOgrJFM6z6b3TSpk`
 - Added customer summary upsert after Order Confirmation generation.
 - Added customer summary upsert after Invoice generation, including Form 2 invoice generation.
 - Added `Rebuild Customer Info Sheet` to the custom `LogFresh` spreadsheet menu.
 - Added customer summary fields for customer name, salesperson, company/farm, phone, email, billing address, payment terms, payment method, latest order/invoice/tracking numbers, product summary, and notes.
+- Added `clasp` deployment support so the local GitHub script can be pushed directly to Google Apps Script.
 
 ### Changed
 
 - Customer summary excludes obvious test/internal rows and Barry Foley/internal LogFresh or AWT email rows.
 - Customer matching now prioritizes email, then falls back to name/company or name/phone when email is missing.
+- Cleaned the Apps Script source folder so only the main automation script and manifest are deployed.
 
 ## 2026-07-21
 
