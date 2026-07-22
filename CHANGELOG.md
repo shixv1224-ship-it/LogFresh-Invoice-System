@@ -4,7 +4,7 @@
 
 This section maps the major GitHub versions to the project history preserved in this repository.
 
-### `a5dcef5` - Initial LogFresh invoice automation system
+### 2026-07-20 · `a5dcef5` - Initial LogFresh invoice automation system
 
 - Created the first GitHub-ready project structure.
 - Added the production Apps Script file.
@@ -12,7 +12,7 @@ This section maps the major GitHub versions to the project history preserved in 
 - Added the initial English README, changelog, and setup guide.
 - Captured the complete two-workflow automation as the first repository version.
 
-### `cc9c812` - Bilingual docs and version archive
+### 2026-07-20 · `cc9c812` - Bilingual docs and version archive
 
 - Added Chinese documentation files.
 - Added bilingual setup guide.
@@ -20,62 +20,68 @@ This section maps the major GitHub versions to the project history preserved in 
 - Added `v1-legacy-single-invoice` archive for the original single-stage invoice script.
 - Added `v2-current-two-stage` archive for the current two-stage workflow.
 
-### `1cabffa` - Bilingual homepage README
+### 2026-07-20 · `1cabffa` - Bilingual homepage README
 
 - Reworked the GitHub homepage README into side-by-side English/Chinese explanations.
 - Added bilingual descriptions for workflows, fields, numbering, date behavior, email subjects, and deployment notes.
 
-### `631fcdf` - U.S. invoice date format
+### 2026-07-21 · `631fcdf` - U.S. invoice date format
 
 - Changed invoice date output from international `dd/MM/yyyy` to U.S. `MM/dd/yyyy`.
 - Updated date parsing for slash-based dates to use U.S. month/day order.
 - Updated English and Chinese documentation to match the new date format.
 
-### `8a3449d` - Latest invoice and order confirmation templates
+### 2026-07-21 · `8a3449d` - Latest invoice and order confirmation templates
 
 - Replaced GitHub template files with the latest provided Word templates.
 - Preserved template placeholder compatibility with the Apps Script.
 
-### `d80950c` - Company suffix casing in templates
+### 2026-07-21 · `d80950c` - Company suffix casing in templates
 
 - Updated the company suffix in template headers from `LTD` to `Ltd`.
 - Confirmed template header text as `Logfresh Biotechnology Co., Ltd`.
 
-### `84be5ca` - Customer info sync
+### 2026-07-21 · `84be5ca` - Customer info sync
 
 - Added customer summary sheet automation.
 - Added automatic upsert of customer records after Order Confirmation and Invoice generation.
 - Added a rebuild menu action for the customer summary sheet.
 
-### `e1b6748` - July 21 changelog refinements
+### 2026-07-21 · `e1b6748` - July 21 changelog refinements
 
 - Added detailed July 21 template refinement notes.
 - Preserved customer info sync changelog entries from the remote branch.
 - Rebased and pushed the combined changelog updates.
 
-### `8e35385` - Separate customer info spreadsheet support
+### 2026-07-21 · `8e35385` - Separate customer info spreadsheet support
 
 - Added script support for storing customer summary records outside the main Form response workbook.
 - Added helper logic to open the configured customer info spreadsheet by ID.
 - Preserved fallback behavior so the customer info sheet can still live inside the active response workbook when no separate spreadsheet ID is configured.
 
-### `34ac08a` - Configure separate customer info spreadsheet
+### 2026-07-21 · `34ac08a` - Configure separate customer info spreadsheet
 
 - Created and connected the standalone `LogFresh Customer Info` Google Sheet.
 - Configured `CUSTOMER_INFO_SPREADSHEET_ID` to write customer records into the separate customer database workbook.
 - Updated the output script copy so GitHub, local files, and the production Apps Script source stay aligned.
 
-### `02d8a3f` - Apps Script deployment support
+### 2026-07-21 · `02d8a3f` - Apps Script deployment support
 
 - Added `clasp` configuration for direct local-to-Google Apps Script deployment.
 - Added the Apps Script manifest file.
 - Connected the repository to the production Apps Script project ID for future script sync.
 
-### `13fc87d` - Remove duplicate clasp script file
+### 2026-07-21 · `13fc87d` - Remove duplicate clasp script file
 
 - Removed the duplicate `Code.js` file from the Apps Script source folder.
 - Re-pushed Apps Script with only the manifest and main automation script.
 - Prevented duplicate top-level script definitions in the Apps Script editor.
+
+### 2026-07-21 · `be1aaf8` - Customer info deployment changelog
+
+- Updated the English and Chinese changelogs with customer info deployment details.
+- Documented the separate customer info spreadsheet configuration.
+- Documented the Apps Script source cleanup after `clasp` deployment.
 
 ## Customer Info Sync - 2026-07-22
 
