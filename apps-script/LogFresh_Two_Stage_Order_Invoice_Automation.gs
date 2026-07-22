@@ -9,6 +9,10 @@ const CONFIG = {
   // Keep these sheet tab names stable in the response spreadsheet.
   MAIN_ORDER_SHEET_NAME: 'Order Confirmation',
   SHIPPING_UPDATE_SHEET_NAME: 'Shipping Updates',
+
+  // Optional: set this to a separate Google Sheets spreadsheet ID if customer info should live in its own file.
+  // Leave blank to keep using a tab in the main response spreadsheet.
+  CUSTOMER_INFO_SPREADSHEET_ID: '',
   CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
 
   // Create a Google Form 2 pre-filled link with sample values:
@@ -489,8 +493,13 @@ function getCustomerInfoHeaders_() {
 }
 
 function getOrCreateCustomerInfoSheet_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getCustomerInfoSpreadsheet_();
   return ss.getSheetByName(CONFIG.CUSTOMER_INFO_SHEET_NAME) || ss.insertSheet(CONFIG.CUSTOMER_INFO_SHEET_NAME);
+}
+
+function getCustomerInfoSpreadsheet_() {
+  const spreadsheetId = String(CONFIG.CUSTOMER_INFO_SPREADSHEET_ID || '').trim();
+  return spreadsheetId ? SpreadsheetApp.openById(spreadsheetId) : SpreadsheetApp.getActiveSpreadsheet();
 }
 
 function ensureCustomerInfoHeaders_(sheet) {

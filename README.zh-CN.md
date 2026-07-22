@@ -12,6 +12,7 @@
 - 通过 Form 2 更新 shipping 和 invoice 信息；
 - 自动保存 PDF 到 Google Drive；
 - 按设置自动发送客户邮件和内部提醒邮件。
+- 自动维护 `客户有效信息` 客户汇总表；可放在主订单表内，也可通过 `CUSTOMER_INFO_SPREADSHEET_ID` 配置为独立 Google Sheets 文件。
 
 ## 两种工作流
 

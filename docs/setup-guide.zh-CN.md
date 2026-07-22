@@ -104,6 +104,38 @@ Form 2 tab 名称：
 Shipping Updates
 ```
 
+## 可选：将客户有效信息放到独立 Google Sheets 文件
+
+默认情况下，`客户有效信息` 会作为主订单回复表里的一个 tab 自动创建。
+
+如果你想让它变成一个独立 Google Sheets 文件：
+
+1. 新建一个空 Google Sheet，例如：
+
+```text
+LogFresh Customer Info
+```
+
+2. 从 URL 复制 spreadsheet ID：
+
+```text
+https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit
+```
+
+3. 填到 Apps Script：
+
+```js
+CUSTOMER_INFO_SPREADSHEET_ID: 'SPREADSHEET_ID',
+```
+
+4. tab 名保持：
+
+```js
+CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
+```
+
+如果独立 spreadsheet 里还没有 `客户有效信息` tab，脚本会自动创建。
+
 ## 5. 放入 Apps Script
 
 在 Sheet 中打开：

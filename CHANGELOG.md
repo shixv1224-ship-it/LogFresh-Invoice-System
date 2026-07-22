@@ -1,10 +1,64 @@
 # Changelog
 
+## Repository Version Timeline
+
+This section maps the major GitHub versions to the project history preserved in this repository.
+
+### `a5dcef5` - Initial LogFresh invoice automation system
+
+- Created the first GitHub-ready project structure.
+- Added the production Apps Script file.
+- Added strict invoice and order confirmation templates.
+- Added the initial English README, changelog, and setup guide.
+- Captured the complete two-workflow automation as the first repository version.
+
+### `cc9c812` - Bilingual docs and version archive
+
+- Added Chinese documentation files.
+- Added bilingual setup guide.
+- Added version archive folder.
+- Added `v1-legacy-single-invoice` archive for the original single-stage invoice script.
+- Added `v2-current-two-stage` archive for the current two-stage workflow.
+
+### `1cabffa` - Bilingual homepage README
+
+- Reworked the GitHub homepage README into side-by-side English/Chinese explanations.
+- Added bilingual descriptions for workflows, fields, numbering, date behavior, email subjects, and deployment notes.
+
+### `631fcdf` - U.S. invoice date format
+
+- Changed invoice date output from international `dd/MM/yyyy` to U.S. `MM/dd/yyyy`.
+- Updated date parsing for slash-based dates to use U.S. month/day order.
+- Updated English and Chinese documentation to match the new date format.
+
+### `8a3449d` - Latest invoice and order confirmation templates
+
+- Replaced GitHub template files with the latest provided Word templates.
+- Preserved template placeholder compatibility with the Apps Script.
+
+### `d80950c` - Company suffix casing in templates
+
+- Updated the company suffix in template headers from `LTD` to `Ltd`.
+- Confirmed template header text as `Logfresh Biotechnology Co., Ltd`.
+
+### `84be5ca` - Customer info sync
+
+- Added customer summary sheet automation.
+- Added automatic upsert of customer records after Order Confirmation and Invoice generation.
+- Added a rebuild menu action for the customer summary sheet.
+
+### `e1b6748` - July 21 changelog refinements
+
+- Added detailed July 21 template refinement notes.
+- Preserved customer info sync changelog entries from the remote branch.
+- Rebased and pushed the combined changelog updates.
+
 ## Customer Info Sync - 2026-07-22
 
 ### Added
 
 - Added automatic `客户有效信息` customer summary sheet maintenance.
+- Added optional `CUSTOMER_INFO_SPREADSHEET_ID` support so customer info can live in a separate Google Sheets file.
 - Added customer summary upsert after Order Confirmation generation.
 - Added customer summary upsert after Invoice generation, including Form 2 invoice generation.
 - Added `Rebuild Customer Info Sheet` to the custom `LogFresh` spreadsheet menu.

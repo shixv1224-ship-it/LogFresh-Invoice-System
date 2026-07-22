@@ -54,18 +54,22 @@ Use this when the customer needs to approve the order before invoicing.
 
 ## Customer Info Sheet / 客户信息表
 
-The script maintains a clean customer summary tab named `客户有效信息`.
+The script maintains a clean customer summary sheet named `客户有效信息`.
 
-脚本会自动维护一张干净的客户汇总页：`客户有效信息`。
+脚本会自动维护一张干净的客户汇总表：`客户有效信息`。
 
-- Created automatically if the tab does not exist.
+- By default, it is created as a tab in the main response spreadsheet.
+- If `CUSTOMER_INFO_SPREADSHEET_ID` is configured, it writes to a separate Google Sheets file instead.
+- Created automatically if the sheet tab does not exist inside the selected spreadsheet.
 - Updated after Order Confirmation or Invoice generation.
 - Upserts customers by email first, then by name/company or name/phone when email is missing.
 - Keeps the summary columns clean: customer, salesperson, company, phone, email, address, payment terms, latest order/invoice/tracking, product summary, and notes.
 - Skips obvious test/internal rows, including Barry Foley/internal LogFresh or AWT email rows.
 - The `LogFresh` menu includes `Rebuild Customer Info Sheet` to rebuild the summary from existing order rows.
 
-- 如果 tab 不存在，会自动创建。
+- 默认会作为主回复表中的一个 tab 创建。
+- 如果配置 `CUSTOMER_INFO_SPREADSHEET_ID`，则会写入一个独立的 Google Sheets 文件。
+- 如果目标 spreadsheet 中不存在该 tab，会自动创建。
 - 每次生成 Order Confirmation 或 Invoice 后自动更新。
 - 优先用邮箱识别同一客户；缺邮箱时用姓名+公司或姓名+电话识别。
 - 汇总字段保持干净：客户、销售、公司、电话、邮箱、地址、付款条款、最近订单/发票/tracking、产品摘要、备注。

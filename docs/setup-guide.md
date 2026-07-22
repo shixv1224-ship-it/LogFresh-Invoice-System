@@ -54,6 +54,38 @@ Rename the main response tab to:
 Order Confirmation
 ```
 
+## Optional: Create a separate Customer Info spreadsheet
+
+By default, the customer summary sheet `客户有效信息` is created as a tab inside the main response spreadsheet.
+
+If you want it to live in its own Google Sheets file:
+
+1. Create a blank Google Sheet, for example:
+
+```text
+LogFresh Customer Info
+```
+
+2. Copy the spreadsheet ID from the URL:
+
+```text
+https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit
+```
+
+3. Paste that ID into Apps Script:
+
+```js
+CUSTOMER_INFO_SPREADSHEET_ID: 'SPREADSHEET_ID',
+```
+
+4. Keep the tab name as:
+
+```js
+CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
+```
+
+The script will create the `客户有效信息` tab in that separate spreadsheet if it does not already exist.
+
 ## 3. Create Form 2
 
 Create a Google Form named:

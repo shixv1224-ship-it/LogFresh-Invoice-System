@@ -9,6 +9,7 @@ This is the current production workflow script.
 - `Invoice Only`
 - `Confirmation First`
 - Customer approval link without Google login
+- Optional separate customer info spreadsheet
 - Form 2 shipping/invoice update
 - Prefilled Form 2 link
 - Daily sequence numbering
@@ -18,6 +19,7 @@ This is the current production workflow script.
 - `Invoice Only`
 - `Confirmation First`
 - 客户无需登录 Google 的确认链接
+- 可选独立客户信息 spreadsheet
 - Form 2 shipping/invoice 更新
 - Form 2 预填链接
 - 每日序号编号

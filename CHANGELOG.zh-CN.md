@@ -1,8 +1,62 @@
 # 更新日志
 
+## GitHub 版本时间线
+
+这一部分根据当前 GitHub repo 中保留的 commit 和 `versions/` 归档整理。
+
+### `a5dcef5` - Initial LogFresh invoice automation system
+
+- 创建第一版 GitHub 项目结构。
+- 添加正式 Apps Script 文件。
+- 添加严格版 Invoice 和 Order Confirmation 模板。
+- 添加第一版英文 README、CHANGELOG 和部署指南。
+- 将完整双流程自动化系统作为 GitHub 初始版本保存。
+
+### `cc9c812` - Bilingual docs and version archive
+
+- 添加中文文档。
+- 添加中文部署指南。
+- 添加历史版本归档目录。
+- 增加 `v1-legacy-single-invoice`，归档早期单阶段 invoice 脚本。
+- 增加 `v2-current-two-stage`，归档当前双阶段 workflow 脚本。
+
+### `1cabffa` - Bilingual homepage README
+
+- 将 GitHub 主页 README 改为中英双语对照。
+- 增加双语说明：workflow、字段、编号、日期、邮件标题、部署说明等。
+
+### `631fcdf` - U.S. invoice date format
+
+- 将 invoice 日期输出从 `dd/MM/yyyy` 改为美国常用 `MM/dd/yyyy`。
+- 更新斜杠日期解析逻辑，按美国月/日顺序读取。
+- 同步更新中英文文档中的日期说明。
+
+### `8a3449d` - Latest invoice and order confirmation templates
+
+- 用最新提供的 Word 模板替换 GitHub 中的模板文件。
+- 保留模板占位符与 Apps Script 的兼容性。
+
+### `d80950c` - Company suffix casing in templates
+
+- 将模板顶部公司后缀从 `LTD` 改为 `Ltd`。
+- 确认模板顶部为 `Logfresh Biotechnology Co., Ltd`。
+
+### `84be5ca` - Customer info sync
+
+- 增加客户汇总表自动同步功能。
+- 在生成 Order Confirmation 和 Invoice 后自动新增/更新客户记录。
+- 增加从历史订单重建客户汇总表的菜单操作。
+
+### `e1b6748` - July 21 changelog refinements
+
+- 补充 2026-07-21 模板细节更新日志。
+- 保留远端新增的客户信息同步 changelog。
+- rebase 后推送合并后的 changelog。
+
 ## 2026-07-22
 
 - 增加 `客户有效信息` 客户汇总页自动维护。
+- 增加可选 `CUSTOMER_INFO_SPREADSHEET_ID` 配置，使客户有效信息可以写入独立 Google Sheets 文件。
 - 每次生成 Order Confirmation 后自动新增/更新客户信息。
 - 每次生成 Invoice 后自动新增/更新客户信息，包括 Form 2 触发的 invoice 生成。
 - 在 `LogFresh` 菜单中增加 `Rebuild Customer Info Sheet`，可从历史订单重建客户汇总页。
