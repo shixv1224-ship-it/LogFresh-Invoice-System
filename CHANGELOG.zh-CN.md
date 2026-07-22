@@ -1,5 +1,15 @@
 # 更新日志
 
+## 2026-07-22
+
+- 增加 `客户有效信息` 客户汇总页自动维护。
+- 每次生成 Order Confirmation 后自动新增/更新客户信息。
+- 每次生成 Invoice 后自动新增/更新客户信息，包括 Form 2 触发的 invoice 生成。
+- 在 `LogFresh` 菜单中增加 `Rebuild Customer Info Sheet`，可从历史订单重建客户汇总页。
+- 客户汇总字段包含客户、Salesperson、公司/农场、电话、邮箱、账单地址、付款条款、付款方式、最近订单号、最近发票号、最近 tracking、产品摘要、备注。
+- 自动排除明显测试/内部记录，包括 Barry Foley 和 LogFresh/AWT 内部邮箱记录。
+- 客户匹配优先使用邮箱；缺少邮箱时使用姓名+公司或姓名+电话。
+
 ## 2026-07-08
 
 - 规划最初的 invoice 模板和 Google Form 自动化思路。

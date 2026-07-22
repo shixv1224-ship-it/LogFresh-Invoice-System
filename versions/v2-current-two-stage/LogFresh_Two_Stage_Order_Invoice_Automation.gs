@@ -9,6 +9,7 @@ const CONFIG = {
   // Keep these sheet tab names stable in the response spreadsheet.
   MAIN_ORDER_SHEET_NAME: 'Order Confirmation',
   SHIPPING_UPDATE_SHEET_NAME: 'Shipping Updates',
+  CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
 
   // Create a Google Form 2 pre-filled link with sample values:
   // ORDER_NUMBER_HERE, SHIPPED_VIA_HERE, PAYMENT_METHOD_HERE, CUSTOMER_EMAIL_HERE, TRACKING_NUMBER_HERE,
@@ -43,6 +44,7 @@ function onOpen() {
     .createMenu('LogFresh')
     .addItem('Generate Order Confirmation for Selected Row', 'generateOrderConfirmationForSelectedRow')
     .addItem('Generate & Email Invoice for Selected Row', 'generateAndEmailInvoiceForSelectedRow')
+    .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
     .addToUi();
@@ -80,6 +82,10 @@ function generateAndEmailInvoiceForSelectedRow() {
   const row = sheet.getActiveRange().getRow();
   if (row === 1) throw new Error('Please select a data row, not the header row.');
   generateInvoiceForRow_(sheet, row, true);
+}
+
+function rebuildCustomerInfoSheet() {
+  rebuildCustomerInfoSheet_();
 }
 
 function doGet(e) {
@@ -235,6 +241,7 @@ function generateOrderConfirmationForRow_(sheet, row) {
       });
       writeResult_(sheet, row, 'Order Confirmation Sent At', new Date());
     }
+    syncCustomerInfoForRow_(sheet, row);
   } catch (error) {
     writeResult_(sheet, row, 'Internal Notes', `Order Confirmation ERROR: ${error.message}`);
     throw error;
@@ -290,6 +297,7 @@ function generateInvoiceForRow_(sheet, row, sendEmail) {
       writeResult_(sheet, row, 'Invoice Sent At', new Date());
       writeResult_(sheet, row, 'Order Status', STATUS.INVOICE_SENT);
     }
+    syncCustomerInfoForRow_(sheet, row);
   } catch (error) {
     writeResult_(sheet, row, 'Internal Notes', `Invoice ERROR: ${error.message}`);
     throw error;
@@ -415,6 +423,235 @@ function buildLineItems_(data) {
   }
 
   return { subtotal, replacements };
+}
+
+function rebuildCustomerInfoSheet_() {
+  const mainSheet = getMainOrderSheet_();
+  const customerSheet = getOrCreateCustomerInfoSheet_();
+  const headers = getCustomerInfoHeaders_();
+  customerSheet.clearContents();
+  customerSheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+
+  const lastRow = mainSheet.getLastRow();
+  for (let row = 2; row <= lastRow; row++) {
+    syncCustomerInfoForRow_(mainSheet, row);
+  }
+
+  formatCustomerInfoSheet_(customerSheet);
+}
+
+function syncCustomerInfoForRow_(sheet, row) {
+  if (sheet.getName() !== CONFIG.MAIN_ORDER_SHEET_NAME) return;
+
+  const data = getRowData_(sheet, row);
+  if (shouldSkipCustomerInfoRow_(data)) return;
+
+  const customerSheet = getOrCreateCustomerInfoSheet_();
+  ensureCustomerInfoHeaders_(customerSheet);
+
+  const record = buildCustomerInfoRecord_(data);
+  const key = makeCustomerInfoKey_(record);
+  if (!key) return;
+
+  const headers = getCustomerInfoHeaders_();
+  const existingRow = findCustomerInfoRow_(customerSheet, key);
+
+  if (existingRow) {
+    const existingRecord = readCustomerInfoRecord_(customerSheet, existingRow);
+    const mergedRecord = mergeCustomerInfoRecords_(existingRecord, record);
+    customerSheet.getRange(existingRow, 1, 1, headers.length).setValues([headers.map(header => mergedRecord[header] || '')]);
+  } else {
+    customerSheet.appendRow(headers.map(header => record[header] || ''));
+  }
+
+  formatCustomerInfoSheet_(customerSheet);
+}
+
+function getCustomerInfoHeaders_() {
+  return [
+    '客户姓名',
+    'Salesperson',
+    '公司/农场',
+    '电话',
+    '邮箱',
+    '备用邮箱/备注邮箱',
+    '账单地址',
+    '城市/州/邮编',
+    '付款条款',
+    '付款方式',
+    '最近订单日期',
+    '最近订单号',
+    '最近发票号',
+    '最近物流单号',
+    '产品摘要',
+    '备注',
+  ];
+}
+
+function getOrCreateCustomerInfoSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  return ss.getSheetByName(CONFIG.CUSTOMER_INFO_SHEET_NAME) || ss.insertSheet(CONFIG.CUSTOMER_INFO_SHEET_NAME);
+}
+
+function ensureCustomerInfoHeaders_(sheet) {
+  const headers = getCustomerInfoHeaders_();
+  const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), headers.length)).getDisplayValues()[0];
+  const needsRewrite = headers.some((header, index) => current[index] !== header);
+  if (needsRewrite) {
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  }
+}
+
+function buildCustomerInfoRecord_(data) {
+  const billEmail = normalizeEmail_(getValue_(data, 'Bill To Email'));
+  const customerEmail = normalizeEmail_(getValue_(data, 'Customer Email'));
+  const primaryEmail = billEmail || customerEmail;
+  const alternateEmail = customerEmail && customerEmail !== primaryEmail ? customerEmail : '';
+  const productSummary = buildCustomerProductSummary_(data);
+  const remarks = buildCustomerInfoRemarks_(data, billEmail, customerEmail);
+
+  return {
+    '客户姓名': getValue_(data, 'Bill To Name'),
+    'Salesperson': getValue_(data, 'Salesperson'),
+    '公司/农场': getValue_(data, 'Bill To Company'),
+    '电话': normalizePhoneDisplay_(getValue_(data, 'Bill To Phone')),
+    '邮箱': primaryEmail,
+    '备用邮箱/备注邮箱': alternateEmail,
+    '账单地址': getValue_(data, 'Bill To Address'),
+    '城市/州/邮编': normalizeCityStateZip_(getValue_(data, 'Bill To City State ZIP')),
+    '付款条款': getValue_(data, 'Payment Terms'),
+    '付款方式': getValue_(data, 'Payment Method'),
+    '最近订单日期': getValue_(data, 'Order Date'),
+    '最近订单号': getValue_(data, 'Order Number'),
+    '最近发票号': getValue_(data, 'Invoice Number'),
+    '最近物流单号': getValue_(data, 'Tracking Number'),
+    '产品摘要': productSummary,
+    '备注': remarks,
+  };
+}
+
+function shouldSkipCustomerInfoRow_(data) {
+  const name = getValue_(data, 'Bill To Name');
+  const company = getValue_(data, 'Bill To Company');
+  const email = normalizeEmail_(getValue_(data, 'Bill To Email'));
+  const customerEmail = normalizeEmail_(getValue_(data, 'Customer Email'));
+  const phone = normalizeDigits_(getValue_(data, 'Bill To Phone'));
+  const combined = [name, company, email, customerEmail, getValue_(data, 'Bill To Address')].join(' ').toLowerCase();
+
+  if (!name && !company) return true;
+  if (name === '1' || company === '1' || phone === '1') return true;
+  if (combined.includes('test')) return true;
+  if (normalizeComparable_(name) === 'barryfoley') return true;
+  if (isInternalEmail_(email) || isInternalEmail_(customerEmail)) return true;
+
+  return false;
+}
+
+function buildCustomerProductSummary_(data) {
+  const items = [];
+  for (let i = 1; i <= 6; i++) {
+    const qty = getValue_(data, `Item ${i} Quantity`);
+    const description = getValue_(data, `Item ${i} Description`);
+    const price = getValue_(data, `Item ${i} Unit Price`);
+    if (qty || description || price) {
+      items.push(`${qty || 0} x ${description || 'Item'}${price ? ` @ ${price}` : ''}`);
+    }
+  }
+  return items.join('; ');
+}
+
+function buildCustomerInfoRemarks_(data, billEmail, customerEmail) {
+  const notes = [];
+  if (!billEmail && !customerEmail) notes.push('缺少邮箱');
+  if (getValue_(data, 'Bill To Name') && getValue_(data, 'Bill To Name') === getValue_(data, 'Bill To Company')) {
+    notes.push('公司字段与客户姓名相同');
+  }
+  if (billEmail && customerEmail && billEmail !== customerEmail) {
+    notes.push(`备用邮箱: ${customerEmail}`);
+  }
+  return notes.join('；');
+}
+
+function makeCustomerInfoKey_(record) {
+  const email = normalizeEmail_(record['邮箱']);
+  if (email) return `email:${email}`;
+
+  const company = normalizeComparable_(record['公司/农场']);
+  const name = normalizeComparable_(record['客户姓名']);
+  const phone = normalizeDigits_(record['电话']);
+  if (company && name) return `name_company:${name}:${company}`;
+  if (phone && name) return `name_phone:${name}:${phone}`;
+  return '';
+}
+
+function findCustomerInfoRow_(sheet, key) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return 0;
+
+  const headers = getCustomerInfoHeaders_();
+  const values = sheet.getRange(2, 1, lastRow - 1, headers.length).getDisplayValues();
+  for (let index = 0; index < values.length; index++) {
+    const rowRecord = {};
+    headers.forEach((header, headerIndex) => {
+      rowRecord[header] = values[index][headerIndex];
+    });
+    if (customerInfoRecordsMatch_(rowRecord, key)) return index + 2;
+  }
+  return 0;
+}
+
+function readCustomerInfoRecord_(sheet, row) {
+  const headers = getCustomerInfoHeaders_();
+  const values = sheet.getRange(row, 1, 1, headers.length).getDisplayValues()[0];
+  const record = {};
+  headers.forEach((header, index) => {
+    record[header] = values[index];
+  });
+  return record;
+}
+
+function mergeCustomerInfoRecords_(existingRecord, newRecord) {
+  const merged = {};
+  getCustomerInfoHeaders_().forEach(header => {
+    merged[header] = newRecord[header] || existingRecord[header] || '';
+  });
+
+  merged['电话'] = mergeUniqueText_(existingRecord['电话'], newRecord['电话'], ' / ');
+  merged['备用邮箱/备注邮箱'] = mergeUniqueText_(existingRecord['备用邮箱/备注邮箱'], newRecord['备用邮箱/备注邮箱'], '; ');
+  merged['备注'] = mergeUniqueText_(existingRecord['备注'], newRecord['备注'], '；');
+  return merged;
+}
+
+function customerInfoRecordsMatch_(record, key) {
+  if (makeCustomerInfoKey_(record) === key) return true;
+
+  const keyParts = String(key || '').split(':');
+  const keyType = keyParts[0];
+  const keyValue = keyParts.slice(1).join(':');
+  const emails = [
+    normalizeEmail_(record['邮箱']),
+    ...String(record['备用邮箱/备注邮箱'] || '').split(/[;,\s]+/).map(normalizeEmail_),
+  ].filter(Boolean);
+
+  if (keyType === 'email' && emails.includes(keyValue)) return true;
+  return false;
+}
+
+function formatCustomerInfoSheet_(sheet) {
+  const headers = getCustomerInfoHeaders_();
+  const lastRow = Math.max(sheet.getLastRow(), 1);
+  sheet.setFrozenRows(1);
+  sheet.getRange(1, 1, 1, headers.length)
+    .setFontWeight('bold')
+    .setBackground('#e6e6e6')
+    .setWrap(true);
+  sheet.getRange(1, 1, lastRow, headers.length)
+    .setWrap(true)
+    .setVerticalAlignment('top');
+
+  const existingFilter = sheet.getFilter();
+  if (existingFilter) existingFilter.remove();
+  sheet.getRange(1, 1, lastRow, headers.length).createFilter();
 }
 
 function createPdfFromTemplate_({ templateId, baseName, replacements }) {
@@ -602,6 +839,47 @@ function joinEmails_(...groups) {
 
 function shouldSendAutomatically_(data) {
   return getValue_(data, 'Send Confirmation Automatically').toLowerCase() !== 'no';
+}
+
+function normalizeEmail_(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function normalizeDigits_(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+function normalizePhoneDisplay_(value) {
+  const digits = normalizeDigits_(value);
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  return String(value || '').trim();
+}
+
+function normalizeComparable_(value) {
+  return String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function normalizeCityStateZip_(value) {
+  return String(value || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/\s*,\s*/g, ', ');
+}
+
+function isInternalEmail_(email) {
+  const normalized = normalizeEmail_(email);
+  return normalized.endsWith('@logfresh.net') || normalized.endsWith('@awt-biotech.com');
+}
+
+function mergeUniqueText_(existingValue, newValue, separator) {
+  const parts = String(existingValue || '')
+    .split(separator)
+    .concat(String(newValue || '').split(separator))
+    .map(value => value.trim())
+    .filter(Boolean);
+  return parts.filter((value, index, array) => array.indexOf(value) === index).join(separator);
 }
 
 function today_() {

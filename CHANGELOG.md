@@ -1,5 +1,20 @@
 # Changelog
 
+## Customer Info Sync - 2026-07-22
+
+### Added
+
+- Added automatic `客户有效信息` customer summary sheet maintenance.
+- Added customer summary upsert after Order Confirmation generation.
+- Added customer summary upsert after Invoice generation, including Form 2 invoice generation.
+- Added `Rebuild Customer Info Sheet` to the custom `LogFresh` spreadsheet menu.
+- Added customer summary fields for customer name, salesperson, company/farm, phone, email, billing address, payment terms, payment method, latest order/invoice/tracking numbers, product summary, and notes.
+
+### Changed
+
+- Customer summary excludes obvious test/internal rows and Barry Foley/internal LogFresh or AWT email rows.
+- Customer matching now prioritizes email, then falls back to name/company or name/phone when email is missing.
+
 ## Initial Build - 2026-07-20
 
 ### Overview

@@ -27,10 +27,12 @@ Use this when the customer has already confirmed the order.
 - Generates an invoice PDF immediately.
 - Sends the invoice only when the send option is set to `Yes`.
 - Sends an internal shipping/tracking reminder to the salesperson.
+- Updates the customer information sheet after document generation.
 
 - 立即生成 Invoice PDF。
 - 只有发送选项为 `Yes` 时才会自动发送 invoice。
 - 同时发送内部 shipping/tracking 提醒给对应销售。
+- 文件生成后自动更新客户信息表。
 
 ### 2. Confirmation First / 先发 Order Confirmation
 
@@ -42,11 +44,33 @@ Use this when the customer needs to approve the order before invoicing.
 - Sends a no-login approval link to the customer when automatic sending is enabled.
 - After customer approval, sends the salesperson an internal shipping update link.
 - Form 2 updates shipping/tracking data and can generate/send the final invoice.
+- Updates the customer information sheet after confirmation or invoice generation.
 
 - 生成 Order Confirmation PDF。
 - 自动发送开启时，客户会收到无需登录 Google 的确认链接。
 - 客户确认后，对应销售会收到内部 shipping update 链接。
 - Form 2 用于更新 shipping/tracking 信息，并生成/发送最终 invoice。
+- Confirmation 或 invoice 生成后自动更新客户信息表。
+
+## Customer Info Sheet / 客户信息表
+
+The script maintains a clean customer summary tab named `客户有效信息`.
+
+脚本会自动维护一张干净的客户汇总页：`客户有效信息`。
+
+- Created automatically if the tab does not exist.
+- Updated after Order Confirmation or Invoice generation.
+- Upserts customers by email first, then by name/company or name/phone when email is missing.
+- Keeps the summary columns clean: customer, salesperson, company, phone, email, address, payment terms, latest order/invoice/tracking, product summary, and notes.
+- Skips obvious test/internal rows, including Barry Foley/internal LogFresh or AWT email rows.
+- The `LogFresh` menu includes `Rebuild Customer Info Sheet` to rebuild the summary from existing order rows.
+
+- 如果 tab 不存在，会自动创建。
+- 每次生成 Order Confirmation 或 Invoice 后自动更新。
+- 优先用邮箱识别同一客户；缺邮箱时用姓名+公司或姓名+电话识别。
+- 汇总字段保持干净：客户、销售、公司、电话、邮箱、地址、付款条款、最近订单/发票/tracking、产品摘要、备注。
+- 自动跳过明显测试/内部记录，包括 Barry Foley 和 LogFresh/AWT 内部邮箱记录。
+- `LogFresh` 菜单里有 `Rebuild Customer Info Sheet`，可以从历史订单行重建客户汇总页。
 
 ## Main files / 主要文件
 
