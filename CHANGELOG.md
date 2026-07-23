@@ -119,13 +119,19 @@ This section only tracks GitHub commits and repository-level version history.
 - Added a Google Sheets menu action to update the `Payment Method` choices in both Google Forms.
 - The updater supports both multiple choice and dropdown `Payment Method` fields.
 
-### 2026-07-23 · `f79d4fc` - Split generated files into order and invoice folders
+### 2026-07-23 · `08d7b3a` - Split generated files into order and invoice folders
 
 - Created separate Drive output folders for Order Confirmations and Invoices.
 - Updated Apps Script so future Order Confirmation files save to the Order Confirmations folder.
 - Updated Apps Script so future Invoice files save to the Invoices folder.
 - Removed old generated files that still used individual customer names in the file name.
 - Moved existing company-named generated files into the appropriate Order Confirmations or Invoices folder.
+
+### 2026-07-23 · `0098ba5` - Remove temporary maintenance menu items
+
+- Removed the temporary `Rename Existing Files to Company Names` Google Sheets menu item.
+- Removed the temporary `Update Google Form Payment Methods` Google Sheets menu item.
+- Kept the permanent automatic company-name file naming, folder split, and payment method configuration in place.
 
 ---
 
@@ -160,6 +166,9 @@ This section tracks the actual workflow, template, form, email, and customer-dat
   - `Order Confirmations`
   - `Invoices`
 - Deleted remaining old generated files whose names still used individual customer names.
+- Removed temporary maintenance menu items after their one-time cleanup work was completed:
+  - `Rename Existing Files to Company Names`
+  - `Update Google Form Payment Methods`
 
 ## Customer Info Sync - 2026-07-22
 

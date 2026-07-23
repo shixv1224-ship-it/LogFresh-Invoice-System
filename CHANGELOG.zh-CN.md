@@ -119,13 +119,19 @@
 - 增加 Google Sheet 菜单操作，可一键更新两个 Google Form 的 `Payment Method` 选项。
 - 该更新器兼容单选题和下拉题类型的 `Payment Method` 字段。
 
-### 2026-07-23 · `f79d4fc` - Split generated files into order and invoice folders
+### 2026-07-23 · `08d7b3a` - Split generated files into order and invoice folders
 
 - 在 Drive 输出目录下创建独立的 Order Confirmations 和 Invoices 文件夹。
 - 更新 Apps Script，使后续 Order Confirmation 文件自动保存到 Order Confirmations 文件夹。
 - 更新 Apps Script，使后续 Invoice 文件自动保存到 Invoices 文件夹。
 - 删除仍然使用客户个人姓名作为文件名的旧生成文件。
 - 将现有已经改成公司名的文件按 Order Confirmation / Invoice 移动到对应文件夹。
+
+### 2026-07-23 · `0098ba5` - Remove temporary maintenance menu items
+
+- 删除临时的 `Rename Existing Files to Company Names` Google Sheets 菜单项。
+- 删除临时的 `Update Google Form Payment Methods` Google Sheets 菜单项。
+- 保留永久自动生效的公司名文件命名、文件夹分流和付款方式配置。
 
 ---
 
@@ -160,6 +166,9 @@
   - `Order Confirmations`
   - `Invoices`
 - 删除仍然使用客户个人姓名作为文件名的旧生成文件。
+- 一次性清理完成后，删除两个临时维护菜单项：
+  - `Rename Existing Files to Company Names`
+  - `Update Google Form Payment Methods`
 
 ## 2026-07-22
 

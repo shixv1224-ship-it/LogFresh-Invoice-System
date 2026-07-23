@@ -58,9 +58,7 @@ function onOpen() {
     .addItem('Generate Order Confirmation for Selected Row', 'generateOrderConfirmationForSelectedRow')
     .addItem('Generate & Email Invoice for Selected Row', 'generateAndEmailInvoiceForSelectedRow')
     .addItem('Generate Invoice PDF Only for Selected Row', 'generateInvoicePdfOnlyForSelectedRow')
-    .addItem('Rename Existing Files to Company Names', 'renameExistingGeneratedFilesToCompanyNames')
     .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
-    .addItem('Update Google Form Payment Methods', 'updateGoogleFormPaymentMethods')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
     .addToUi();
@@ -129,42 +127,8 @@ function generateInvoicePdfOnlyForSelectedRow() {
   );
 }
 
-function renameExistingGeneratedFilesToCompanyNames() {
-  const ui = SpreadsheetApp.getUi();
-  const response = ui.alert(
-    'Rename Existing Generated Files',
-    'This will rename existing Order Confirmation and Invoice Google Docs/PDFs in the output Drive folder so the file name uses Bill To Company instead of the customer name. Continue?',
-    ui.ButtonSet.OK_CANCEL
-  );
-  if (response !== ui.Button.OK) return;
-
-  const result = renameExistingGeneratedFilesToCompanyNames_();
-  ui.alert(
-    'Rename Complete',
-    `Renamed ${result.renamed} file(s).\nSkipped ${result.skipped} file(s).\nMatched ${result.companyMatches} document(s) with company names.`,
-    ui.ButtonSet.OK
-  );
-}
-
 function rebuildCustomerInfoSheet() {
   rebuildCustomerInfoSheet_();
-}
-
-function updateGoogleFormPaymentMethods() {
-  const ui = SpreadsheetApp.getUi();
-  const response = ui.alert(
-    'Update Google Form Payment Methods',
-    `This will update Payment Method choices in both Google Forms to:\n\n${FORM_CHOICES.PAYMENT_METHOD.join('\n')}\n\nContinue?`,
-    ui.ButtonSet.OK_CANCEL
-  );
-  if (response !== ui.Button.OK) return;
-
-  const result = updateGoogleFormPaymentMethods_();
-  ui.alert(
-    'Payment Methods Updated',
-    `Updated ${result.updated} form item(s).\nSkipped ${result.skipped} form(s).`,
-    ui.ButtonSet.OK
-  );
 }
 
 function doGet(e) {
