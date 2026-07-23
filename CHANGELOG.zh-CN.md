@@ -89,7 +89,7 @@
 - 保留 invoice 生成和是否发送 invoice 的原有逻辑。
 - 保留客户确认后的 `[Approved]` shipping 信息提醒邮件。
 
-### 2026-07-23 · `TBD` - Manual invoice PDF-only menu action
+### 2026-07-23 · `455c26b` - Manual invoice PDF-only menu action
 
 - 增加 Google Sheet 菜单操作，可对选中的订单行只生成 invoice PDF，不发送任何邮件。
 - 生成前增加确认弹窗。

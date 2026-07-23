@@ -89,7 +89,7 @@ This section only tracks GitHub commits and repository-level version history.
 - Kept invoice generation and optional invoice sending unchanged.
 - Kept the customer-approved `[Approved]` shipping information reminder unchanged.
 
-### 2026-07-23 · `TBD` - Manual invoice PDF-only menu action
+### 2026-07-23 · `455c26b` - Manual invoice PDF-only menu action
 
 - Added a Google Sheets menu action to generate an invoice PDF for the selected row without sending any email.
 - Added a confirmation popup before generating the PDF-only invoice.
