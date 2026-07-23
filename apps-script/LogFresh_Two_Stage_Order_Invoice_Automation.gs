@@ -48,6 +48,7 @@ function onOpen() {
     .createMenu('LogFresh')
     .addItem('Generate Order Confirmation for Selected Row', 'generateOrderConfirmationForSelectedRow')
     .addItem('Generate & Email Invoice for Selected Row', 'generateAndEmailInvoiceForSelectedRow')
+    .addItem('Generate Invoice PDF Only for Selected Row', 'generateInvoicePdfOnlyForSelectedRow')
     .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
@@ -86,6 +87,35 @@ function generateAndEmailInvoiceForSelectedRow() {
   const row = sheet.getActiveRange().getRow();
   if (row === 1) throw new Error('Please select a data row, not the header row.');
   generateInvoiceForRow_(sheet, row, true);
+}
+
+function generateInvoicePdfOnlyForSelectedRow() {
+  const ui = SpreadsheetApp.getUi();
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const row = sheet.getActiveRange().getRow();
+  if (row === 1) {
+    ui.alert('Please select a data row, not the header row.');
+    return;
+  }
+
+  const response = ui.alert(
+    'Generate Invoice PDF Only',
+    'This will generate/update the invoice PDF and save it to Drive. No email will be sent. Continue?',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (response !== ui.Button.OK) return;
+
+  generateInvoiceForRow_(sheet, row, false);
+
+  const data = getRowData_(sheet, row);
+  const invoiceUrl = getValue_(data, 'Invoice URL');
+  ui.alert(
+    'Invoice PDF Created',
+    invoiceUrl
+      ? `The invoice PDF was saved to Drive.\n\nInvoice URL:\n${invoiceUrl}`
+      : 'The invoice PDF was created and saved to Drive. Please check the Invoice URL column.',
+    ui.ButtonSet.OK
+  );
 }
 
 function rebuildCustomerInfoSheet() {

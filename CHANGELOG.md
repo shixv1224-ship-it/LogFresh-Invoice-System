@@ -89,6 +89,12 @@ This section only tracks GitHub commits and repository-level version history.
 - Kept invoice generation and optional invoice sending unchanged.
 - Kept the customer-approved `[Approved]` shipping information reminder unchanged.
 
+### 2026-07-23 · `TBD` - Manual invoice PDF-only menu action
+
+- Added a Google Sheets menu action to generate an invoice PDF for the selected row without sending any email.
+- Added a confirmation popup before generating the PDF-only invoice.
+- Added a completion popup showing where the invoice was saved in Drive.
+
 ---
 
 ## Functional / Business Change History
@@ -102,6 +108,9 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Removed the automatic `[Update] Invoice shipping information required` internal reminder from the `Invoice Only` workflow.
 - `Invoice Only` now only generates the invoice and sends it according to the form's send option.
 - The `[Approved] Order Confirmation needs shipping info` email is still active for the `Confirmation First` workflow after customer approval.
+- Added a manual Sheet menu option:
+  - `LogFresh > Generate Invoice PDF Only for Selected Row`
+- This option generates/updates the invoice PDF, saves it to Drive, and never sends an email.
 
 ## Customer Info Sync - 2026-07-22
 

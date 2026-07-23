@@ -89,6 +89,12 @@
 - 保留 invoice 生成和是否发送 invoice 的原有逻辑。
 - 保留客户确认后的 `[Approved]` shipping 信息提醒邮件。
 
+### 2026-07-23 · `TBD` - Manual invoice PDF-only menu action
+
+- 增加 Google Sheet 菜单操作，可对选中的订单行只生成 invoice PDF，不发送任何邮件。
+- 生成前增加确认弹窗。
+- 生成后增加完成弹窗，并显示 Drive 中保存的 invoice 链接。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -102,6 +108,9 @@
 - 取消 `Invoice Only` 流程里自动发送的 `[Update] Invoice shipping information required` 内部提醒邮件。
 - `Invoice Only` 现在只生成 invoice，并按照表单里的发送选项决定是否发送 invoice。
 - `Confirmation First` 流程中，客户点击确认后发送的 `[Approved] Order Confirmation needs shipping info` 邮件仍然保留。
+- 增加一个手动 Sheet 菜单选项：
+  - `LogFresh > Generate Invoice PDF Only for Selected Row`
+- 这个选项只生成/更新 invoice PDF，保存到 Drive，永远不会发送邮件。
 
 ## 2026-07-22
 
