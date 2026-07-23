@@ -164,7 +164,7 @@ This section only tracks GitHub commits and repository-level version history.
 - Added a `LogFresh > Sync Form Address Fields` menu action so an authorized user can update Form 1 address questions and re-sync the main sheet split address columns.
 - Kept automatic future backfill during document generation.
 
-### 2026-07-23 · `c18cd15` - Rewrite main sheet address columns in place
+### 2026-07-23 · `4d38a60` - Rewrite main sheet address columns in place
 
 - Updated `LogFresh > Sync Form Address Fields` so it rewrites the main `Order Confirmation` sheet address columns in place instead of only appending/backfilling columns.
 - Keeps billing address columns beside `Bill To Address`: `Bill To City`, `Bill To State`, and `Bill To ZIP`.

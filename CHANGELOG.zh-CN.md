@@ -164,7 +164,7 @@
 - 增加 `LogFresh > Sync Form Address Fields` 菜单操作，授权用户可一键同步 Form 1 地址问题，并重新同步主表地址拆分列。
 - 保留后续生成文件时的自动回填逻辑。
 
-### 2026-07-23 · `c18cd15` - Rewrite main sheet address columns in place
+### 2026-07-23 · `4d38a60` - Rewrite main sheet address columns in place
 
 - 改进 `LogFresh > Sync Form Address Fields`：现在会把主 `Order Confirmation` 表里的地址列原地重写整理，而不是只在最右边追加/回填新列。
 - Billing 地址列会固定整理到 `Bill To Address` 旁边：`Bill To City`、`Bill To State`、`Bill To ZIP`。
