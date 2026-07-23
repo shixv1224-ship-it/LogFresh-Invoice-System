@@ -43,6 +43,10 @@ Important:
 - `Workflow Type` must include:
   - `Invoice Only`
   - `Confirmation First`
+- `Payment Method` must include the same options in Form 1 and Form 2:
+  - `Credit Card`
+  - `Prepaid`
+  - `Check/Wire Transfer`
 - `Send Confirmation Automatically` controls Form 1 sending for both workflows.
 - `Salesperson Email` should be filled accurately because internal reminders are sent there.
 
@@ -157,6 +161,14 @@ Invoice Date = 2026-07-20
 Due Date = 2026-08-19
 Payment Method = Credit Card
 Customer Email = CUSTOMER_EMAIL_HERE
+```
+
+The prefilled `Payment Method` value can be any one of:
+
+```text
+Credit Card
+Prepaid
+Check/Wire Transfer
 ```
 
 In the Apps Script config, replace the generated sample values with:

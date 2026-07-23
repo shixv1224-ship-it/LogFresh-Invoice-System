@@ -471,7 +471,7 @@ function buildLineItems_(data) {
 
     replacements[`{{QTY${i}}}`] = active ? qtyText : '';
     replacements[`{{DESC${i}}}`] = active ? description : '';
-    replacements[`{{PRICE${i}}}`] = active ? money_(price) : '';
+    replacements[`{{PRICE${i}}}`] = active ? unitPrice_(priceText) : '';
     replacements[`{{AMOUNT${i}}}`] = active ? money_(amount) : '';
   }
 
@@ -986,6 +986,17 @@ function parseNumber_(value) {
 
 function money_(value) {
   return '$' + Number(value || 0).toFixed(2);
+}
+
+function unitPrice_(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+
+  const cleaned = text.replace(/[$,\s]/g, '');
+  const number = Number(cleaned);
+  if (!Number.isFinite(number)) return text;
+
+  return '$' + cleaned;
 }
 
 function joinEmails_(...groups) {

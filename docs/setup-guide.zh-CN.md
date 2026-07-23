@@ -64,6 +64,14 @@ Invoice Only
 Confirmation First
 ```
 
+`Payment Method` 在 Form 1 和 Form 2 中保持一致，选项为：
+
+```text
+Credit Card
+Prepaid
+Check/Wire Transfer
+```
+
 ## 3. 创建 Form 2
 
 Form 2 用于更新 shipping / invoice 信息。

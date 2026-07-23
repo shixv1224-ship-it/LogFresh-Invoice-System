@@ -172,6 +172,16 @@ Confirmation First
 
 `Send Confirmation Automatically` 是 Form 1 的统一发送开关。
 
+`Payment Method` should use the same choices in both forms:
+
+`Payment Method` 在两个表单中保持相同选项：
+
+```text
+Credit Card
+Prepaid
+Check/Wire Transfer
+```
+
 ```text
 Yes = send the generated document for the selected workflow
 No = generate PDF only and save it to Drive
@@ -205,6 +215,10 @@ Internal Notes
 Form 2 updates the original order by matching `Order Number`.
 
 Form 2 通过 `Order Number` 匹配原订单并回写 shipping / invoice 信息。
+
+Form 2 should use the same `Payment Method` choices as Form 1.
+
+Form 2 的 `Payment Method` 选项应与 Form 1 保持一致。
 
 ## Numbering / 编号规则
 

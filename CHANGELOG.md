@@ -101,11 +101,17 @@ This section only tracks GitHub commits and repository-level version history.
 - Changed generated Invoice file names to use the billing company name instead of the individual customer name.
 - Kept email greetings and document content behavior unchanged.
 
-### 2026-07-23 · `511edeb` - Add batch rename for existing generated files
+### 2026-07-23 · `d589642` - Add batch rename for existing generated files
 
 - Added a Google Sheets menu action to rename existing generated Order Confirmation and Invoice files in Drive.
 - The batch rename reads the `BILL TO` section from each generated Google Doc and uses the company name for both the Google Doc and matching PDF file names.
 - Added skip logic for files where a company name cannot be safely detected.
+
+### 2026-07-23 · `d0fb689` - Update unit price and payment method requirements
+
+- Changed line-item unit price rendering so it preserves the decimal precision entered in the form instead of forcing two decimal places.
+- Kept subtotal, total, balance due, and other calculated dollar amounts formatted to two decimal places.
+- Documented the shared Form 1/Form 2 payment method options: `Credit Card`, `Prepaid`, and `Check/Wire Transfer`.
 
 ---
 
@@ -128,6 +134,11 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Added a manual Sheet menu option:
   - `LogFresh > Rename Existing Files to Company Names`
 - This option scans the existing output Drive folder and renames old generated Google Docs/PDFs to use company names when detectable.
+- Updated unit price behavior so invoice line-item unit prices keep the decimal precision entered in the form.
+- Standardized the payment method choices for both forms:
+  - `Credit Card`
+  - `Prepaid`
+  - `Check/Wire Transfer`
 
 ## Customer Info Sync - 2026-07-22
 

@@ -75,6 +75,18 @@ Invoice Date + 30 days
 今天 + 30 days
 ```
 
+## 当前表单要求
+
+`Payment Method` 在 Form 1 和 Form 2 中保持一致，选项为：
+
+```text
+Credit Card
+Prepaid
+Check/Wire Transfer
+```
+
+`Item Unit Price` 不再强制显示两位小数；系统会保留表单里输入的单价小数位数。Subtotal、Total、Balance Due 等总金额仍按美元金额显示两位小数。
+
 ## 部署说明
 
 详细部署步骤见：
