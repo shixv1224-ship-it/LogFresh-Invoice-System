@@ -83,11 +83,25 @@ This section only tracks GitHub commits and repository-level version history.
 - Documented the separate customer info spreadsheet configuration.
 - Documented the Apps Script source cleanup after `clasp` deployment.
 
+### 2026-07-23 · `202a70c` - Disable invoice-only update reminder email
+
+- Disabled the automatic `[Update] Invoice shipping information required` email for the `Invoice Only` workflow.
+- Kept invoice generation and optional invoice sending unchanged.
+- Kept the customer-approved `[Approved]` shipping information reminder unchanged.
+
 ---
 
 ## Functional / Business Change History
 
 This section tracks the actual workflow, template, form, email, and customer-data changes made for the LogFresh automation system.
+
+## 2026-07-23
+
+### Changed
+
+- Removed the automatic `[Update] Invoice shipping information required` internal reminder from the `Invoice Only` workflow.
+- `Invoice Only` now only generates the invoice and sends it according to the form's send option.
+- The `[Approved] Order Confirmation needs shipping info` email is still active for the `Confirmation First` workflow after customer approval.
 
 ## Customer Info Sync - 2026-07-22
 

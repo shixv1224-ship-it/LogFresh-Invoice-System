@@ -83,11 +83,25 @@
 - 记录独立客户资料表的配置。
 - 记录 `clasp` 部署后 Apps Script 源码目录清理。
 
+### 2026-07-23 · `202a70c` - Disable invoice-only update reminder email
+
+- 取消 `Invoice Only` 流程中自动发送的 `[Update] Invoice shipping information required` 内部提醒邮件。
+- 保留 invoice 生成和是否发送 invoice 的原有逻辑。
+- 保留客户确认后的 `[Approved]` shipping 信息提醒邮件。
+
 ---
 
 ## 功能 / 业务更新记录
 
 这一部分记录 LogFresh 自动化系统本身的流程、模板、表单、邮件和客户资料功能变化。
+
+## 2026-07-23
+
+### Changed
+
+- 取消 `Invoice Only` 流程里自动发送的 `[Update] Invoice shipping information required` 内部提醒邮件。
+- `Invoice Only` 现在只生成 invoice，并按照表单里的发送选项决定是否发送 invoice。
+- `Confirmation First` 流程中，客户点击确认后发送的 `[Approved] Order Confirmation needs shipping info` 邮件仍然保留。
 
 ## 2026-07-22
 
