@@ -1074,9 +1074,12 @@ function setFormItemTitle_(item, title) {
 function moveFormItemAfter_(form, itemToMove, previousItem) {
   if (!itemToMove || !previousItem) return;
   const items = form.getItems();
-  const targetIndex = items.findIndex(item => item.getId() === previousItem.getId()) + 1;
-  if (targetIndex <= 0) return;
-  form.moveItem(itemToMove, targetIndex);
+  const fromIndex = items.findIndex(item => item.getId() === itemToMove.getId());
+  let targetIndex = items.findIndex(item => item.getId() === previousItem.getId()) + 1;
+  if (fromIndex < 0 || targetIndex <= 0 || fromIndex === targetIndex) return;
+
+  if (fromIndex < targetIndex) targetIndex -= 1;
+  form.moveItem(fromIndex, targetIndex);
 }
 
 function parseGeneratedFileName_(name) {
