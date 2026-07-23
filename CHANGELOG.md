@@ -143,6 +143,14 @@ This section only tracks GitHub commits and repository-level version history.
 - Added automatic U.S. two-letter state dropdown maintenance for the Form 1 state fields.
 - Kept the legacy combined city/state/ZIP template placeholders working as a fallback.
 
+### 2026-07-23 · `9233de0` - Invoice-only internal archive email
+
+- Changed the `Invoice Only` workflow when `Send Confirmation Automatically = No`.
+- Instead of sending nothing, the generated invoice is now emailed to `Salesperson Email` and CC'd to the fixed internal email list for internal archive.
+- Kept `Invoice Only` with `Send Confirmation Automatically = Yes` customer-facing behavior unchanged.
+- Kept the manual `Generate Invoice PDF Only for Selected Row` menu action as true PDF-only with no email sent.
+- Added `Invoice Internal Archive Sent At` tracking in the main order sheet.
+
 ---
 
 ## Functional / Business Change History
@@ -185,6 +193,9 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Added `Order Total` to the main order sheet and Customer Info output.
 - Added automatic Form 1 maintenance for split billing/shipping city, state, and ZIP questions.
 - Added automatic U.S. state dropdown maintenance for `Bill To State` and `Ship To State`.
+- Updated `Invoice Only` behavior so `Send Confirmation Automatically = No` sends the invoice internally to `Salesperson Email` and CCs the fixed internal email list for archive.
+- Preserved the manual PDF-only menu as a no-email action.
+- Added `Invoice Internal Archive Sent At` to track internal archive emails separately from customer invoice emails.
 
 ## Customer Info Sync - 2026-07-22
 

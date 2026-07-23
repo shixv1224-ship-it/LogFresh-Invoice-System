@@ -143,6 +143,14 @@
 - 增加美国两位州缩写下拉选项自动维护。
 - 保留旧的合并 city/state/ZIP 模板占位符 fallback，避免旧模板立即失效。
 
+### 2026-07-23 · `9233de0` - Invoice-only internal archive email
+
+- 调整 `Invoice Only` 在 `Send Confirmation Automatically = No` 时的行为。
+- 不再是什么邮件都不发；系统会把生成好的 invoice 发送给 `Salesperson Email`，并 CC 固定内部邮箱列表，用作内部存档。
+- `Invoice Only` 在 `Send Confirmation Automatically = Yes` 时仍然照旧发给客户。
+- Sheet 菜单里的 `Generate Invoice PDF Only for Selected Row` 仍然是真正只生成 PDF，不发任何邮件。
+- 新增 `Invoice Internal Archive Sent At` 主订单表记录列，用于单独追踪内部存档邮件。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -185,6 +193,9 @@
 - 在主订单表和 Customer Info 输出中加入 `Order Total`。
 - 增加 Form 1 自动维护：拆分 billing/shipping 的 City、State、ZIP 问题。
 - 增加 `Bill To State` 和 `Ship To State` 的美国州缩写下拉自动维护。
+- 更新 `Invoice Only` 逻辑：`Send Confirmation Automatically = No` 时，invoice 会发送给 `Salesperson Email` 并 CC 固定内部邮箱做存档。
+- 保留手动 PDF-only 菜单为不发邮件操作。
+- 新增 `Invoice Internal Archive Sent At`，将内部存档邮件和客户 invoice 邮件分开记录。
 
 ## 2026-07-22
 

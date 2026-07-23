@@ -192,12 +192,12 @@ Check/Wire Transfer
 
 ```text
 Yes = send the generated document for the selected workflow
-No = generate PDF only and save it to Drive
+No = for Invoice Only, send the invoice to Salesperson Email and CC internal emails for archive; for Confirmation First, generate PDF only
 ```
 
 ```text
 Yes = 自动发送当前流程生成的文件
-No = 只生成 PDF 并保存到 Drive，不发送邮件
+No = 如果是 Invoice Only，会把 invoice 发给 Salesperson Email 并 CC 内部邮箱做存档；如果是 Confirmation First，只生成 PDF
 ```
 
 ### Form 2: Shipping / Invoice Update / Form 2：发货与 Invoice 更新
@@ -296,10 +296,10 @@ Customer approved, internal shipping reminder / 客户确认后的内部 shippin
 [Approved] Order Confirmation needs shipping info - {{ORDER_NUMBER}}
 ```
 
-Invoice-only internal shipping reminder / Invoice Only 后的内部 shipping 提醒：
+Invoice-only internal archive email / Invoice Only 内部存档邮件：
 
 ```text
-[Update] Invoice shipping information required - {{INVOICE_NUMBER}} / {{ORDER_NUMBER}}
+[INV Internal] Invoice archive copy - {{INVOICE_NUMBER}} / {{ORDER_NUMBER}}
 ```
 
 ## Email recipients / 邮件收件规则
@@ -308,9 +308,9 @@ Customer-facing emails are CC'd to the fixed internal list plus `Salesperson Ema
 
 客户邮件会自动 CC 固定内部邮箱列表和 `Salesperson Email`。
 
-Internal shipping/update reminders are sent primarily to `Salesperson Email`, with backup internal emails configured in the script.
+Internal approval/archive emails are sent primarily to `Salesperson Email`, with backup internal emails configured in the script.
 
-内部 shipping/update 提醒优先发送给 `Salesperson Email`，同时可使用脚本中配置的备用内部邮箱。
+内部 approval/archive 邮件优先发送给 `Salesperson Email`，同时可使用脚本中配置的备用内部邮箱。
 
 ## Current configuration / 当前配置
 

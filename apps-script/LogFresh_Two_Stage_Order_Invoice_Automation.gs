@@ -206,7 +206,7 @@ function processOrderCreateFormRow_(sheet, row) {
 
   if (workflow.includes('invoice only')) {
     const shouldSendInvoice = shouldSendAutomatically_(data);
-    generateInvoiceForRow_(sheet, row, shouldSendInvoice);
+    generateInvoiceForRow_(sheet, row, shouldSendInvoice, !shouldSendInvoice);
   } else {
     generateOrderConfirmationForRow_(sheet, row);
   }
@@ -306,7 +306,7 @@ function generateOrderConfirmationForRow_(sheet, row) {
   }
 }
 
-function generateInvoiceForRow_(sheet, row, sendEmail) {
+function generateInvoiceForRow_(sheet, row, sendEmail, sendInternalArchive) {
   try {
     ensureInternalColumns_(sheet);
     ensureOrderNumber_(sheet, row);
@@ -359,12 +359,56 @@ function generateInvoiceForRow_(sheet, row, sendEmail) {
       });
       writeResult_(sheet, row, 'Invoice Sent At', new Date());
       writeResult_(sheet, row, 'Order Status', STATUS.INVOICE_SENT);
+    } else if (sendInternalArchive) {
+      sendInvoiceInternalArchiveEmail_({
+        data,
+        result,
+        invoiceNumber,
+        orderNumber,
+        customerName,
+        trackingNumber,
+      });
+      writeResult_(sheet, row, 'Invoice Internal Archive Sent At', new Date());
     }
     syncCustomerInfoForRow_(sheet, row);
   } catch (error) {
     writeResult_(sheet, row, 'Internal Notes', `Invoice ERROR: ${error.message}`);
     throw error;
   }
+}
+
+function sendInvoiceInternalArchiveEmail_({ data, result, invoiceNumber, orderNumber, customerName, trackingNumber }) {
+  const salespersonEmail = getValue_(data, 'Salesperson Email');
+  const internalEmails = CONFIG.CUSTOMER_EMAIL_CC && !CONFIG.CUSTOMER_EMAIL_CC.includes('PASTE_')
+    ? CONFIG.CUSTOMER_EMAIL_CC
+    : CONFIG.INTERNAL_NOTIFICATION_EMAIL;
+  const recipient = salespersonEmail || internalEmails;
+  if (!recipient) return;
+
+  MailApp.sendEmail({
+    to: recipient,
+    cc: salespersonEmail ? internalEmails : undefined,
+    subject: `[INV Internal] Invoice archive copy - ${invoiceNumber} / ${orderNumber}`,
+    body:
+      `Internal archive copy only. This invoice was not sent to the customer automatically.\n\n` +
+      `Customer: ${customerName}\n` +
+      `Order Number: ${orderNumber}\n` +
+      `Invoice Number: ${invoiceNumber}\n` +
+      `Shipping Method: ${getValue_(data, 'Shipped Via')}\n` +
+      `Tracking Number: ${trackingNumber}\n\n` +
+      `Invoice Drive URL: ${result.pdfFile.getUrl()}`,
+    htmlBody:
+      `<p><strong>Internal archive copy only.</strong> This invoice was not sent to the customer automatically.</p>` +
+      `<p>Customer: ${escapeHtml_(customerName)}<br>` +
+      `Order Number: ${escapeHtml_(orderNumber)}<br>` +
+      `Invoice Number: ${escapeHtml_(invoiceNumber)}<br>` +
+      `Shipping Method: ${escapeHtml_(getValue_(data, 'Shipped Via'))}<br>` +
+      `Tracking Number: ${escapeHtml_(trackingNumber)}</p>` +
+      `<p>Invoice Drive URL: <a href="${result.pdfFile.getUrl()}">${result.pdfFile.getUrl()}</a></p>`,
+    attachments: [result.pdfBlob],
+    name: CONFIG.COMPANY_NAME,
+    replyTo: CONFIG.COMPANY_EMAIL,
+  });
 }
 
 function sendShippingUpdateReminder_(sheet, row) {
@@ -1052,6 +1096,7 @@ function ensureInternalColumns_(sheet) {
     'Ship To ZIP',
     'Invoice URL',
     'Invoice Sent At',
+    'Invoice Internal Archive Sent At',
     'Order Total',
     'Internal Notes',
   ].forEach(header => ensureColumn_(sheet, header));

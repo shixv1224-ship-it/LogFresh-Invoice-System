@@ -203,4 +203,10 @@ Event type: On form submit
 
 再测试 `Invoice Only`。
 
+预期：
+
+- `Send Confirmation Automatically = Yes`：invoice 发给客户，并 CC 内部邮箱。
+- `Send Confirmation Automatically = No`：invoice 不发给客户，改发给 `Salesperson Email`，并 CC 固定内部邮箱做存档。
+- Sheet 菜单里的 `Generate Invoice PDF Only for Selected Row` 仍然只生成 PDF，不发送任何邮件。
+
 确认 PDF、邮件、Sheet 回写、Form 2 预填链接都正常。

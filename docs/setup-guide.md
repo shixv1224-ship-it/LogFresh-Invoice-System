@@ -306,6 +306,12 @@ Send Confirmation Automatically = Yes or No
 
 Expected:
 
+- If `Send Confirmation Automatically = Yes`, the invoice is emailed to the customer and CC'd internally.
+- If `Send Confirmation Automatically = No`, the invoice is not emailed to the customer; it is emailed to `Salesperson Email` and CC'd to the fixed internal list for archive.
+- The manual Sheet menu option `Generate Invoice PDF Only for Selected Row` still generates the PDF only and sends no email.
+
+Expected:
+
 - Invoice PDF is generated.
 - Invoice is emailed only if send option is `Yes`.
 - Internal shipping/tracking reminder is sent to salesperson.

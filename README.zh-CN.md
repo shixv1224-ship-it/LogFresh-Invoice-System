@@ -24,6 +24,8 @@
 
 旧的 `[Update] Invoice shipping information required` 内部提醒邮件已取消。
 
+如果 `Send Confirmation Automatically = No`，Invoice Only 不会发给客户，而是发送给 `Salesperson Email` 并 CC 固定内部邮箱，用作内部存档。
+
 ### Confirmation First
 
 适用于客户需要先确认订单的情况。
