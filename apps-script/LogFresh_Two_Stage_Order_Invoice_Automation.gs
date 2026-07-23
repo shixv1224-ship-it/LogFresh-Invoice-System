@@ -157,7 +157,6 @@ function processOrderCreateFormRow_(sheet, row) {
   if (workflow.includes('invoice only')) {
     const shouldSendInvoice = shouldSendAutomatically_(data);
     generateInvoiceForRow_(sheet, row, shouldSendInvoice);
-    sendShippingUpdateReminder_(sheet, row);
   } else {
     generateOrderConfirmationForRow_(sheet, row);
   }
