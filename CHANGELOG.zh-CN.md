@@ -143,7 +143,7 @@
 - 增加美国两位州缩写下拉选项自动维护。
 - 保留旧的合并 city/state/ZIP 模板占位符 fallback，避免旧模板立即失效。
 
-### 2026-07-23 · `9233de0` - Invoice-only internal archive email
+### 2026-07-23 · `23d6a87` - Invoice-only internal archive email
 
 - 调整 `Invoice Only` 在 `Send Confirmation Automatically = No` 时的行为。
 - 不再是什么邮件都不发；系统会把生成好的 invoice 发送给 `Salesperson Email`，并 CC 固定内部邮箱列表，用作内部存档。

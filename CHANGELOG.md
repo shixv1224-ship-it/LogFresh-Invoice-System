@@ -143,7 +143,7 @@ This section only tracks GitHub commits and repository-level version history.
 - Added automatic U.S. two-letter state dropdown maintenance for the Form 1 state fields.
 - Kept the legacy combined city/state/ZIP template placeholders working as a fallback.
 
-### 2026-07-23 · `9233de0` - Invoice-only internal archive email
+### 2026-07-23 · `23d6a87` - Invoice-only internal archive email
 
 - Changed the `Invoice Only` workflow when `Send Confirmation Automatically = No`.
 - Instead of sending nothing, the generated invoice is now emailed to `Salesperson Email` and CC'd to the fixed internal email list for internal archive.
