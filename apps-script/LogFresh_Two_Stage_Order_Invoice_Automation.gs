@@ -232,6 +232,7 @@ function generateOrderConfirmationForRow_(sheet, row) {
     const replacements = buildReplacements_(data, row, 'order');
     const orderNumber = replacements['{{ORDER_NUMBER}}'];
     const customerName = getValue_(data, 'Bill To Name') || getValue_(data, 'Bill To Company') || 'Customer';
+    const fileCustomerName = getValue_(data, 'Bill To Company') || customerName;
     const recipient = getValue_(data, 'Customer Email') || getValue_(data, 'Bill To Email');
     const approvalUrl = makeApprovalUrl_(orderNumber);
     const salespersonEmail = getValue_(data, 'Salesperson Email');
@@ -240,7 +241,7 @@ function generateOrderConfirmationForRow_(sheet, row) {
 
     const result = createPdfFromTemplate_({
       templateId: CONFIG.ORDER_CONFIRMATION_TEMPLATE_ID,
-      baseName: `Order Confirmation ${orderNumber} - ${customerName}`,
+      baseName: `Order Confirmation ${orderNumber} - ${fileCustomerName}`,
       replacements,
     });
 
@@ -292,12 +293,13 @@ function generateInvoiceForRow_(sheet, row, sendEmail) {
     const invoiceNumber = replacements['{{INVOICE_NUMBER}}'];
     const orderNumber = replacements['{{ORDER_NUMBER}}'];
     const customerName = getValue_(data, 'Bill To Name') || getValue_(data, 'Bill To Company') || 'Customer';
+    const fileCustomerName = getValue_(data, 'Bill To Company') || customerName;
     const recipient = getValue_(data, 'Customer Email') || getValue_(data, 'Bill To Email');
     const salespersonEmail = getValue_(data, 'Salesperson Email');
 
     const result = createPdfFromTemplate_({
       templateId: CONFIG.INVOICE_TEMPLATE_ID,
-      baseName: `Invoice ${invoiceNumber} - ${customerName}`,
+      baseName: `Invoice ${invoiceNumber} - ${fileCustomerName}`,
       replacements,
     });
 

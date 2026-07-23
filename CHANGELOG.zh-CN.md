@@ -95,6 +95,12 @@
 - 生成前增加确认弹窗。
 - 生成后增加完成弹窗，并显示 Drive 中保存的 invoice 链接。
 
+### 2026-07-23 · `f7c73d7` - Use company names in generated file names
+
+- 将后续生成的 Order Confirmation 文件名改为优先使用账单公司名，而不是客户个人名。
+- 将后续生成的 Invoice 文件名改为优先使用账单公司名，而不是客户个人名。
+- 邮件称呼和文档正文内容保持不变。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -111,6 +117,8 @@
 - 增加一个手动 Sheet 菜单选项：
   - `LogFresh > Generate Invoice PDF Only for Selected Row`
 - 这个选项只生成/更新 invoice PDF，保存到 Drive，永远不会发送邮件。
+- 后续生成的 Order Confirmation 和 Invoice 文件名会优先使用 `Bill To Company`。
+- 如果 `Bill To Company` 为空，系统才会 fallback 到客户个人名。
 
 ## 2026-07-22
 
