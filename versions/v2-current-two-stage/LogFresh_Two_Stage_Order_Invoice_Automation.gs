@@ -68,6 +68,7 @@ function onOpen() {
     .addItem('Generate & Email Invoice for Selected Row', 'generateAndEmailInvoiceForSelectedRow')
     .addItem('Generate Invoice PDF Only for Selected Row', 'generateInvoicePdfOnlyForSelectedRow')
     .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
+    .addItem('Sync Form Address Fields', 'syncFormAddressFields')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
     .addToUi();
@@ -140,6 +141,24 @@ function generateInvoicePdfOnlyForSelectedRow() {
 
 function rebuildCustomerInfoSheet() {
   rebuildCustomerInfoSheet_();
+}
+
+function syncFormAddressFields() {
+  ensureGoogleFormsSetup_();
+
+  const sheet = getMainOrderSheet_();
+  ensureInternalColumns_(sheet);
+  const lastRow = sheet.getLastRow();
+  for (let row = 2; row <= lastRow; row++) {
+    const data = getRowData_(sheet, row);
+    backfillSplitAddressColumnsForRow_(sheet, row, data);
+  }
+
+  SpreadsheetApp.getUi().alert(
+    'Address Fields Synced',
+    'Form 1 address fields and the main sheet address columns have been synced.',
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
 }
 
 function doGet(e) {

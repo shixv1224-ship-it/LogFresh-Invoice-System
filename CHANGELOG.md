@@ -157,6 +157,13 @@ This section only tracks GitHub commits and repository-level version history.
 - After the new invoice is created successfully, older matching invoice PDF/Google Doc files are moved to Drive trash.
 - Kept Invoice Only and manual PDF-only generation from deleting old files automatically.
 
+### 2026-07-23 · `TBD` - Sync split address fields to main sheet and form
+
+- Added split address columns to the main `Order Confirmation` response sheet: `Bill To City`, `Bill To State`, `Bill To ZIP`, `Ship To City`, `Ship To State`, and `Ship To ZIP`.
+- Backfilled existing order rows with parsed city, state, and ZIP values.
+- Added a `LogFresh > Sync Form Address Fields` menu action so an authorized user can update Form 1 address questions and re-sync the main sheet split address columns.
+- Kept automatic future backfill during document generation.
+
 ---
 
 ## Functional / Business Change History
@@ -203,6 +210,8 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Preserved the manual PDF-only menu as a no-email action.
 - Added `Invoice Internal Archive Sent At` to track internal archive emails separately from customer invoice emails.
 - Updated Form 2 invoice updates so regenerating an invoice removes the previous matching invoice file after the new one is created.
+- Synced existing main order sheet rows into separate billing/shipping city, state, and ZIP columns.
+- Added a Sheet menu action to sync Form 1 address fields and main sheet address columns together.
 
 ## Customer Info Sync - 2026-07-22
 

@@ -157,6 +157,13 @@
 - 新 invoice 成功生成后，旧的匹配 invoice PDF / Google Doc 会被移到 Drive 垃圾桶。
 - `Invoice Only` 和手动 PDF-only 生成不会自动删除旧文件。
 
+### 2026-07-23 · `TBD` - Sync split address fields to main sheet and form
+
+- 在主 `Order Confirmation` 回复表中加入拆分地址列：`Bill To City`、`Bill To State`、`Bill To ZIP`、`Ship To City`、`Ship To State`、`Ship To ZIP`。
+- 已把现有订单行的 city、state、ZIP 解析并回填。
+- 增加 `LogFresh > Sync Form Address Fields` 菜单操作，授权用户可一键同步 Form 1 地址问题，并重新同步主表地址拆分列。
+- 保留后续生成文件时的自动回填逻辑。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -203,6 +210,8 @@
 - 保留手动 PDF-only 菜单为不发邮件操作。
 - 新增 `Invoice Internal Archive Sent At`，将内部存档邮件和客户 invoice 邮件分开记录。
 - 更新 Form 2 invoice update：同一订单重新生成 invoice 后，会移除旧的匹配 invoice 文件。
+- 已将主订单表现有订单同步到独立 billing/shipping city、state、ZIP 列。
+- 增加 Sheet 菜单操作，可同步 Form 1 地址字段和主表地址列。
 
 ## 2026-07-22
 
