@@ -113,11 +113,19 @@
 - Subtotal、Total、Balance Due 等计算总金额仍保持美元两位小数。
 - 记录 Form 1 / Form 2 统一付款方式选项：`Credit Card`、`Prepaid`、`Check/Wire Transfer`。
 
-### 2026-07-23 · `ed1bfca` - Add one-click Google Form payment method updater
+### 2026-07-23 · `b4fc186` - Add one-click Google Form payment method updater
 
 - 将 Form 1 和 Form 2 的 ID 加入 Apps Script 配置。
 - 增加 Google Sheet 菜单操作，可一键更新两个 Google Form 的 `Payment Method` 选项。
 - 该更新器兼容单选题和下拉题类型的 `Payment Method` 字段。
+
+### 2026-07-23 · `f79d4fc` - Split generated files into order and invoice folders
+
+- 在 Drive 输出目录下创建独立的 Order Confirmations 和 Invoices 文件夹。
+- 更新 Apps Script，使后续 Order Confirmation 文件自动保存到 Order Confirmations 文件夹。
+- 更新 Apps Script，使后续 Invoice 文件自动保存到 Invoices 文件夹。
+- 删除仍然使用客户个人姓名作为文件名的旧生成文件。
+- 将现有已经改成公司名的文件按 Order Confirmation / Invoice 移动到对应文件夹。
 
 ---
 
@@ -148,6 +156,10 @@
 - 增加一个手动 Sheet 菜单选项：
   - `LogFresh > Update Google Form Payment Methods`
 - 这个选项会更新两个 Google Form 里的 `Payment Method` 题目选项。
+- 将生成文件拆分到两个 Drive 文件夹：
+  - `Order Confirmations`
+  - `Invoices`
+- 删除仍然使用客户个人姓名作为文件名的旧生成文件。
 
 ## 2026-07-22
 

@@ -113,11 +113,19 @@ This section only tracks GitHub commits and repository-level version history.
 - Kept subtotal, total, balance due, and other calculated dollar amounts formatted to two decimal places.
 - Documented the shared Form 1/Form 2 payment method options: `Credit Card`, `Prepaid`, and `Check/Wire Transfer`.
 
-### 2026-07-23 · `ed1bfca` - Add one-click Google Form payment method updater
+### 2026-07-23 · `b4fc186` - Add one-click Google Form payment method updater
 
 - Added Form 1 and Form 2 IDs to Apps Script configuration.
 - Added a Google Sheets menu action to update the `Payment Method` choices in both Google Forms.
 - The updater supports both multiple choice and dropdown `Payment Method` fields.
+
+### 2026-07-23 · `f79d4fc` - Split generated files into order and invoice folders
+
+- Created separate Drive output folders for Order Confirmations and Invoices.
+- Updated Apps Script so future Order Confirmation files save to the Order Confirmations folder.
+- Updated Apps Script so future Invoice files save to the Invoices folder.
+- Removed old generated files that still used individual customer names in the file name.
+- Moved existing company-named generated files into the appropriate Order Confirmations or Invoices folder.
 
 ---
 
@@ -148,6 +156,10 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Added a manual Sheet menu option:
   - `LogFresh > Update Google Form Payment Methods`
 - This option updates the `Payment Method` question choices in both Google Forms.
+- Split generated Drive files into two folders:
+  - `Order Confirmations`
+  - `Invoices`
+- Deleted remaining old generated files whose names still used individual customer names.
 
 ## Customer Info Sync - 2026-07-22
 

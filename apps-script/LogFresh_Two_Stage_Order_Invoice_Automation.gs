@@ -2,6 +2,8 @@ const CONFIG = {
   ORDER_CONFIRMATION_TEMPLATE_ID: '1IKmEJH8gQ4Sv9376UEUHYFkvf7aYwZCQWfpkVfDx9FE',
   INVOICE_TEMPLATE_ID: '1HL7cBQRwKluDp4bqpjuwF3Cf7g3KPOFMm1bFTBQf0qA',
   OUTPUT_FOLDER_ID: '1fJ2NObstEyEbEoKcf-OSOdyrg1hhgpEU',
+  ORDER_CONFIRMATION_OUTPUT_FOLDER_ID: '15cT5Z39SKmQYDteIgMZtuAhu8bQiGdGa',
+  INVOICE_OUTPUT_FOLDER_ID: '1ywiGiGlVqRbtdETpYNZ7q7MzBiBgehkv',
 
   // After you deploy this as a Web App, paste the Web App URL here.
   WEB_APP_URL: 'PASTE_WEB_APP_URL_HERE',
@@ -284,6 +286,7 @@ function generateOrderConfirmationForRow_(sheet, row) {
 
     const result = createPdfFromTemplate_({
       templateId: CONFIG.ORDER_CONFIRMATION_TEMPLATE_ID,
+      folderId: CONFIG.ORDER_CONFIRMATION_OUTPUT_FOLDER_ID,
       baseName: `Order Confirmation ${orderNumber} - ${fileCustomerName}`,
       replacements,
     });
@@ -342,6 +345,7 @@ function generateInvoiceForRow_(sheet, row, sendEmail) {
 
     const result = createPdfFromTemplate_({
       templateId: CONFIG.INVOICE_TEMPLATE_ID,
+      folderId: CONFIG.INVOICE_OUTPUT_FOLDER_ID,
       baseName: `Invoice ${invoiceNumber} - ${fileCustomerName}`,
       replacements,
     });
@@ -737,15 +741,16 @@ function formatCustomerInfoSheet_(sheet) {
   sheet.getRange(1, 1, lastRow, headers.length).createFilter();
 }
 
-function createPdfFromTemplate_({ templateId, baseName, replacements }) {
+function createPdfFromTemplate_({ templateId, folderId, baseName, replacements }) {
   if (!templateId || templateId.includes('PASTE_')) {
     throw new Error('Template ID is missing in CONFIG.');
   }
-  if (!CONFIG.OUTPUT_FOLDER_ID || CONFIG.OUTPUT_FOLDER_ID.includes('PASTE_')) {
+  const targetFolderId = folderId || CONFIG.OUTPUT_FOLDER_ID;
+  if (!targetFolderId || targetFolderId.includes('PASTE_')) {
     throw new Error('Output folder ID is missing in CONFIG.');
   }
 
-  const outputFolder = DriveApp.getFolderById(CONFIG.OUTPUT_FOLDER_ID);
+  const outputFolder = DriveApp.getFolderById(targetFolderId);
   const template = DriveApp.getFileById(templateId);
   const documentFile = template.makeCopy(baseName, outputFolder);
   const document = DocumentApp.openById(documentFile.getId());
@@ -765,19 +770,26 @@ function renameExistingGeneratedFilesToCompanyNames_() {
     throw new Error('Output folder ID is missing in CONFIG.');
   }
 
-  const folder = DriveApp.getFolderById(CONFIG.OUTPUT_FOLDER_ID);
-  const iterator = folder.getFiles();
+  const folderIds = [
+    CONFIG.OUTPUT_FOLDER_ID,
+    CONFIG.ORDER_CONFIRMATION_OUTPUT_FOLDER_ID,
+    CONFIG.INVOICE_OUTPUT_FOLDER_ID,
+  ].filter(Boolean);
   const files = [];
   const companyByDocumentKey = {};
   let renamed = 0;
   let skipped = 0;
   let companyMatches = 0;
 
-  while (iterator.hasNext()) {
-    const file = iterator.next();
-    const parsed = parseGeneratedFileName_(file.getName());
-    if (parsed) files.push({ file, parsed });
-  }
+  folderIds.forEach(folderId => {
+    const folder = DriveApp.getFolderById(folderId);
+    const iterator = folder.getFiles();
+    while (iterator.hasNext()) {
+      const file = iterator.next();
+      const parsed = parseGeneratedFileName_(file.getName());
+      if (parsed) files.push({ file, parsed });
+    }
+  });
 
   files.forEach(({ file, parsed }) => {
     if (parsed.isPdf || file.getMimeType() !== MimeType.GOOGLE_DOCS) return;
