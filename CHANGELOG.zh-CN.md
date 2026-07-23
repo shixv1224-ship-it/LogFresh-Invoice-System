@@ -107,11 +107,17 @@
 - 批量重命名会读取每个旧 Google Doc 里的 `BILL TO` 区域，用公司名重命名对应的 Google Doc 和 PDF。
 - 如果某个文件无法安全识别公司名，会自动跳过，避免误改。
 
-### 2026-07-23 · `d0fb689` - Update unit price and payment method requirements
+### 2026-07-23 · `366766a` - Update unit price and payment method requirements
 
 - 修改 line-item unit price 显示逻辑，保留表单输入的小数位数，不再强制两位小数。
 - Subtotal、Total、Balance Due 等计算总金额仍保持美元两位小数。
 - 记录 Form 1 / Form 2 统一付款方式选项：`Credit Card`、`Prepaid`、`Check/Wire Transfer`。
+
+### 2026-07-23 · `ed1bfca` - Add one-click Google Form payment method updater
+
+- 将 Form 1 和 Form 2 的 ID 加入 Apps Script 配置。
+- 增加 Google Sheet 菜单操作，可一键更新两个 Google Form 的 `Payment Method` 选项。
+- 该更新器兼容单选题和下拉题类型的 `Payment Method` 字段。
 
 ---
 
@@ -139,6 +145,9 @@
   - `Credit Card`
   - `Prepaid`
   - `Check/Wire Transfer`
+- 增加一个手动 Sheet 菜单选项：
+  - `LogFresh > Update Google Form Payment Methods`
+- 这个选项会更新两个 Google Form 里的 `Payment Method` 题目选项。
 
 ## 2026-07-22
 

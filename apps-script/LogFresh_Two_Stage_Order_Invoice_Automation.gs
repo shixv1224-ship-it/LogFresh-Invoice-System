@@ -10,6 +10,9 @@ const CONFIG = {
   MAIN_ORDER_SHEET_NAME: 'Order Confirmation',
   SHIPPING_UPDATE_SHEET_NAME: 'Shipping Updates',
 
+  ORDER_FORM_ID: '15Dj28MbzhU4HG8ZtR6mcXAjqc96SBjs4dnODaFlcSIc',
+  SHIPPING_UPDATE_FORM_ID: '1dXcLM-VcafxilriKffGgS3tMMU9Yja7y2Zoo9v6kCC8',
+
   // Optional: set this to a separate Google Sheets spreadsheet ID if customer info should live in its own file.
   // Leave blank to keep using a tab in the main response spreadsheet.
   CUSTOMER_INFO_SPREADSHEET_ID: '1J-5LH2qpLD7jpPPRB-XpEKfODC7YOgrJFM6z6b3TSpk',
@@ -43,6 +46,10 @@ const STATUS = {
   INVOICE_SENT: 'Invoice Sent',
 };
 
+const FORM_CHOICES = {
+  PAYMENT_METHOD: ['Credit Card', 'Prepaid', 'Check/Wire Transfer'],
+};
+
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('LogFresh')
@@ -51,6 +58,7 @@ function onOpen() {
     .addItem('Generate Invoice PDF Only for Selected Row', 'generateInvoicePdfOnlyForSelectedRow')
     .addItem('Rename Existing Files to Company Names', 'renameExistingGeneratedFilesToCompanyNames')
     .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
+    .addItem('Update Google Form Payment Methods', 'updateGoogleFormPaymentMethods')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
     .addToUi();
@@ -138,6 +146,23 @@ function renameExistingGeneratedFilesToCompanyNames() {
 
 function rebuildCustomerInfoSheet() {
   rebuildCustomerInfoSheet_();
+}
+
+function updateGoogleFormPaymentMethods() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.alert(
+    'Update Google Form Payment Methods',
+    `This will update Payment Method choices in both Google Forms to:\n\n${FORM_CHOICES.PAYMENT_METHOD.join('\n')}\n\nContinue?`,
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (response !== ui.Button.OK) return;
+
+  const result = updateGoogleFormPaymentMethods_();
+  ui.alert(
+    'Payment Methods Updated',
+    `Updated ${result.updated} form item(s).\nSkipped ${result.skipped} form(s).`,
+    ui.ButtonSet.OK
+  );
 }
 
 function doGet(e) {
@@ -790,6 +815,51 @@ function renameExistingGeneratedFilesToCompanyNames_() {
   });
 
   return { renamed, skipped, companyMatches };
+}
+
+function updateGoogleFormPaymentMethods_() {
+  const formIds = [
+    CONFIG.ORDER_FORM_ID,
+    CONFIG.SHIPPING_UPDATE_FORM_ID,
+  ].filter(Boolean);
+  let updated = 0;
+  let skipped = 0;
+
+  formIds.forEach(formId => {
+    try {
+      const form = FormApp.openById(formId);
+      const didUpdate = updatePaymentMethodItem_(form);
+      if (didUpdate) {
+        updated += 1;
+      } else {
+        skipped += 1;
+      }
+    } catch (error) {
+      skipped += 1;
+      Logger.log(`Could not update Payment Method choices for form ${formId}: ${error.message}`);
+    }
+  });
+
+  return { updated, skipped };
+}
+
+function updatePaymentMethodItem_(form) {
+  const items = form.getItems();
+  const item = items.find(candidate => candidate.getTitle().trim().toLowerCase() === 'payment method');
+  if (!item) return false;
+
+  const type = item.getType();
+  if (type === FormApp.ItemType.MULTIPLE_CHOICE) {
+    item.asMultipleChoiceItem().setChoiceValues(FORM_CHOICES.PAYMENT_METHOD);
+    return true;
+  }
+
+  if (type === FormApp.ItemType.LIST) {
+    item.asListItem().setChoiceValues(FORM_CHOICES.PAYMENT_METHOD);
+    return true;
+  }
+
+  throw new Error(`Payment Method must be a multiple choice or dropdown item. Current type: ${type}`);
 }
 
 function parseGeneratedFileName_(name) {

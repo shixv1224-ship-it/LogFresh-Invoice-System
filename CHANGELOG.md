@@ -107,11 +107,17 @@ This section only tracks GitHub commits and repository-level version history.
 - The batch rename reads the `BILL TO` section from each generated Google Doc and uses the company name for both the Google Doc and matching PDF file names.
 - Added skip logic for files where a company name cannot be safely detected.
 
-### 2026-07-23 · `d0fb689` - Update unit price and payment method requirements
+### 2026-07-23 · `366766a` - Update unit price and payment method requirements
 
 - Changed line-item unit price rendering so it preserves the decimal precision entered in the form instead of forcing two decimal places.
 - Kept subtotal, total, balance due, and other calculated dollar amounts formatted to two decimal places.
 - Documented the shared Form 1/Form 2 payment method options: `Credit Card`, `Prepaid`, and `Check/Wire Transfer`.
+
+### 2026-07-23 · `ed1bfca` - Add one-click Google Form payment method updater
+
+- Added Form 1 and Form 2 IDs to Apps Script configuration.
+- Added a Google Sheets menu action to update the `Payment Method` choices in both Google Forms.
+- The updater supports both multiple choice and dropdown `Payment Method` fields.
 
 ---
 
@@ -139,6 +145,9 @@ This section tracks the actual workflow, template, form, email, and customer-dat
   - `Credit Card`
   - `Prepaid`
   - `Check/Wire Transfer`
+- Added a manual Sheet menu option:
+  - `LogFresh > Update Google Form Payment Methods`
+- This option updates the `Payment Method` question choices in both Google Forms.
 
 ## Customer Info Sync - 2026-07-22
 
