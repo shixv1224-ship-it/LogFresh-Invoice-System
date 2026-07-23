@@ -26,12 +26,12 @@ Use this when the customer has already confirmed the order.
 
 - Generates an invoice PDF immediately.
 - Sends the invoice only when the send option is set to `Yes`.
-- Sends an internal shipping/tracking reminder to the salesperson.
+- Does not send the old internal `[Update]` shipping reminder.
 - Updates the customer information sheet after document generation.
 
 - 立即生成 Invoice PDF。
 - 只有发送选项为 `Yes` 时才会自动发送 invoice。
-- 同时发送内部 shipping/tracking 提醒给对应销售。
+- 不再发送旧的内部 `[Update]` shipping 提醒。
 - 文件生成后自动更新客户信息表。
 
 ### 2. Confirmation First / 先发 Order Confirmation
@@ -54,16 +54,16 @@ Use this when the customer needs to approve the order before invoicing.
 
 ## Customer Info Sheet / 客户信息表
 
-The script maintains a clean customer summary sheet named `客户有效信息`.
+The script maintains a clean customer summary sheet named `Customer Info`.
 
-脚本会自动维护一张干净的客户汇总表：`客户有效信息`。
+脚本会自动维护一张干净的客户汇总表：`Customer Info`。
 
 - By default, it is created as a tab in the main response spreadsheet.
 - If `CUSTOMER_INFO_SPREADSHEET_ID` is configured, it writes to a separate Google Sheets file instead.
 - Created automatically if the sheet tab does not exist inside the selected spreadsheet.
 - Updated after Order Confirmation or Invoice generation.
 - Upserts customers by email first, then by name/company or name/phone when email is missing.
-- Keeps the summary columns clean: customer, salesperson, company, phone, email, address, payment terms, latest order/invoice/tracking, product summary, and notes.
+- Keeps the summary columns clean: customer, salesperson, company, phone, email, billing address, billing city/state/ZIP, payment terms, latest order/invoice/tracking, product summary, order total, and notes.
 - Skips obvious test/internal rows, including Barry Foley/internal LogFresh or AWT email rows.
 - The `LogFresh` menu includes `Rebuild Customer Info Sheet` to rebuild the summary from existing order rows.
 
@@ -72,7 +72,7 @@ The script maintains a clean customer summary sheet named `客户有效信息`.
 - 如果目标 spreadsheet 中不存在该 tab，会自动创建。
 - 每次生成 Order Confirmation 或 Invoice 后自动更新。
 - 优先用邮箱识别同一客户；缺邮箱时用姓名+公司或姓名+电话识别。
-- 汇总字段保持干净：客户、销售、公司、电话、邮箱、地址、付款条款、最近订单/发票/tracking、产品摘要、备注。
+- 汇总字段保持干净：客户、销售、公司、电话、邮箱、账单地址、账单城市/州/ZIP、付款条款、最近订单/发票/tracking、产品摘要、订单总额、备注。
 - 自动跳过明显测试/内部记录，包括 Barry Foley 和 LogFresh/AWT 内部邮箱记录。
 - `LogFresh` 菜单里有 `Rebuild Customer Info Sheet`，可以从历史订单行重建客户汇总页。
 
@@ -125,14 +125,18 @@ Payment Method
 Bill To Name
 Bill To Company
 Bill To Address
-Bill To City State ZIP
+Bill To City
+Bill To State
+Bill To ZIP
 Bill To Phone
 Bill To Email
 Shipping Address Option
 Ship To Name
 Ship To Company
 Ship To Address
-Ship To City State ZIP
+Ship To City
+Ship To State
+Ship To ZIP
 Ship To Phone
 Ship To Email
 Item 1 Quantity
@@ -181,6 +185,10 @@ Credit Card
 Prepaid
 Check/Wire Transfer
 ```
+
+`Bill To State` and `Ship To State` are maintained as U.S. two-letter state dropdowns.
+
+`Bill To State` 和 `Ship To State` 会保持为美国两位州缩写下拉选项。
 
 ```text
 Yes = send the generated document for the selected workflow

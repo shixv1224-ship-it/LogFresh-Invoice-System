@@ -133,6 +133,16 @@
 - 删除临时的 `Update Google Form Payment Methods` Google Sheets 菜单项。
 - 保留永久自动生效的公司名文件命名、文件夹分流和付款方式配置。
 
+### 2026-07-23 · `7847b03` - Customer info English columns and address split
+
+- 将客户汇总 tab 从 `客户有效信息` 改名为 `Customer Info`。
+- 将 Customer Info 表头从中文改为英文。
+- 将账单城市、州、ZIP 拆成独立列，方便后续 Excel 导出和筛选报表。
+- 在主订单表自动列和 Customer Info 输出中加入 `Order Total`。
+- 增加 Form 1 自动维护逻辑：拆分 `Bill To City`、`Bill To State`、`Bill To ZIP`、`Ship To City`、`Ship To State`、`Ship To ZIP`。
+- 增加美国两位州缩写下拉选项自动维护。
+- 保留旧的合并 city/state/ZIP 模板占位符 fallback，避免旧模板立即失效。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -169,6 +179,12 @@
 - 一次性清理完成后，删除两个临时维护菜单项：
   - `Rename Existing Files to Company Names`
   - `Update Google Form Payment Methods`
+- 将客户汇总 tab 从 `客户有效信息` 改为 `Customer Info`。
+- 将 Customer Info 表头改为英文。
+- 将账单 City、State、ZIP 拆成独立列，方便 Excel 导出和筛选。
+- 在主订单表和 Customer Info 输出中加入 `Order Total`。
+- 增加 Form 1 自动维护：拆分 billing/shipping 的 City、State、ZIP 问题。
+- 增加 `Bill To State` 和 `Ship To State` 的美国州缩写下拉自动维护。
 
 ## 2026-07-22
 

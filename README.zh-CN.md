@@ -12,7 +12,7 @@
 - 通过 Form 2 更新 shipping 和 invoice 信息；
 - 自动保存 PDF 到 Google Drive；
 - 按设置自动发送客户邮件和内部提醒邮件。
-- 自动维护 `客户有效信息` 客户汇总表；可放在主订单表内，也可通过 `CUSTOMER_INFO_SPREADSHEET_ID` 配置为独立 Google Sheets 文件。
+- 自动维护 `Customer Info` 客户汇总表；可放在主订单表内，也可通过 `CUSTOMER_INFO_SPREADSHEET_ID` 配置为独立 Google Sheets 文件。
 
 ## 两种工作流
 
@@ -21,6 +21,8 @@
 适用于客户已经确认订单的情况。
 
 系统会直接生成 invoice PDF，并根据发送选项决定是否发给客户。
+
+旧的 `[Update] Invoice shipping information required` 内部提醒邮件已取消。
 
 ### Confirmation First
 
@@ -86,6 +88,19 @@ Check/Wire Transfer
 ```
 
 `Item Unit Price` 不再强制显示两位小数；系统会保留表单里输入的单价小数位数。Subtotal、Total、Balance Due 等总金额仍按美元金额显示两位小数。
+
+Form 1 的地址字段应拆分为独立列：
+
+```text
+Bill To City
+Bill To State
+Bill To ZIP
+Ship To City
+Ship To State
+Ship To ZIP
+```
+
+`Bill To State` 和 `Ship To State` 使用美国两位州缩写下拉选项。Customer Info 表也会输出独立的 Billing City、Billing State、Billing ZIP 和 Order Total，方便导出 Excel 做筛选/报表。
 
 ## 部署说明
 

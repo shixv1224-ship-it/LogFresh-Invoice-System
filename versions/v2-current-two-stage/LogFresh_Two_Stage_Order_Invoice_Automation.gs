@@ -2,6 +2,8 @@ const CONFIG = {
   ORDER_CONFIRMATION_TEMPLATE_ID: '1IKmEJH8gQ4Sv9376UEUHYFkvf7aYwZCQWfpkVfDx9FE',
   INVOICE_TEMPLATE_ID: '1HL7cBQRwKluDp4bqpjuwF3Cf7g3KPOFMm1bFTBQf0qA',
   OUTPUT_FOLDER_ID: '1fJ2NObstEyEbEoKcf-OSOdyrg1hhgpEU',
+  ORDER_CONFIRMATION_OUTPUT_FOLDER_ID: '15cT5Z39SKmQYDteIgMZtuAhu8bQiGdGa',
+  INVOICE_OUTPUT_FOLDER_ID: '1ywiGiGlVqRbtdETpYNZ7q7MzBiBgehkv',
 
   // After you deploy this as a Web App, paste the Web App URL here.
   WEB_APP_URL: 'PASTE_WEB_APP_URL_HERE',
@@ -10,10 +12,14 @@ const CONFIG = {
   MAIN_ORDER_SHEET_NAME: 'Order Confirmation',
   SHIPPING_UPDATE_SHEET_NAME: 'Shipping Updates',
 
+  ORDER_FORM_ID: '15Dj28MbzhU4HG8ZtR6mcXAjqc96SBjs4dnODaFlcSIc',
+  SHIPPING_UPDATE_FORM_ID: '1dXcLM-VcafxilriKffGgS3tMMU9Yja7y2Zoo9v6kCC8',
+
   // Optional: set this to a separate Google Sheets spreadsheet ID if customer info should live in its own file.
   // Leave blank to keep using a tab in the main response spreadsheet.
   CUSTOMER_INFO_SPREADSHEET_ID: '1J-5LH2qpLD7jpPPRB-XpEKfODC7YOgrJFM6z6b3TSpk',
-  CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
+  CUSTOMER_INFO_SHEET_NAME: 'Customer Info',
+  LEGACY_CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
 
   // Create a Google Form 2 pre-filled link with sample values:
   // ORDER_NUMBER_HERE, SHIPPED_VIA_HERE, PAYMENT_METHOD_HERE, CUSTOMER_EMAIL_HERE, TRACKING_NUMBER_HERE,
@@ -43,18 +49,33 @@ const STATUS = {
   INVOICE_SENT: 'Invoice Sent',
 };
 
+const FORM_CHOICES = {
+  PAYMENT_METHOD: ['Credit Card', 'Prepaid', 'Check/Wire Transfer'],
+  US_STATES: [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+    'DC',
+  ],
+};
+
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('LogFresh')
     .addItem('Generate Order Confirmation for Selected Row', 'generateOrderConfirmationForSelectedRow')
     .addItem('Generate & Email Invoice for Selected Row', 'generateAndEmailInvoiceForSelectedRow')
+    .addItem('Generate Invoice PDF Only for Selected Row', 'generateInvoicePdfOnlyForSelectedRow')
     .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
     .addToUi();
+  ensureGoogleFormsSetupSafely_();
 }
 
 function onFormSubmit(e) {
+  ensureGoogleFormsSetupSafely_();
   const sheet = e.range.getSheet();
   const row = e.range.getRow();
   if (isShippingUpdateSheet_(sheet)) {
@@ -86,6 +107,35 @@ function generateAndEmailInvoiceForSelectedRow() {
   const row = sheet.getActiveRange().getRow();
   if (row === 1) throw new Error('Please select a data row, not the header row.');
   generateInvoiceForRow_(sheet, row, true);
+}
+
+function generateInvoicePdfOnlyForSelectedRow() {
+  const ui = SpreadsheetApp.getUi();
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const row = sheet.getActiveRange().getRow();
+  if (row === 1) {
+    ui.alert('Please select a data row, not the header row.');
+    return;
+  }
+
+  const response = ui.alert(
+    'Generate Invoice PDF Only',
+    'This will generate/update the invoice PDF and save it to Drive. No email will be sent. Continue?',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (response !== ui.Button.OK) return;
+
+  generateInvoiceForRow_(sheet, row, false);
+
+  const data = getRowData_(sheet, row);
+  const invoiceUrl = getValue_(data, 'Invoice URL');
+  ui.alert(
+    'Invoice PDF Created',
+    invoiceUrl
+      ? `The invoice PDF was saved to Drive.\n\nInvoice URL:\n${invoiceUrl}`
+      : 'The invoice PDF was created and saved to Drive. Please check the Invoice URL column.',
+    ui.ButtonSet.OK
+  );
 }
 
 function rebuildCustomerInfoSheet() {
@@ -157,7 +207,6 @@ function processOrderCreateFormRow_(sheet, row) {
   if (workflow.includes('invoice only')) {
     const shouldSendInvoice = shouldSendAutomatically_(data);
     generateInvoiceForRow_(sheet, row, shouldSendInvoice);
-    sendShippingUpdateReminder_(sheet, row);
   } else {
     generateOrderConfirmationForRow_(sheet, row);
   }
@@ -199,10 +248,13 @@ function generateOrderConfirmationForRow_(sheet, row) {
     ensureInternalColumns_(sheet);
     ensureOrderNumber_(sheet, row);
 
-    const data = getRowData_(sheet, row);
+    let data = getRowData_(sheet, row);
+    backfillSplitAddressColumnsForRow_(sheet, row, data);
+    data = getRowData_(sheet, row);
     const replacements = buildReplacements_(data, row, 'order');
     const orderNumber = replacements['{{ORDER_NUMBER}}'];
     const customerName = getValue_(data, 'Bill To Name') || getValue_(data, 'Bill To Company') || 'Customer';
+    const fileCustomerName = getValue_(data, 'Bill To Company') || customerName;
     const recipient = getValue_(data, 'Customer Email') || getValue_(data, 'Bill To Email');
     const approvalUrl = makeApprovalUrl_(orderNumber);
     const salespersonEmail = getValue_(data, 'Salesperson Email');
@@ -211,11 +263,13 @@ function generateOrderConfirmationForRow_(sheet, row) {
 
     const result = createPdfFromTemplate_({
       templateId: CONFIG.ORDER_CONFIRMATION_TEMPLATE_ID,
-      baseName: `Order Confirmation ${orderNumber} - ${customerName}`,
+      folderId: CONFIG.ORDER_CONFIRMATION_OUTPUT_FOLDER_ID,
+      baseName: `Order Confirmation ${orderNumber} - ${fileCustomerName}`,
       replacements,
     });
 
     writeResult_(sheet, row, 'Order Number', orderNumber);
+    writeResult_(sheet, row, 'Order Total', replacements['{{TOTAL}}']);
     writeResult_(sheet, row, 'Order Status', STATUS.PENDING_APPROVAL);
     writeResult_(sheet, row, 'Customer Approval URL', approvalUrl);
     writeResult_(sheet, row, 'Order Confirmation URL', result.pdfFile.getUrl());
@@ -257,23 +311,28 @@ function generateInvoiceForRow_(sheet, row, sendEmail) {
     ensureInternalColumns_(sheet);
     ensureOrderNumber_(sheet, row);
 
-    const data = getRowData_(sheet, row);
+    let data = getRowData_(sheet, row);
+    backfillSplitAddressColumnsForRow_(sheet, row, data);
+    data = getRowData_(sheet, row);
     const trackingNumber = getValue_(data, 'Tracking Number');
     const replacements = buildReplacements_(data, row, 'invoice');
     const invoiceNumber = replacements['{{INVOICE_NUMBER}}'];
     const orderNumber = replacements['{{ORDER_NUMBER}}'];
     const customerName = getValue_(data, 'Bill To Name') || getValue_(data, 'Bill To Company') || 'Customer';
+    const fileCustomerName = getValue_(data, 'Bill To Company') || customerName;
     const recipient = getValue_(data, 'Customer Email') || getValue_(data, 'Bill To Email');
     const salespersonEmail = getValue_(data, 'Salesperson Email');
 
     const result = createPdfFromTemplate_({
       templateId: CONFIG.INVOICE_TEMPLATE_ID,
-      baseName: `Invoice ${invoiceNumber} - ${customerName}`,
+      folderId: CONFIG.INVOICE_OUTPUT_FOLDER_ID,
+      baseName: `Invoice ${invoiceNumber} - ${fileCustomerName}`,
       replacements,
     });
 
     writeResult_(sheet, row, 'Order Number', orderNumber);
     writeResult_(sheet, row, 'Invoice Number', invoiceNumber);
+    writeResult_(sheet, row, 'Order Total', replacements['{{TOTAL}}']);
     writeResult_(sheet, row, 'Invoice URL', result.pdfFile.getUrl());
     writeResult_(sheet, row, 'Order Status', STATUS.INVOICE_CREATED);
 
@@ -356,6 +415,12 @@ function buildReplacements_(data, row, documentType) {
   const taxRate = numberValue_(data, 'Tax Rate Percent') / 100;
   const tax = subtotalInfo.subtotal * taxRate;
   const total = subtotalInfo.subtotal - discount + shipping + tax;
+  const billToCity = getAddressPart_(data, 'Bill To', 'City');
+  const billToState = getAddressPart_(data, 'Bill To', 'State');
+  const billToZip = getAddressPart_(data, 'Bill To', 'ZIP');
+  const shipToCity = sameShipping ? billToCity : getAddressPart_(data, 'Ship To', 'City');
+  const shipToState = sameShipping ? billToState : getAddressPart_(data, 'Ship To', 'State');
+  const shipToZip = sameShipping ? billToZip : getAddressPart_(data, 'Ship To', 'ZIP');
 
   const replacements = {
     '{{COMPANY_NAME}}': CONFIG.COMPANY_NAME,
@@ -382,14 +447,20 @@ function buildReplacements_(data, row, documentType) {
     '{{BILL_TO_NAME}}': getValue_(data, 'Bill To Name'),
     '{{BILL_TO_COMPANY}}': getValue_(data, 'Bill To Company'),
     '{{BILL_TO_ADDRESS}}': getValue_(data, 'Bill To Address'),
-    '{{BILL_TO_CITY_STATE_ZIP}}': getValue_(data, 'Bill To City State ZIP'),
+    '{{BILL_TO_CITY}}': billToCity,
+    '{{BILL_TO_STATE}}': billToState,
+    '{{BILL_TO_ZIP}}': billToZip,
+    '{{BILL_TO_CITY_STATE_ZIP}}': formatCityStateZip_(billToCity, billToState, billToZip),
     '{{BILL_TO_PHONE}}': getValue_(data, 'Bill To Phone'),
     '{{BILL_TO_EMAIL}}': getValue_(data, 'Bill To Email'),
 
     '{{SHIP_TO_NAME}}': sameShipping ? getValue_(data, 'Bill To Name') : getValue_(data, 'Ship To Name'),
     '{{SHIP_TO_COMPANY}}': sameShipping ? getValue_(data, 'Bill To Company') : getValue_(data, 'Ship To Company'),
     '{{SHIP_TO_ADDRESS}}': sameShipping ? getValue_(data, 'Bill To Address') : getValue_(data, 'Ship To Address'),
-    '{{SHIP_TO_CITY_STATE_ZIP}}': sameShipping ? getValue_(data, 'Bill To City State ZIP') : getValue_(data, 'Ship To City State ZIP'),
+    '{{SHIP_TO_CITY}}': shipToCity,
+    '{{SHIP_TO_STATE}}': shipToState,
+    '{{SHIP_TO_ZIP}}': shipToZip,
+    '{{SHIP_TO_CITY_STATE_ZIP}}': formatCityStateZip_(shipToCity, shipToState, shipToZip),
     '{{SHIP_TO_PHONE}}': sameShipping ? getValue_(data, 'Bill To Phone') : getValue_(data, 'Ship To Phone'),
     '{{SHIP_TO_EMAIL}}': sameShipping ? getValue_(data, 'Bill To Email') : getValue_(data, 'Ship To Email'),
 
@@ -422,7 +493,7 @@ function buildLineItems_(data) {
 
     replacements[`{{QTY${i}}}`] = active ? qtyText : '';
     replacements[`{{DESC${i}}}`] = active ? description : '';
-    replacements[`{{PRICE${i}}}`] = active ? money_(price) : '';
+    replacements[`{{PRICE${i}}}`] = active ? unitPrice_(priceText) : '';
     replacements[`{{AMOUNT${i}}}`] = active ? money_(amount) : '';
   }
 
@@ -473,28 +544,40 @@ function syncCustomerInfoForRow_(sheet, row) {
 
 function getCustomerInfoHeaders_() {
   return [
-    '客户姓名',
+    'Customer Name',
     'Salesperson',
-    '公司/农场',
-    '电话',
-    '邮箱',
-    '备用邮箱/备注邮箱',
-    '账单地址',
-    '城市/州/邮编',
-    '付款条款',
-    '付款方式',
-    '最近订单日期',
-    '最近订单号',
-    '最近发票号',
-    '最近物流单号',
-    '产品摘要',
-    '备注',
+    'Company / Farm',
+    'Phone',
+    'Email',
+    'Alternate Email / Notes',
+    'Billing Address',
+    'Billing City',
+    'Billing State',
+    'Billing ZIP',
+    'Payment Terms',
+    'Payment Method',
+    'Latest Order Date',
+    'Latest Order Number',
+    'Latest Invoice Number',
+    'Latest Tracking Number',
+    'Product Summary',
+    'Order Total',
+    'Notes',
   ];
 }
 
 function getOrCreateCustomerInfoSheet_() {
   const ss = getCustomerInfoSpreadsheet_();
-  return ss.getSheetByName(CONFIG.CUSTOMER_INFO_SHEET_NAME) || ss.insertSheet(CONFIG.CUSTOMER_INFO_SHEET_NAME);
+  const existing = ss.getSheetByName(CONFIG.CUSTOMER_INFO_SHEET_NAME);
+  if (existing) return existing;
+
+  const legacy = ss.getSheetByName(CONFIG.LEGACY_CUSTOMER_INFO_SHEET_NAME);
+  if (legacy) {
+    legacy.setName(CONFIG.CUSTOMER_INFO_SHEET_NAME);
+    return legacy;
+  }
+
+  return ss.insertSheet(CONFIG.CUSTOMER_INFO_SHEET_NAME);
 }
 
 function getCustomerInfoSpreadsheet_() {
@@ -518,24 +601,28 @@ function buildCustomerInfoRecord_(data) {
   const alternateEmail = customerEmail && customerEmail !== primaryEmail ? customerEmail : '';
   const productSummary = buildCustomerProductSummary_(data);
   const remarks = buildCustomerInfoRemarks_(data, billEmail, customerEmail);
+  const total = calculateOrderTotal_(data);
 
   return {
-    '客户姓名': getValue_(data, 'Bill To Name'),
+    'Customer Name': getValue_(data, 'Bill To Name'),
     'Salesperson': getValue_(data, 'Salesperson'),
-    '公司/农场': getValue_(data, 'Bill To Company'),
-    '电话': normalizePhoneDisplay_(getValue_(data, 'Bill To Phone')),
-    '邮箱': primaryEmail,
-    '备用邮箱/备注邮箱': alternateEmail,
-    '账单地址': getValue_(data, 'Bill To Address'),
-    '城市/州/邮编': normalizeCityStateZip_(getValue_(data, 'Bill To City State ZIP')),
-    '付款条款': getValue_(data, 'Payment Terms'),
-    '付款方式': getValue_(data, 'Payment Method'),
-    '最近订单日期': getValue_(data, 'Order Date'),
-    '最近订单号': getValue_(data, 'Order Number'),
-    '最近发票号': getValue_(data, 'Invoice Number'),
-    '最近物流单号': getValue_(data, 'Tracking Number'),
-    '产品摘要': productSummary,
-    '备注': remarks,
+    'Company / Farm': getValue_(data, 'Bill To Company'),
+    'Phone': normalizePhoneDisplay_(getValue_(data, 'Bill To Phone')),
+    'Email': primaryEmail,
+    'Alternate Email / Notes': alternateEmail,
+    'Billing Address': getValue_(data, 'Bill To Address'),
+    'Billing City': getAddressPart_(data, 'Bill To', 'City'),
+    'Billing State': getAddressPart_(data, 'Bill To', 'State'),
+    'Billing ZIP': getAddressPart_(data, 'Bill To', 'ZIP'),
+    'Payment Terms': getValue_(data, 'Payment Terms'),
+    'Payment Method': getValue_(data, 'Payment Method'),
+    'Latest Order Date': getValue_(data, 'Order Date'),
+    'Latest Order Number': getValue_(data, 'Order Number'),
+    'Latest Invoice Number': getValue_(data, 'Invoice Number'),
+    'Latest Tracking Number': getValue_(data, 'Tracking Number'),
+    'Product Summary': productSummary,
+    'Order Total': money_(total),
+    'Notes': remarks,
   };
 }
 
@@ -571,23 +658,23 @@ function buildCustomerProductSummary_(data) {
 
 function buildCustomerInfoRemarks_(data, billEmail, customerEmail) {
   const notes = [];
-  if (!billEmail && !customerEmail) notes.push('缺少邮箱');
+  if (!billEmail && !customerEmail) notes.push('Missing email');
   if (getValue_(data, 'Bill To Name') && getValue_(data, 'Bill To Name') === getValue_(data, 'Bill To Company')) {
-    notes.push('公司字段与客户姓名相同');
+    notes.push('Company field matches customer name');
   }
   if (billEmail && customerEmail && billEmail !== customerEmail) {
-    notes.push(`备用邮箱: ${customerEmail}`);
+    notes.push(`Alternate email: ${customerEmail}`);
   }
-  return notes.join('；');
+  return notes.join('; ');
 }
 
 function makeCustomerInfoKey_(record) {
-  const email = normalizeEmail_(record['邮箱']);
+  const email = normalizeEmail_(record['Email']);
   if (email) return `email:${email}`;
 
-  const company = normalizeComparable_(record['公司/农场']);
-  const name = normalizeComparable_(record['客户姓名']);
-  const phone = normalizeDigits_(record['电话']);
+  const company = normalizeComparable_(record['Company / Farm']);
+  const name = normalizeComparable_(record['Customer Name']);
+  const phone = normalizeDigits_(record['Phone']);
   if (company && name) return `name_company:${name}:${company}`;
   if (phone && name) return `name_phone:${name}:${phone}`;
   return '';
@@ -625,9 +712,9 @@ function mergeCustomerInfoRecords_(existingRecord, newRecord) {
     merged[header] = newRecord[header] || existingRecord[header] || '';
   });
 
-  merged['电话'] = mergeUniqueText_(existingRecord['电话'], newRecord['电话'], ' / ');
-  merged['备用邮箱/备注邮箱'] = mergeUniqueText_(existingRecord['备用邮箱/备注邮箱'], newRecord['备用邮箱/备注邮箱'], '; ');
-  merged['备注'] = mergeUniqueText_(existingRecord['备注'], newRecord['备注'], '；');
+  merged['Phone'] = mergeUniqueText_(existingRecord['Phone'], newRecord['Phone'], ' / ');
+  merged['Alternate Email / Notes'] = mergeUniqueText_(existingRecord['Alternate Email / Notes'], newRecord['Alternate Email / Notes'], '; ');
+  merged['Notes'] = mergeUniqueText_(existingRecord['Notes'], newRecord['Notes'], '; ');
   return merged;
 }
 
@@ -638,8 +725,8 @@ function customerInfoRecordsMatch_(record, key) {
   const keyType = keyParts[0];
   const keyValue = keyParts.slice(1).join(':');
   const emails = [
-    normalizeEmail_(record['邮箱']),
-    ...String(record['备用邮箱/备注邮箱'] || '').split(/[;,\s]+/).map(normalizeEmail_),
+    normalizeEmail_(record['Email']),
+    ...String(record['Alternate Email / Notes'] || '').split(/[;,\s]+/).map(normalizeEmail_),
   ].filter(Boolean);
 
   if (keyType === 'email' && emails.includes(keyValue)) return true;
@@ -663,15 +750,16 @@ function formatCustomerInfoSheet_(sheet) {
   sheet.getRange(1, 1, lastRow, headers.length).createFilter();
 }
 
-function createPdfFromTemplate_({ templateId, baseName, replacements }) {
+function createPdfFromTemplate_({ templateId, folderId, baseName, replacements }) {
   if (!templateId || templateId.includes('PASTE_')) {
     throw new Error('Template ID is missing in CONFIG.');
   }
-  if (!CONFIG.OUTPUT_FOLDER_ID || CONFIG.OUTPUT_FOLDER_ID.includes('PASTE_')) {
+  const targetFolderId = folderId || CONFIG.OUTPUT_FOLDER_ID;
+  if (!targetFolderId || targetFolderId.includes('PASTE_')) {
     throw new Error('Output folder ID is missing in CONFIG.');
   }
 
-  const outputFolder = DriveApp.getFolderById(CONFIG.OUTPUT_FOLDER_ID);
+  const outputFolder = DriveApp.getFolderById(targetFolderId);
   const template = DriveApp.getFileById(templateId);
   const documentFile = template.makeCopy(baseName, outputFolder);
   const document = DocumentApp.openById(documentFile.getId());
@@ -684,6 +772,241 @@ function createPdfFromTemplate_({ templateId, baseName, replacements }) {
   const pdfBlob = documentFile.getAs(MimeType.PDF).setName(`${baseName}.pdf`);
   const pdfFile = outputFolder.createFile(pdfBlob);
   return { documentFile, pdfFile, pdfBlob };
+}
+
+function renameExistingGeneratedFilesToCompanyNames_() {
+  if (!CONFIG.OUTPUT_FOLDER_ID || CONFIG.OUTPUT_FOLDER_ID.includes('PASTE_')) {
+    throw new Error('Output folder ID is missing in CONFIG.');
+  }
+
+  const folderIds = [
+    CONFIG.OUTPUT_FOLDER_ID,
+    CONFIG.ORDER_CONFIRMATION_OUTPUT_FOLDER_ID,
+    CONFIG.INVOICE_OUTPUT_FOLDER_ID,
+  ].filter(Boolean);
+  const files = [];
+  const companyByDocumentKey = {};
+  let renamed = 0;
+  let skipped = 0;
+  let companyMatches = 0;
+
+  folderIds.forEach(folderId => {
+    const folder = DriveApp.getFolderById(folderId);
+    const iterator = folder.getFiles();
+    while (iterator.hasNext()) {
+      const file = iterator.next();
+      const parsed = parseGeneratedFileName_(file.getName());
+      if (parsed) files.push({ file, parsed });
+    }
+  });
+
+  files.forEach(({ file, parsed }) => {
+    if (parsed.isPdf || file.getMimeType() !== MimeType.GOOGLE_DOCS) return;
+
+    const text = DocumentApp.openById(file.getId()).getBody().getText();
+    const companyName = sanitizeFileName_(extractBillToCompanyFromDocumentText_(text));
+    if (!companyName) {
+      skipped += 1;
+      return;
+    }
+
+    companyByDocumentKey[`${parsed.documentType}|${parsed.documentNumber}`] = companyName;
+    companyMatches += 1;
+    const newName = `${parsed.documentType} ${parsed.documentNumber} - ${companyName}`;
+    if (file.getName() !== newName) {
+      file.setName(newName);
+      renamed += 1;
+    }
+  });
+
+  files.forEach(({ file, parsed }) => {
+    if (!parsed.isPdf) return;
+
+    const companyName = companyByDocumentKey[`${parsed.documentType}|${parsed.documentNumber}`];
+    if (!companyName) {
+      skipped += 1;
+      return;
+    }
+
+    const newName = `${parsed.documentType} ${parsed.documentNumber} - ${companyName}.pdf`;
+    if (file.getName() !== newName) {
+      file.setName(newName);
+      renamed += 1;
+    }
+  });
+
+  return { renamed, skipped, companyMatches };
+}
+
+function updateGoogleFormPaymentMethods_() {
+  const formIds = [
+    CONFIG.ORDER_FORM_ID,
+    CONFIG.SHIPPING_UPDATE_FORM_ID,
+  ].filter(Boolean);
+  let updated = 0;
+  let skipped = 0;
+
+  formIds.forEach(formId => {
+    try {
+      const form = FormApp.openById(formId);
+      const didUpdate = updatePaymentMethodItem_(form);
+      if (didUpdate) {
+        updated += 1;
+      } else {
+        skipped += 1;
+      }
+    } catch (error) {
+      skipped += 1;
+      Logger.log(`Could not update Payment Method choices for form ${formId}: ${error.message}`);
+    }
+  });
+
+  return { updated, skipped };
+}
+
+function updatePaymentMethodItem_(form) {
+  const items = form.getItems();
+  const item = items.find(candidate => candidate.getTitle().trim().toLowerCase() === 'payment method');
+  if (!item) return false;
+
+  const type = item.getType();
+  if (type === FormApp.ItemType.MULTIPLE_CHOICE) {
+    item.asMultipleChoiceItem().setChoiceValues(FORM_CHOICES.PAYMENT_METHOD);
+    return true;
+  }
+
+  if (type === FormApp.ItemType.LIST) {
+    item.asListItem().setChoiceValues(FORM_CHOICES.PAYMENT_METHOD);
+    return true;
+  }
+
+  throw new Error(`Payment Method must be a multiple choice or dropdown item. Current type: ${type}`);
+}
+
+function ensureGoogleFormsSetupSafely_() {
+  try {
+    ensureGoogleFormsSetup_();
+  } catch (error) {
+    Logger.log(`Could not apply automatic Google Form setup: ${error.message}`);
+  }
+}
+
+function ensureGoogleFormsSetup_() {
+  updateGoogleFormPaymentMethods_();
+
+  if (CONFIG.ORDER_FORM_ID) {
+    const orderForm = FormApp.openById(CONFIG.ORDER_FORM_ID);
+    ensureSplitAddressFields_(orderForm, 'Bill To');
+    ensureSplitAddressFields_(orderForm, 'Ship To');
+  }
+}
+
+function ensureSplitAddressFields_(form, prefix) {
+  const cityTitle = `${prefix} City`;
+  const stateTitle = `${prefix} State`;
+  const zipTitle = `${prefix} ZIP`;
+  const legacyTitle = `${prefix} City State ZIP`;
+
+  let cityItem = findFormItemByTitle_(form, cityTitle);
+  const legacyItem = findFormItemByTitle_(form, legacyTitle);
+  if (!cityItem && legacyItem && legacyItem.getType() === FormApp.ItemType.TEXT) {
+    legacyItem.asTextItem().setTitle(cityTitle);
+    cityItem = legacyItem;
+  }
+  if (!cityItem) {
+    cityItem = form.addTextItem().setTitle(cityTitle).setRequired(false);
+  }
+
+  let stateItem = findFormItemByTitle_(form, stateTitle);
+  if (stateItem && stateItem.getType() !== FormApp.ItemType.LIST && stateItem.getType() !== FormApp.ItemType.MULTIPLE_CHOICE) {
+    setFormItemTitle_(stateItem, `${stateTitle} (Old - do not use)`);
+    stateItem = null;
+  }
+  if (!stateItem) {
+    stateItem = form.addListItem().setTitle(stateTitle).setChoiceValues(FORM_CHOICES.US_STATES).setRequired(false);
+  } else if (stateItem.getType() === FormApp.ItemType.LIST) {
+    stateItem.asListItem().setChoiceValues(FORM_CHOICES.US_STATES);
+  } else {
+    stateItem.asMultipleChoiceItem().setChoiceValues(FORM_CHOICES.US_STATES);
+  }
+
+  let zipItem = findFormItemByTitle_(form, zipTitle);
+  if (!zipItem) {
+    zipItem = form.addTextItem().setTitle(zipTitle).setRequired(false);
+  }
+
+  moveFormItemAfter_(form, stateItem, cityItem);
+  moveFormItemAfter_(form, zipItem, stateItem);
+}
+
+function findFormItemByTitle_(form, title) {
+  const wanted = String(title || '').trim().toLowerCase();
+  return form.getItems().find(item => item.getTitle().trim().toLowerCase() === wanted) || null;
+}
+
+function setFormItemTitle_(item, title) {
+  const type = item.getType();
+  if (type === FormApp.ItemType.TEXT) item.asTextItem().setTitle(title);
+  else if (type === FormApp.ItemType.PARAGRAPH_TEXT) item.asParagraphTextItem().setTitle(title);
+  else if (type === FormApp.ItemType.MULTIPLE_CHOICE) item.asMultipleChoiceItem().setTitle(title);
+  else if (type === FormApp.ItemType.LIST) item.asListItem().setTitle(title);
+  else if (type === FormApp.ItemType.CHECKBOX) item.asCheckboxItem().setTitle(title);
+  else if (type === FormApp.ItemType.DATE) item.asDateItem().setTitle(title);
+  else if (type === FormApp.ItemType.PAGE_BREAK) item.asPageBreakItem().setTitle(title);
+  else if (type === FormApp.ItemType.SECTION_HEADER) item.asSectionHeaderItem().setTitle(title);
+}
+
+function moveFormItemAfter_(form, itemToMove, previousItem) {
+  if (!itemToMove || !previousItem) return;
+  const items = form.getItems();
+  const targetIndex = items.findIndex(item => item.getId() === previousItem.getId()) + 1;
+  if (targetIndex <= 0) return;
+  form.moveItem(itemToMove, targetIndex);
+}
+
+function parseGeneratedFileName_(name) {
+  const isPdf = /\.pdf$/i.test(name);
+  const baseName = isPdf ? name.replace(/\.pdf$/i, '') : name;
+  const match = baseName.match(/^(Order Confirmation|Invoice)\s+((?:ORD|INV|US-LF)-[A-Za-z0-9-]+)\s+-\s+(.+)$/i);
+  if (!match) return null;
+
+  const rawType = match[1].toLowerCase();
+  return {
+    documentType: rawType === 'invoice' ? 'Invoice' : 'Order Confirmation',
+    documentNumber: match[2],
+    currentCustomerName: match[3],
+    isPdf,
+  };
+}
+
+function extractBillToCompanyFromDocumentText_(text) {
+  const lines = String(text || '')
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean);
+  const billToIndex = lines.findIndex(line => line.toUpperCase() === 'BILL TO');
+  if (billToIndex < 0) return '';
+
+  const candidate = lines[billToIndex + 2] || '';
+  return isLikelyCompanyName_(candidate) ? candidate : '';
+}
+
+function isLikelyCompanyName_(value) {
+  const text = String(value || '').trim();
+  if (!text) return false;
+  if (/^(SHIP TO|COMMENTS|SPECIAL INSTRUCTIONS|SALESPERSON|CUSTOMER PO#?)$/i.test(text)) return false;
+  if (/^\d+\s/.test(text)) return false;
+  if (/@/.test(text)) return false;
+  if (/\d{3}[-.\s]\d{3}[-.\s]\d{4}/.test(text)) return false;
+  if (/\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/i.test(text)) return false;
+  return true;
+}
+
+function sanitizeFileName_(value) {
+  return String(value || '')
+    .replace(/[\\/:*?"<>|#%{}~&]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function makeApprovalUrl_(orderNumber) {
@@ -721,8 +1044,15 @@ function ensureInternalColumns_(sheet) {
     'Invoice Number',
     'Invoice Date',
     'Due Date',
+    'Bill To City',
+    'Bill To State',
+    'Bill To ZIP',
+    'Ship To City',
+    'Ship To State',
+    'Ship To ZIP',
     'Invoice URL',
     'Invoice Sent At',
+    'Order Total',
     'Internal Notes',
   ].forEach(header => ensureColumn_(sheet, header));
 }
@@ -755,6 +1085,84 @@ function getValue_(data, name) {
 
 function numberValue_(data, name) {
   return parseNumber_(getValue_(data, name));
+}
+
+function backfillSplitAddressColumnsForRow_(sheet, row, data) {
+  const sameShipping = getValue_(data, 'Shipping Address Option').toLowerCase().includes('same');
+  [
+    ['Bill To', 'City'],
+    ['Bill To', 'State'],
+    ['Bill To', 'ZIP'],
+    ['Ship To', 'City'],
+    ['Ship To', 'State'],
+    ['Ship To', 'ZIP'],
+  ].forEach(([prefix, part]) => {
+    const header = `${prefix} ${part}`;
+    if (getValue_(data, header)) return;
+    const value = sameShipping && prefix === 'Ship To'
+      ? getAddressPart_(data, 'Bill To', part)
+      : getAddressPart_(data, prefix, part);
+    if (value) writeResult_(sheet, row, header, value);
+  });
+}
+
+function calculateOrderTotal_(data) {
+  const subtotalInfo = buildLineItems_(data);
+  const discount = numberValue_(data, 'Discount');
+  const shipping = numberValue_(data, 'Shipping Charge');
+  const taxRate = numberValue_(data, 'Tax Rate Percent') / 100;
+  const tax = subtotalInfo.subtotal * taxRate;
+  return subtotalInfo.subtotal - discount + shipping + tax;
+}
+
+function getAddressPart_(data, prefix, part) {
+  const direct = getValue_(data, `${prefix} ${part}`);
+  if (direct) return direct;
+
+  if (part === 'ZIP') {
+    const zip = getValue_(data, `${prefix} Zip`) || getValue_(data, `${prefix} Zip Code`);
+    if (zip) return zip;
+  }
+
+  const parsed = parseLegacyCityStateZip_(getValue_(data, `${prefix} City State ZIP`));
+  if (part === 'City') return parsed.city;
+  if (part === 'State') return parsed.state;
+  if (part === 'ZIP') return parsed.zip;
+  return '';
+}
+
+function parseLegacyCityStateZip_(value) {
+  const text = normalizeCityStateZip_(value);
+  if (!text) return { city: '', state: '', zip: '' };
+
+  const match = text.match(/^(.+?)(?:,|\s{2,})?\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/i);
+  if (match) {
+    return {
+      city: match[1].replace(/,$/, '').trim(),
+      state: match[2].toUpperCase(),
+      zip: match[3],
+    };
+  }
+
+  const commaParts = text.split(',').map(part => part.trim()).filter(Boolean);
+  if (commaParts.length >= 2) {
+    const stateZip = commaParts.slice(1).join(' ');
+    const stateZipMatch = stateZip.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?$/i);
+    if (stateZipMatch) {
+      return {
+        city: commaParts[0],
+        state: stateZipMatch[1].toUpperCase(),
+        zip: stateZipMatch[2] || '',
+      };
+    }
+  }
+
+  return { city: text, state: '', zip: '' };
+}
+
+function formatCityStateZip_(city, state, zip) {
+  const stateZip = [state, zip].filter(Boolean).join(' ');
+  return [city, stateZip].filter(Boolean).join(', ');
 }
 
 function replaceInSection_(section, replacements) {
@@ -835,6 +1243,17 @@ function parseNumber_(value) {
 
 function money_(value) {
   return '$' + Number(value || 0).toFixed(2);
+}
+
+function unitPrice_(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+
+  const cleaned = text.replace(/[$,\s]/g, '');
+  const number = Number(cleaned);
+  if (!Number.isFinite(number)) return text;
+
+  return '$' + cleaned;
 }
 
 function joinEmails_(...groups) {

@@ -14,7 +14,8 @@ Recommended subfolders:
 
 ```text
 Templates
-Generated PDFs
+Order Confirmations
+Invoices
 ```
 
 Upload the template files from this repository:
@@ -49,6 +50,8 @@ Important:
   - `Check/Wire Transfer`
 - `Send Confirmation Automatically` controls Form 1 sending for both workflows.
 - `Salesperson Email` should be filled accurately because internal reminders are sent there.
+- Address fields should be split into separate City, State, and ZIP questions.
+- `Bill To State` and `Ship To State` should be dropdown questions using U.S. two-letter state abbreviations.
 
 Connect Form 1 to a Google Sheet.
 
@@ -60,7 +63,7 @@ Order Confirmation
 
 ## Optional: Create a separate Customer Info spreadsheet
 
-By default, the customer summary sheet `客户有效信息` is created as a tab inside the main response spreadsheet.
+By default, the customer summary sheet `Customer Info` is created as a tab inside the main response spreadsheet.
 
 If you want it to live in its own Google Sheets file:
 
@@ -85,10 +88,10 @@ CUSTOMER_INFO_SPREADSHEET_ID: 'SPREADSHEET_ID',
 4. Keep the tab name as:
 
 ```js
-CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
+CUSTOMER_INFO_SHEET_NAME: 'Customer Info',
 ```
 
-The script will create the `客户有效信息` tab in that separate spreadsheet if it does not already exist.
+The script will create the `Customer Info` tab in that separate spreadsheet if it does not already exist. If an older tab named `客户有效信息` exists, the script will rename it to `Customer Info`.
 
 ## 3. Create Form 2
 

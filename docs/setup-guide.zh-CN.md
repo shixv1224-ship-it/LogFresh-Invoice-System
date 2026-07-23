@@ -9,7 +9,8 @@
 ```text
 LogFresh Invoice Automation
 Templates
-Generated PDFs
+Order Confirmations
+Invoices
 ```
 
 将 `templates/` 里的两个 Word 模板上传到 Google Drive，并用 Google Docs 打开/转换。
@@ -39,14 +40,18 @@ Payment Method
 Bill To Name
 Bill To Company
 Bill To Address
-Bill To City State ZIP
+Bill To City
+Bill To State
+Bill To ZIP
 Bill To Phone
 Bill To Email
 Shipping Address Option
 Ship To Name
 Ship To Company
 Ship To Address
-Ship To City State ZIP
+Ship To City
+Ship To State
+Ship To ZIP
 Ship To Phone
 Ship To Email
 Item 1 Quantity
@@ -71,6 +76,8 @@ Credit Card
 Prepaid
 Check/Wire Transfer
 ```
+
+`Bill To State` 和 `Ship To State` 建议设为下拉题，选项使用美国两位州缩写。脚本也会尝试自动维护这两个下拉题。
 
 ## 3. 创建 Form 2
 
@@ -114,7 +121,7 @@ Shipping Updates
 
 ## 可选：将客户有效信息放到独立 Google Sheets 文件
 
-默认情况下，`客户有效信息` 会作为主订单回复表里的一个 tab 自动创建。
+默认情况下，`Customer Info` 会作为主订单回复表里的一个 tab 自动创建。
 
 如果你想让它变成一个独立 Google Sheets 文件：
 
@@ -139,10 +146,10 @@ CUSTOMER_INFO_SPREADSHEET_ID: 'SPREADSHEET_ID',
 4. tab 名保持：
 
 ```js
-CUSTOMER_INFO_SHEET_NAME: '客户有效信息',
+CUSTOMER_INFO_SHEET_NAME: 'Customer Info',
 ```
 
-如果独立 spreadsheet 里还没有 `客户有效信息` tab，脚本会自动创建。
+如果独立 spreadsheet 里还没有 `Customer Info` tab，脚本会自动创建。如果旧 tab 名为 `客户有效信息`，脚本会自动改名为 `Customer Info`。
 
 ## 5. 放入 Apps Script
 

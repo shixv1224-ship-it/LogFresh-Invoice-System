@@ -133,6 +133,16 @@ This section only tracks GitHub commits and repository-level version history.
 - Removed the temporary `Update Google Form Payment Methods` Google Sheets menu item.
 - Kept the permanent automatic company-name file naming, folder split, and payment method configuration in place.
 
+### 2026-07-23 · `7847b03` - Customer info English columns and address split
+
+- Renamed the customer summary tab from `客户有效信息` to `Customer Info`.
+- Changed Customer Info headers from Chinese to English.
+- Split billing address reporting into separate `Billing City`, `Billing State`, and `Billing ZIP` columns for cleaner Excel exports.
+- Added `Order Total` to the main order sheet automation and Customer Info output.
+- Added Form 1 maintenance logic for separate `Bill To City`, `Bill To State`, `Bill To ZIP`, `Ship To City`, `Ship To State`, and `Ship To ZIP` questions.
+- Added automatic U.S. two-letter state dropdown maintenance for the Form 1 state fields.
+- Kept the legacy combined city/state/ZIP template placeholders working as a fallback.
+
 ---
 
 ## Functional / Business Change History
@@ -169,6 +179,12 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Removed temporary maintenance menu items after their one-time cleanup work was completed:
   - `Rename Existing Files to Company Names`
   - `Update Google Form Payment Methods`
+- Renamed the customer summary tab from `客户有效信息` to `Customer Info`.
+- Changed the Customer Info headers to English.
+- Split billing city, state, and ZIP into separate Customer Info columns for clean Excel export.
+- Added `Order Total` to the main order sheet and Customer Info output.
+- Added automatic Form 1 maintenance for split billing/shipping city, state, and ZIP questions.
+- Added automatic U.S. state dropdown maintenance for `Bill To State` and `Ship To State`.
 
 ## Customer Info Sync - 2026-07-22
 
