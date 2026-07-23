@@ -32,6 +32,8 @@
 
 系统会先生成 Order Confirmation，客户点击确认后，对应销售会收到内部提醒，再通过 Form 2 补充 shipping / tracking，最后生成 invoice。
 
+如果 Form 2 为同一订单重新生成 invoice，系统会在新 invoice 成功生成后，把旧的匹配 invoice 文件移到 Drive 垃圾桶，避免同一订单保留两份 invoice。
+
 ## 主要文件
 
 ```text

@@ -224,6 +224,10 @@ Form 2 updates the original order by matching `Order Number`.
 
 Form 2 通过 `Order Number` 匹配原订单并回写 shipping / invoice 信息。
 
+When Form 2 regenerates an invoice for the same order, the older matching invoice file is moved to Drive trash after the new invoice is created successfully.
+
+当 Form 2 为同一订单重新生成 invoice 时，系统会在新 invoice 成功生成后，把旧的匹配 invoice 文件移到 Drive 垃圾桶。
+
 Form 2 should use the same `Payment Method` choices as Form 1.
 
 Form 2 的 `Payment Method` 选项应与 Form 1 保持一致。

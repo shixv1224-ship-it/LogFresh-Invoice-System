@@ -239,7 +239,7 @@ function processShippingUpdateFormRow_(updateSheet, updateRow) {
   });
 
   const shouldSend = getValue_(updateData, 'Send Invoice Automatically').toLowerCase() !== 'no';
-  generateInvoiceForRow_(mainSheet, orderRow, shouldSend);
+  generateInvoiceForRow_(mainSheet, orderRow, shouldSend, false, true);
   writeResult_(updateSheet, updateRow, 'Processing Status', 'Complete');
 }
 
@@ -306,7 +306,7 @@ function generateOrderConfirmationForRow_(sheet, row) {
   }
 }
 
-function generateInvoiceForRow_(sheet, row, sendEmail, sendInternalArchive) {
+function generateInvoiceForRow_(sheet, row, sendEmail, sendInternalArchive, replaceExistingInvoiceFiles) {
   try {
     ensureInternalColumns_(sheet);
     ensureOrderNumber_(sheet, row);
@@ -322,13 +322,21 @@ function generateInvoiceForRow_(sheet, row, sendEmail, sendInternalArchive) {
     const fileCustomerName = getValue_(data, 'Bill To Company') || customerName;
     const recipient = getValue_(data, 'Customer Email') || getValue_(data, 'Bill To Email');
     const salespersonEmail = getValue_(data, 'Salesperson Email');
+    const baseName = `Invoice ${invoiceNumber} - ${fileCustomerName}`;
+    const existingInvoiceFileIds = replaceExistingInvoiceFiles
+      ? collectExistingInvoiceFileIds_(data, baseName)
+      : [];
 
     const result = createPdfFromTemplate_({
       templateId: CONFIG.INVOICE_TEMPLATE_ID,
       folderId: CONFIG.INVOICE_OUTPUT_FOLDER_ID,
-      baseName: `Invoice ${invoiceNumber} - ${fileCustomerName}`,
+      baseName,
       replacements,
     });
+
+    if (replaceExistingInvoiceFiles) {
+      trashFilesById_(existingInvoiceFileIds, [result.documentFile.getId(), result.pdfFile.getId()]);
+    }
 
     writeResult_(sheet, row, 'Order Number', orderNumber);
     writeResult_(sheet, row, 'Invoice Number', invoiceNumber);
@@ -816,6 +824,50 @@ function createPdfFromTemplate_({ templateId, folderId, baseName, replacements }
   const pdfBlob = documentFile.getAs(MimeType.PDF).setName(`${baseName}.pdf`);
   const pdfFile = outputFolder.createFile(pdfBlob);
   return { documentFile, pdfFile, pdfBlob };
+}
+
+function collectExistingInvoiceFileIds_(data, baseName) {
+  const ids = [];
+  const existingPdfId = extractDriveFileId_(getValue_(data, 'Invoice URL'));
+  if (existingPdfId) ids.push(existingPdfId);
+
+  const folderId = CONFIG.INVOICE_OUTPUT_FOLDER_ID || CONFIG.OUTPUT_FOLDER_ID;
+  if (folderId && !folderId.includes('PASTE_')) {
+    const folder = DriveApp.getFolderById(folderId);
+    [baseName, `${baseName}.pdf`].forEach(name => {
+      const files = folder.getFilesByName(name);
+      while (files.hasNext()) {
+        ids.push(files.next().getId());
+      }
+    });
+  }
+
+  return ids.filter((id, index, array) => id && array.indexOf(id) === index);
+}
+
+function trashFilesById_(fileIds, keepIds) {
+  const keep = keepIds || [];
+  fileIds.forEach(fileId => {
+    if (keep.includes(fileId)) return;
+    try {
+      DriveApp.getFileById(fileId).setTrashed(true);
+    } catch (error) {
+      Logger.log(`Could not trash old invoice file ${fileId}: ${error.message}`);
+    }
+  });
+}
+
+function extractDriveFileId_(urlOrId) {
+  const text = String(urlOrId || '').trim();
+  if (!text) return '';
+
+  const fileMatch = text.match(/\/d\/([A-Za-z0-9_-]+)/);
+  if (fileMatch) return fileMatch[1];
+
+  const idMatch = text.match(/[?&]id=([A-Za-z0-9_-]+)/);
+  if (idMatch) return idMatch[1];
+
+  return /^[A-Za-z0-9_-]{20,}$/.test(text) ? text : '';
 }
 
 function renameExistingGeneratedFilesToCompanyNames_() {
