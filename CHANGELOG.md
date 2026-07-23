@@ -151,7 +151,7 @@ This section only tracks GitHub commits and repository-level version history.
 - Kept the manual `Generate Invoice PDF Only for Selected Row` menu action as true PDF-only with no email sent.
 - Added `Invoice Internal Archive Sent At` tracking in the main order sheet.
 
-### 2026-07-23 · `TBD` - Remove old invoice files on invoice update
+### 2026-07-23 · `a0e5cf6` - Remove old invoice files on invoice update
 
 - Updated the Form 2 invoice update workflow to replace the previous generated invoice file for the same order.
 - After the new invoice is created successfully, older matching invoice PDF/Google Doc files are moved to Drive trash.

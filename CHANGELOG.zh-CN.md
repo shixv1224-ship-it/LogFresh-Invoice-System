@@ -151,7 +151,7 @@
 - Sheet 菜单里的 `Generate Invoice PDF Only for Selected Row` 仍然是真正只生成 PDF，不发任何邮件。
 - 新增 `Invoice Internal Archive Sent At` 主订单表记录列，用于单独追踪内部存档邮件。
 
-### 2026-07-23 · `TBD` - Remove old invoice files on invoice update
+### 2026-07-23 · `a0e5cf6` - Remove old invoice files on invoice update
 
 - 更新 Form 2 的 invoice update 流程：同一订单重新生成 invoice 时，会替换旧 invoice 文件。
 - 新 invoice 成功生成后，旧的匹配 invoice PDF / Google Doc 会被移到 Drive 垃圾桶。
