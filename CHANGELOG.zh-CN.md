@@ -172,7 +172,7 @@
 - 同步后会隐藏重复的旧地址列，而不是直接删除，避免误删历史数据。
 - 改进州名解析，像 `North Carolina`、`Michigan` 这类完整州名会自动转成两位州缩写。
 
-### 2026-07-23 · `PENDING` - Recalculate order totals during sheet sync
+### 2026-07-23 · `2bc6cea` - Recalculate order totals during sheet sync
 
 - 改进 `LogFresh > Sync Form Address Fields`：同步地址字段时，会同时重新计算每一行订单的 `Order Total`。
 - Total 按 line item 的数量 × 单价计算，再加 shipping charge、减 discount，并保留 tax rate 支持。

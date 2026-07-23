@@ -172,7 +172,7 @@ This section only tracks GitHub commits and repository-level version history.
 - Hides duplicate legacy address columns after syncing, instead of deleting them.
 - Improved state parsing so full U.S. state names such as `North Carolina` and `Michigan` are normalized to two-letter state abbreviations.
 
-### 2026-07-23 · `PENDING` - Recalculate order totals during sheet sync
+### 2026-07-23 · `2bc6cea` - Recalculate order totals during sheet sync
 
 - Updated `LogFresh > Sync Form Address Fields` to recalculate `Order Total` for every existing order row.
 - The total is calculated from line-item quantities and unit prices, plus shipping charge, minus discount, with optional tax rate support.
