@@ -95,11 +95,17 @@ This section only tracks GitHub commits and repository-level version history.
 - Added a confirmation popup before generating the PDF-only invoice.
 - Added a completion popup showing where the invoice was saved in Drive.
 
-### 2026-07-23 · `f7c73d7` - Use company names in generated file names
+### 2026-07-23 · `c3b65c1` - Use company names in generated file names
 
 - Changed generated Order Confirmation file names to use the billing company name instead of the individual customer name.
 - Changed generated Invoice file names to use the billing company name instead of the individual customer name.
 - Kept email greetings and document content behavior unchanged.
+
+### 2026-07-23 · `511edeb` - Add batch rename for existing generated files
+
+- Added a Google Sheets menu action to rename existing generated Order Confirmation and Invoice files in Drive.
+- The batch rename reads the `BILL TO` section from each generated Google Doc and uses the company name for both the Google Doc and matching PDF file names.
+- Added skip logic for files where a company name cannot be safely detected.
 
 ---
 
@@ -119,6 +125,9 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - This option generates/updates the invoice PDF, saves it to Drive, and never sends an email.
 - Changed future generated Order Confirmation and Invoice file names to use `Bill To Company` first.
 - If `Bill To Company` is blank, the system falls back to the customer name.
+- Added a manual Sheet menu option:
+  - `LogFresh > Rename Existing Files to Company Names`
+- This option scans the existing output Drive folder and renames old generated Google Docs/PDFs to use company names when detectable.
 
 ## Customer Info Sync - 2026-07-22
 

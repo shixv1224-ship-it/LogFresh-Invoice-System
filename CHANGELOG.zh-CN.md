@@ -95,11 +95,17 @@
 - 生成前增加确认弹窗。
 - 生成后增加完成弹窗，并显示 Drive 中保存的 invoice 链接。
 
-### 2026-07-23 · `f7c73d7` - Use company names in generated file names
+### 2026-07-23 · `c3b65c1` - Use company names in generated file names
 
 - 将后续生成的 Order Confirmation 文件名改为优先使用账单公司名，而不是客户个人名。
 - 将后续生成的 Invoice 文件名改为优先使用账单公司名，而不是客户个人名。
 - 邮件称呼和文档正文内容保持不变。
+
+### 2026-07-23 · `511edeb` - Add batch rename for existing generated files
+
+- 增加 Google Sheet 菜单操作，可批量重命名 Drive 里已经生成过的 Order Confirmation 和 Invoice 文件。
+- 批量重命名会读取每个旧 Google Doc 里的 `BILL TO` 区域，用公司名重命名对应的 Google Doc 和 PDF。
+- 如果某个文件无法安全识别公司名，会自动跳过，避免误改。
 
 ---
 
@@ -119,6 +125,9 @@
 - 这个选项只生成/更新 invoice PDF，保存到 Drive，永远不会发送邮件。
 - 后续生成的 Order Confirmation 和 Invoice 文件名会优先使用 `Bill To Company`。
 - 如果 `Bill To Company` 为空，系统才会 fallback 到客户个人名。
+- 增加一个手动 Sheet 菜单选项：
+  - `LogFresh > Rename Existing Files to Company Names`
+- 这个选项会扫描现有输出 Drive 文件夹，把旧的 Google Docs/PDFs 尽量批量改成公司名。
 
 ## 2026-07-22
 

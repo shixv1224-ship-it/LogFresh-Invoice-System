@@ -49,6 +49,7 @@ function onOpen() {
     .addItem('Generate Order Confirmation for Selected Row', 'generateOrderConfirmationForSelectedRow')
     .addItem('Generate & Email Invoice for Selected Row', 'generateAndEmailInvoiceForSelectedRow')
     .addItem('Generate Invoice PDF Only for Selected Row', 'generateInvoicePdfOnlyForSelectedRow')
+    .addItem('Rename Existing Files to Company Names', 'renameExistingGeneratedFilesToCompanyNames')
     .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
@@ -114,6 +115,23 @@ function generateInvoicePdfOnlyForSelectedRow() {
     invoiceUrl
       ? `The invoice PDF was saved to Drive.\n\nInvoice URL:\n${invoiceUrl}`
       : 'The invoice PDF was created and saved to Drive. Please check the Invoice URL column.',
+    ui.ButtonSet.OK
+  );
+}
+
+function renameExistingGeneratedFilesToCompanyNames() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.alert(
+    'Rename Existing Generated Files',
+    'This will rename existing Order Confirmation and Invoice Google Docs/PDFs in the output Drive folder so the file name uses Bill To Company instead of the customer name. Continue?',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (response !== ui.Button.OK) return;
+
+  const result = renameExistingGeneratedFilesToCompanyNames_();
+  ui.alert(
+    'Rename Complete',
+    `Renamed ${result.renamed} file(s).\nSkipped ${result.skipped} file(s).\nMatched ${result.companyMatches} document(s) with company names.`,
     ui.ButtonSet.OK
   );
 }
@@ -715,6 +733,108 @@ function createPdfFromTemplate_({ templateId, baseName, replacements }) {
   const pdfBlob = documentFile.getAs(MimeType.PDF).setName(`${baseName}.pdf`);
   const pdfFile = outputFolder.createFile(pdfBlob);
   return { documentFile, pdfFile, pdfBlob };
+}
+
+function renameExistingGeneratedFilesToCompanyNames_() {
+  if (!CONFIG.OUTPUT_FOLDER_ID || CONFIG.OUTPUT_FOLDER_ID.includes('PASTE_')) {
+    throw new Error('Output folder ID is missing in CONFIG.');
+  }
+
+  const folder = DriveApp.getFolderById(CONFIG.OUTPUT_FOLDER_ID);
+  const iterator = folder.getFiles();
+  const files = [];
+  const companyByDocumentKey = {};
+  let renamed = 0;
+  let skipped = 0;
+  let companyMatches = 0;
+
+  while (iterator.hasNext()) {
+    const file = iterator.next();
+    const parsed = parseGeneratedFileName_(file.getName());
+    if (parsed) files.push({ file, parsed });
+  }
+
+  files.forEach(({ file, parsed }) => {
+    if (parsed.isPdf || file.getMimeType() !== MimeType.GOOGLE_DOCS) return;
+
+    const text = DocumentApp.openById(file.getId()).getBody().getText();
+    const companyName = sanitizeFileName_(extractBillToCompanyFromDocumentText_(text));
+    if (!companyName) {
+      skipped += 1;
+      return;
+    }
+
+    companyByDocumentKey[`${parsed.documentType}|${parsed.documentNumber}`] = companyName;
+    companyMatches += 1;
+    const newName = `${parsed.documentType} ${parsed.documentNumber} - ${companyName}`;
+    if (file.getName() !== newName) {
+      file.setName(newName);
+      renamed += 1;
+    }
+  });
+
+  files.forEach(({ file, parsed }) => {
+    if (!parsed.isPdf) return;
+
+    const companyName = companyByDocumentKey[`${parsed.documentType}|${parsed.documentNumber}`];
+    if (!companyName) {
+      skipped += 1;
+      return;
+    }
+
+    const newName = `${parsed.documentType} ${parsed.documentNumber} - ${companyName}.pdf`;
+    if (file.getName() !== newName) {
+      file.setName(newName);
+      renamed += 1;
+    }
+  });
+
+  return { renamed, skipped, companyMatches };
+}
+
+function parseGeneratedFileName_(name) {
+  const isPdf = /\.pdf$/i.test(name);
+  const baseName = isPdf ? name.replace(/\.pdf$/i, '') : name;
+  const match = baseName.match(/^(Order Confirmation|Invoice)\s+((?:ORD|INV|US-LF)-[A-Za-z0-9-]+)\s+-\s+(.+)$/i);
+  if (!match) return null;
+
+  const rawType = match[1].toLowerCase();
+  return {
+    documentType: rawType === 'invoice' ? 'Invoice' : 'Order Confirmation',
+    documentNumber: match[2],
+    currentCustomerName: match[3],
+    isPdf,
+  };
+}
+
+function extractBillToCompanyFromDocumentText_(text) {
+  const lines = String(text || '')
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean);
+  const billToIndex = lines.findIndex(line => line.toUpperCase() === 'BILL TO');
+  if (billToIndex < 0) return '';
+
+  const candidate = lines[billToIndex + 2] || '';
+  return isLikelyCompanyName_(candidate) ? candidate : '';
+}
+
+function isLikelyCompanyName_(value) {
+  const text = String(value || '').trim();
+  if (!text) return false;
+  if (/^(SHIP TO|COMMENTS|SPECIAL INSTRUCTIONS|SALESPERSON|CUSTOMER PO#?)$/i.test(text)) return false;
+  if (/^\d+\s/.test(text)) return false;
+  if (/@/.test(text)) return false;
+  if (/\d{3}[-.\s]\d{3}[-.\s]\d{4}/.test(text)) return false;
+  if (/\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/i.test(text)) return false;
+  return true;
+}
+
+function sanitizeFileName_(value) {
+  return String(value || '')
+    .replace(/[\\/:*?"<>|#%{}~&]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function makeApprovalUrl_(orderNumber) {
