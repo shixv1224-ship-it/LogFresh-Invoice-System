@@ -157,7 +157,7 @@
 - 新 invoice 成功生成后，旧的匹配 invoice PDF / Google Doc 会被移到 Drive 垃圾桶。
 - `Invoice Only` 和手动 PDF-only 生成不会自动删除旧文件。
 
-### 2026-07-23 · `TBD` - Sync split address fields to main sheet and form
+### 2026-07-23 · `620aca2` - Sync split address fields to main sheet and form
 
 - 在主 `Order Confirmation` 回复表中加入拆分地址列：`Bill To City`、`Bill To State`、`Bill To ZIP`、`Ship To City`、`Ship To State`、`Ship To ZIP`。
 - 已把现有订单行的 city、state、ZIP 解析并回填。

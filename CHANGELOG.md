@@ -157,7 +157,7 @@ This section only tracks GitHub commits and repository-level version history.
 - After the new invoice is created successfully, older matching invoice PDF/Google Doc files are moved to Drive trash.
 - Kept Invoice Only and manual PDF-only generation from deleting old files automatically.
 
-### 2026-07-23 · `TBD` - Sync split address fields to main sheet and form
+### 2026-07-23 · `620aca2` - Sync split address fields to main sheet and form
 
 - Added split address columns to the main `Order Confirmation` response sheet: `Bill To City`, `Bill To State`, `Bill To ZIP`, `Ship To City`, `Ship To State`, and `Ship To ZIP`.
 - Backfilled existing order rows with parsed city, state, and ZIP values.
