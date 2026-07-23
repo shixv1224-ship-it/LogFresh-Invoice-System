@@ -133,7 +133,7 @@ This section only tracks GitHub commits and repository-level version history.
 - Removed the temporary `Update Google Form Payment Methods` Google Sheets menu item.
 - Kept the permanent automatic company-name file naming, folder split, and payment method configuration in place.
 
-### 2026-07-23 · `7847b03` - Customer info English columns and address split
+### 2026-07-23 · `c8fd4ec` - Customer info English columns and address split
 
 - Renamed the customer summary tab from `客户有效信息` to `Customer Info`.
 - Changed Customer Info headers from Chinese to English.

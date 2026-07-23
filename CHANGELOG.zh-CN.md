@@ -133,7 +133,7 @@
 - 删除临时的 `Update Google Form Payment Methods` Google Sheets 菜单项。
 - 保留永久自动生效的公司名文件命名、文件夹分流和付款方式配置。
 
-### 2026-07-23 · `7847b03` - Customer info English columns and address split
+### 2026-07-23 · `c8fd4ec` - Customer info English columns and address split
 
 - 将客户汇总 tab 从 `客户有效信息` 改名为 `Customer Info`。
 - 将 Customer Info 表头从中文改为英文。
