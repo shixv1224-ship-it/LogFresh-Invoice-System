@@ -164,6 +164,14 @@
 - 增加 `LogFresh > Sync Form Address Fields` 菜单操作，授权用户可一键同步 Form 1 地址问题，并重新同步主表地址拆分列。
 - 保留后续生成文件时的自动回填逻辑。
 
+### 2026-07-23 · `c18cd15` - Rewrite main sheet address columns in place
+
+- 改进 `LogFresh > Sync Form Address Fields`：现在会把主 `Order Confirmation` 表里的地址列原地重写整理，而不是只在最右边追加/回填新列。
+- Billing 地址列会固定整理到 `Bill To Address` 旁边：`Bill To City`、`Bill To State`、`Bill To ZIP`。
+- Shipping 地址列会固定整理到 `Ship To Street Address` 旁边：`Ship To City`、`Ship To State`、`Ship To ZIP`。
+- 同步后会隐藏重复的旧地址列，而不是直接删除，避免误删历史数据。
+- 改进州名解析，像 `North Carolina`、`Michigan` 这类完整州名会自动转成两位州缩写。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -212,6 +220,7 @@
 - 更新 Form 2 invoice update：同一订单重新生成 invoice 后，会移除旧的匹配 invoice 文件。
 - 已将主订单表现有订单同步到独立 billing/shipping city、state、ZIP 列。
 - 增加 Sheet 菜单操作，可同步 Form 1 地址字段和主表地址列。
+- 改进地址同步菜单：现在会原地重写主订单表地址列，把 city/state/ZIP 固定放在地址字段旁边，隐藏重复旧列，并支持把完整美国州名解析成两位缩写。
 
 ## 2026-07-22
 

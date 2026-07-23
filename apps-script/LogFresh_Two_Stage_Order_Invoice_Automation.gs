@@ -145,18 +145,11 @@ function rebuildCustomerInfoSheet() {
 
 function syncFormAddressFields() {
   ensureGoogleFormsSetup_();
-
-  const sheet = getMainOrderSheet_();
-  ensureInternalColumns_(sheet);
-  const lastRow = sheet.getLastRow();
-  for (let row = 2; row <= lastRow; row++) {
-    const data = getRowData_(sheet, row);
-    backfillSplitAddressColumnsForRow_(sheet, row, data);
-  }
+  rewriteMainSheetAddressColumns_();
 
   SpreadsheetApp.getUi().alert(
     'Address Fields Synced',
-    'Form 1 address fields and the main sheet address columns have been synced.',
+    'Form 1 address fields were synced, and the main sheet address columns were rewritten in place.',
     SpreadsheetApp.getUi().ButtonSet.OK
   );
 }
@@ -265,6 +258,7 @@ function processShippingUpdateFormRow_(updateSheet, updateRow) {
 function generateOrderConfirmationForRow_(sheet, row) {
   try {
     ensureInternalColumns_(sheet);
+    ensureAddressSplitColumnsForSheet_(sheet);
     ensureOrderNumber_(sheet, row);
 
     let data = getRowData_(sheet, row);
@@ -328,6 +322,7 @@ function generateOrderConfirmationForRow_(sheet, row) {
 function generateInvoiceForRow_(sheet, row, sendEmail, sendInternalArchive, replaceExistingInvoiceFiles) {
   try {
     ensureInternalColumns_(sheet);
+    ensureAddressSplitColumnsForSheet_(sheet);
     ensureOrderNumber_(sheet, row);
 
     let data = getRowData_(sheet, row);
@@ -1182,7 +1177,11 @@ function getRowData_(sheet, row) {
   const values = sheet.getRange(row, 1, 1, lastColumn).getDisplayValues()[0];
   const data = {};
   headers.forEach((header, index) => {
-    data[String(header).trim()] = values[index];
+    const normalizedHeader = String(header).trim();
+    if (!normalizedHeader) return;
+    if (data[normalizedHeader] === undefined || data[normalizedHeader] === '') {
+      data[normalizedHeader] = values[index];
+    }
   });
   return data;
 }
@@ -1200,6 +1199,160 @@ function isShippingUpdateSheet_(sheet) {
 
 function getValue_(data, name) {
   return String(data[name] || '').trim();
+}
+
+function rewriteMainSheetAddressColumns_() {
+  const sheet = getMainOrderSheet_();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 1) return;
+
+  ensureAddressSplitColumnsForSheet_(sheet);
+
+  const headerInfo = getAddressHeaderInfo_(sheet);
+  const values = lastRow >= 2
+    ? sheet.getRange(2, 1, lastRow - 1, sheet.getLastColumn()).getDisplayValues()
+    : [];
+
+  values.forEach((rowValues, rowIndex) => {
+    const bill = resolveSplitAddressFromRowValues_(rowValues, headerInfo, 'Bill To', false, null);
+    const ship = resolveSplitAddressFromRowValues_(rowValues, headerInfo, 'Ship To', isSameShippingFromRowValues_(rowValues, headerInfo), bill);
+    const rowNumber = rowIndex + 2;
+
+    sheet.getRange(rowNumber, headerInfo.canonical['Bill To City']).setValue(bill.city);
+    sheet.getRange(rowNumber, headerInfo.canonical['Bill To State']).setValue(bill.state);
+    sheet.getRange(rowNumber, headerInfo.canonical['Bill To ZIP']).setValue(bill.zip);
+    sheet.getRange(rowNumber, headerInfo.canonical['Ship To City']).setValue(ship.city);
+    sheet.getRange(rowNumber, headerInfo.canonical['Ship To State']).setValue(ship.state);
+    sheet.getRange(rowNumber, headerInfo.canonical['Ship To ZIP']).setValue(ship.zip);
+  });
+
+  hideDuplicateAddressColumns_(sheet, headerInfo);
+}
+
+function ensureAddressSplitColumnsForSheet_(sheet) {
+  ensureSplitColumnsAfter_(sheet, 'Bill To Address', ['Bill To City', 'Bill To State', 'Bill To ZIP']);
+  ensureSplitColumnsAfter_(sheet, getShipToAddressHeader_(sheet), ['Ship To City', 'Ship To State', 'Ship To ZIP']);
+}
+
+function ensureSplitColumnsAfter_(sheet, anchorHeader, splitHeaders) {
+  if (!anchorHeader) return;
+  let anchorColumn = getColumnByHeader_(sheet, anchorHeader);
+  if (!anchorColumn) return;
+
+  splitHeaders.forEach((header, index) => {
+    const wantedColumn = anchorColumn + index + 1;
+    const currentHeader = String(sheet.getRange(1, wantedColumn).getDisplayValue() || '').trim();
+    if (currentHeader === header) return;
+
+    const existingColumn = getColumnByHeader_(sheet, header);
+    if (existingColumn && existingColumn !== wantedColumn) {
+      sheet.moveColumns(sheet.getRange(1, existingColumn, sheet.getMaxRows(), 1), wantedColumn);
+    } else {
+      sheet.insertColumnBefore(wantedColumn);
+      sheet.getRange(1, wantedColumn).setValue(header);
+    }
+
+    anchorColumn = getColumnByHeader_(sheet, anchorHeader);
+  });
+}
+
+function getShipToAddressHeader_(sheet) {
+  if (getColumnByHeader_(sheet, 'Ship To Street Address')) return 'Ship To Street Address';
+  if (getColumnByHeader_(sheet, 'Ship To Address')) return 'Ship To Address';
+  return '';
+}
+
+function getAddressHeaderInfo_(sheet) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getDisplayValues()[0].map(header => String(header || '').trim());
+  const byHeader = {};
+  headers.forEach((header, index) => {
+    if (!header) return;
+    if (!byHeader[header]) byHeader[header] = [];
+    byHeader[header].push(index + 1);
+  });
+
+  return {
+    headers,
+    byHeader,
+    canonical: {
+      'Bill To City': getColumnByHeader_(sheet, 'Bill To City'),
+      'Bill To State': getColumnByHeader_(sheet, 'Bill To State'),
+      'Bill To ZIP': getColumnByHeader_(sheet, 'Bill To ZIP'),
+      'Ship To City': getColumnByHeader_(sheet, 'Ship To City'),
+      'Ship To State': getColumnByHeader_(sheet, 'Ship To State'),
+      'Ship To ZIP': getColumnByHeader_(sheet, 'Ship To ZIP'),
+    },
+  };
+}
+
+function resolveSplitAddressFromRowValues_(rowValues, headerInfo, prefix, useBillTo, billToAddress) {
+  if (useBillTo && billToAddress) return billToAddress;
+
+  const cityHeader = `${prefix} City`;
+  const stateHeader = `${prefix} State`;
+  const zipHeader = `${prefix} ZIP`;
+  const legacyHeader = `${prefix} City State ZIP`;
+
+  let city = firstNonEmptyFromHeaders_(rowValues, headerInfo, [cityHeader]);
+  let state = firstNonEmptyFromHeaders_(rowValues, headerInfo, [stateHeader]);
+  let zip = firstNonEmptyFromHeaders_(rowValues, headerInfo, [zipHeader, `${prefix} Zip`, `${prefix} Zip Code`]);
+
+  const legacyValue = firstNonEmptyFromHeaders_(rowValues, headerInfo, [legacyHeader]);
+  const directCombined = looksLikeCityStateZip_(city) ? city : '';
+  const parsed = parseLegacyCityStateZip_(legacyValue || directCombined);
+
+  if (!city || looksLikeCityStateZip_(city)) city = parsed.city || city;
+  if (!state) state = parsed.state;
+  if (!zip) zip = parsed.zip;
+
+  return {
+    city: String(city || '').trim(),
+    state: normalizeStateAbbreviation_(state),
+    zip: String(zip || '').trim(),
+  };
+}
+
+function firstNonEmptyFromHeaders_(rowValues, headerInfo, headers) {
+  for (const header of headers) {
+    const columns = headerInfo.byHeader[header] || [];
+    for (const column of columns) {
+      const value = String(rowValues[column - 1] || '').trim();
+      if (value) return value;
+    }
+  }
+  return '';
+}
+
+function isSameShippingFromRowValues_(rowValues, headerInfo) {
+  const value = firstNonEmptyFromHeaders_(rowValues, headerInfo, ['Shipping Address Option']).toLowerCase();
+  return value.includes('same');
+}
+
+function looksLikeCityStateZip_(value) {
+  const text = normalizeCityStateZip_(value);
+  if (!text) return false;
+  return /\b\d{5}(?:-\d{4})?\b/.test(text) || /,\s*[A-Za-z]{2,}(?:\s+[A-Za-z]+)?\.?\s*$/.test(text);
+}
+
+function hideDuplicateAddressColumns_(sheet, headerInfo) {
+  const canonicalColumns = Object.values(headerInfo.canonical).filter(Boolean);
+  const duplicateHeaders = [
+    'Bill To City',
+    'Bill To State',
+    'Bill To ZIP',
+    'Bill To City State ZIP',
+    'Ship To City',
+    'Ship To State',
+    'Ship To ZIP',
+    'Ship To City State ZIP',
+  ];
+
+  headerInfo.headers.forEach((header, index) => {
+    const column = index + 1;
+    if (!duplicateHeaders.includes(header)) return;
+    if (canonicalColumns.includes(column)) return;
+    sheet.hideColumns(column);
+  });
 }
 
 function numberValue_(data, name) {
@@ -1254,11 +1407,11 @@ function parseLegacyCityStateZip_(value) {
   const text = normalizeCityStateZip_(value);
   if (!text) return { city: '', state: '', zip: '' };
 
-  const match = text.match(/^(.+?)(?:,|\s{2,})?\s+([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/i);
+  const match = text.match(/^(.+?)(?:,|\s{2,})?\s+([A-Za-z]+(?:\s+[A-Za-z]+)?|[A-Z]{2})\.?\s+(\d{5}(?:-\d{4})?)$/i);
   if (match) {
     return {
       city: match[1].replace(/,$/, '').trim(),
-      state: match[2].toUpperCase(),
+      state: normalizeStateAbbreviation_(match[2]),
       zip: match[3],
     };
   }
@@ -1266,17 +1419,79 @@ function parseLegacyCityStateZip_(value) {
   const commaParts = text.split(',').map(part => part.trim()).filter(Boolean);
   if (commaParts.length >= 2) {
     const stateZip = commaParts.slice(1).join(' ');
-    const stateZipMatch = stateZip.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?$/i);
+    const stateZipMatch = stateZip.match(/^([A-Za-z]+(?:\s+[A-Za-z]+)?|[A-Z]{2})\.?\s*(\d{5}(?:-\d{4})?)?$/i);
     if (stateZipMatch) {
       return {
         city: commaParts[0],
-        state: stateZipMatch[1].toUpperCase(),
+        state: normalizeStateAbbreviation_(stateZipMatch[1]),
         zip: stateZipMatch[2] || '',
       };
     }
   }
 
   return { city: text, state: '', zip: '' };
+}
+
+function normalizeStateAbbreviation_(value) {
+  const text = String(value || '').trim().replace(/\./g, '');
+  if (!text) return '';
+  if (/^[A-Za-z]{2}$/.test(text)) return text.toUpperCase();
+
+  const states = {
+    alabama: 'AL',
+    alaska: 'AK',
+    arizona: 'AZ',
+    arkansas: 'AR',
+    california: 'CA',
+    colorado: 'CO',
+    connecticut: 'CT',
+    delaware: 'DE',
+    florida: 'FL',
+    georgia: 'GA',
+    hawaii: 'HI',
+    idaho: 'ID',
+    illinois: 'IL',
+    indiana: 'IN',
+    iowa: 'IA',
+    kansas: 'KS',
+    kentucky: 'KY',
+    louisiana: 'LA',
+    maine: 'ME',
+    maryland: 'MD',
+    massachusetts: 'MA',
+    michigan: 'MI',
+    minnesota: 'MN',
+    mississippi: 'MS',
+    missouri: 'MO',
+    montana: 'MT',
+    nebraska: 'NE',
+    nevada: 'NV',
+    'new hampshire': 'NH',
+    'new jersey': 'NJ',
+    'new mexico': 'NM',
+    'new york': 'NY',
+    'north carolina': 'NC',
+    'north dakota': 'ND',
+    ohio: 'OH',
+    oklahoma: 'OK',
+    oregon: 'OR',
+    pennsylvania: 'PA',
+    'rhode island': 'RI',
+    'south carolina': 'SC',
+    'south dakota': 'SD',
+    tennessee: 'TN',
+    texas: 'TX',
+    utah: 'UT',
+    vermont: 'VT',
+    virginia: 'VA',
+    washington: 'WA',
+    'west virginia': 'WV',
+    wisconsin: 'WI',
+    wyoming: 'WY',
+    'district of columbia': 'DC',
+  };
+
+  return states[text.toLowerCase()] || text.toUpperCase();
 }
 
 function formatCityStateZip_(city, state, zip) {

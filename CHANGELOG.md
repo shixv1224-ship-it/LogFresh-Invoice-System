@@ -164,6 +164,14 @@ This section only tracks GitHub commits and repository-level version history.
 - Added a `LogFresh > Sync Form Address Fields` menu action so an authorized user can update Form 1 address questions and re-sync the main sheet split address columns.
 - Kept automatic future backfill during document generation.
 
+### 2026-07-23 · `c18cd15` - Rewrite main sheet address columns in place
+
+- Updated `LogFresh > Sync Form Address Fields` so it rewrites the main `Order Confirmation` sheet address columns in place instead of only appending/backfilling columns.
+- Keeps billing address columns beside `Bill To Address`: `Bill To City`, `Bill To State`, and `Bill To ZIP`.
+- Keeps shipping address columns beside `Ship To Street Address`: `Ship To City`, `Ship To State`, and `Ship To ZIP`.
+- Hides duplicate legacy address columns after syncing, instead of deleting them.
+- Improved state parsing so full U.S. state names such as `North Carolina` and `Michigan` are normalized to two-letter state abbreviations.
+
 ---
 
 ## Functional / Business Change History
@@ -212,6 +220,7 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Updated Form 2 invoice updates so regenerating an invoice removes the previous matching invoice file after the new one is created.
 - Synced existing main order sheet rows into separate billing/shipping city, state, and ZIP columns.
 - Added a Sheet menu action to sync Form 1 address fields and main sheet address columns together.
+- Improved the address sync menu so it now rewrites the main order sheet columns in place, keeps split city/state/ZIP columns beside the address fields, hides duplicate legacy columns, and parses full U.S. state names into two-letter abbreviations.
 
 ## Customer Info Sync - 2026-07-22
 
