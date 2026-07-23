@@ -172,6 +172,12 @@ This section only tracks GitHub commits and repository-level version history.
 - Hides duplicate legacy address columns after syncing, instead of deleting them.
 - Improved state parsing so full U.S. state names such as `North Carolina` and `Michigan` are normalized to two-letter state abbreviations.
 
+### 2026-07-23 · `PENDING` - Recalculate order totals during sheet sync
+
+- Updated `LogFresh > Sync Form Address Fields` to recalculate `Order Total` for every existing order row.
+- The total is calculated from line-item quantities and unit prices, plus shipping charge, minus discount, with optional tax rate support.
+- Keeps `Order Total` visible in the main order table even before regenerating documents.
+
 ---
 
 ## Functional / Business Change History
@@ -221,6 +227,7 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Synced existing main order sheet rows into separate billing/shipping city, state, and ZIP columns.
 - Added a Sheet menu action to sync Form 1 address fields and main sheet address columns together.
 - Improved the address sync menu so it now rewrites the main order sheet columns in place, keeps split city/state/ZIP columns beside the address fields, hides duplicate legacy columns, and parses full U.S. state names into two-letter abbreviations.
+- Added automatic `Order Total` recalculation to the address/form sync menu so the main table is updated at the same time as the address split.
 
 ## Customer Info Sync - 2026-07-22
 

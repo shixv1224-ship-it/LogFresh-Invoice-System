@@ -172,6 +172,12 @@
 - 同步后会隐藏重复的旧地址列，而不是直接删除，避免误删历史数据。
 - 改进州名解析，像 `North Carolina`、`Michigan` 这类完整州名会自动转成两位州缩写。
 
+### 2026-07-23 · `PENDING` - Recalculate order totals during sheet sync
+
+- 改进 `LogFresh > Sync Form Address Fields`：同步地址字段时，会同时重新计算每一行订单的 `Order Total`。
+- Total 按 line item 的数量 × 单价计算，再加 shipping charge、减 discount，并保留 tax rate 支持。
+- 即使还没有重新生成 PDF，主订单表里也会显示最新 `Order Total`。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -221,6 +227,7 @@
 - 已将主订单表现有订单同步到独立 billing/shipping city、state、ZIP 列。
 - 增加 Sheet 菜单操作，可同步 Form 1 地址字段和主表地址列。
 - 改进地址同步菜单：现在会原地重写主订单表地址列，把 city/state/ZIP 固定放在地址字段旁边，隐藏重复旧列，并支持把完整美国州名解析成两位缩写。
+- 地址/Form 同步菜单现在会同时重新计算 `Order Total`，让主表金额和地址拆分一起更新。
 
 ## 2026-07-22
 

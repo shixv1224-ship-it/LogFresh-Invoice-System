@@ -146,10 +146,11 @@ function rebuildCustomerInfoSheet() {
 function syncFormAddressFields() {
   ensureGoogleFormsSetup_();
   rewriteMainSheetAddressColumns_();
+  recalculateMainSheetOrderTotals_();
 
   SpreadsheetApp.getUi().alert(
     'Address Fields Synced',
-    'Form 1 address fields were synced, and the main sheet address columns were rewritten in place.',
+    'Form 1 address fields were synced, the main sheet address columns were rewritten in place, and Order Total was recalculated.',
     SpreadsheetApp.getUi().ButtonSet.OK
   );
 }
@@ -1227,6 +1228,20 @@ function rewriteMainSheetAddressColumns_() {
   });
 
   hideDuplicateAddressColumns_(sheet, headerInfo);
+}
+
+function recalculateMainSheetOrderTotals_() {
+  const sheet = getMainOrderSheet_();
+  ensureColumn_(sheet, 'Order Total');
+
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+
+  for (let row = 2; row <= lastRow; row++) {
+    const data = getRowData_(sheet, row);
+    const total = calculateOrderTotal_(data);
+    writeResult_(sheet, row, 'Order Total', money_(total));
+  }
 }
 
 function ensureAddressSplitColumnsForSheet_(sheet) {
