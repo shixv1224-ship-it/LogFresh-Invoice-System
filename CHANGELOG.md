@@ -191,6 +191,12 @@ This section only tracks GitHub commits and repository-level version history.
 - Added date normalization to the `LogFresh > Sync Form Address Fields` maintenance action for historical rows.
 - Kept system-generated order/invoice numbering unchanged.
 
+### 2026-07-23 · `PENDING` - Add comma formatting to quantities and amounts
+
+- Added thousands separators to generated document quantity values, for example `200000` now renders as `200,000`.
+- Added thousands separators to generated document money values, for example `$29692.85` now renders as `$29,692.85`.
+- Kept unit prices unchanged so high-precision values such as `$0.145` remain clean and are not forced into two decimals.
+
 ---
 
 ## Functional / Business Change History
@@ -243,6 +249,7 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Added automatic `Order Total` recalculation to the address/form sync menu so the main table is updated at the same time as the address split.
 - Changed Customer Info behavior so repeat customers with multiple orders are stored as multiple order rows instead of being collapsed into one latest-customer record.
 - Standardized business date display to `MM/dd/yyyy` across documents, order rows, and Customer Info.
+- Added comma formatting for generated document quantity and amount columns while keeping unit prices unchanged.
 
 ## Customer Info Sync - 2026-07-22
 

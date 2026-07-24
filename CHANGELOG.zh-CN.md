@@ -191,6 +191,12 @@
 - 将历史日期格式修复加入 `LogFresh > Sync Form Address Fields` 维护菜单。
 - 保持系统生成的 order/invoice 编号格式不变。
 
+### 2026-07-23 · `PENDING` - Add comma formatting to quantities and amounts
+
+- 生成文档中的数量会加入千位逗号，例如 `200000` 会显示为 `200,000`。
+- 生成文档中的金额会加入千位逗号，例如 `$29692.85` 会显示为 `$29,692.85`。
+- Unit Price 保持不变，像 `$0.145` 这种高精度单价不会被强制改成两位小数。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -243,6 +249,7 @@
 - 地址/Form 同步菜单现在会同时重新计算 `Order Total`，让主表金额和地址拆分一起更新。
 - Customer Info 改为保留每一笔订单；同一客户多次下单不会再被合并成一条 latest customer record。
 - 统一业务日期显示为 `MM/dd/yyyy`，覆盖文档、主订单表和 Customer Info。
+- 为生成文档中的数量和金额加入千位逗号，同时保持 Unit Price 显示逻辑不变。
 
 ## 2026-07-22
 

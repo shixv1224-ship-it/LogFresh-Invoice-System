@@ -561,7 +561,7 @@ function buildLineItems_(data) {
     const amount = active ? qty * price : 0;
     subtotal += amount;
 
-    replacements[`{{QTY${i}}}`] = active ? qtyText : '';
+    replacements[`{{QTY${i}}}`] = active ? quantity_(qtyText) : '';
     replacements[`{{DESC${i}}}`] = active ? description : '';
     replacements[`{{PRICE${i}}}`] = active ? unitPrice_(priceText) : '';
     replacements[`{{AMOUNT${i}}}`] = active ? money_(amount) : '';
@@ -1633,7 +1633,27 @@ function parseNumber_(value) {
 }
 
 function money_(value) {
-  return '$' + Number(value || 0).toFixed(2);
+  return '$' + formatNumberWithCommas_(Number(value || 0).toFixed(2));
+}
+
+function quantity_(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+
+  const cleaned = text.replace(/[,\s]/g, '');
+  const number = Number(cleaned);
+  if (!Number.isFinite(number)) return text;
+
+  return formatNumberWithCommas_(cleaned);
+}
+
+function formatNumberWithCommas_(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+
+  const parts = text.split('.');
+  const whole = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.length > 1 ? `${whole}.${parts.slice(1).join('.')}` : whole;
 }
 
 function unitPrice_(value) {
