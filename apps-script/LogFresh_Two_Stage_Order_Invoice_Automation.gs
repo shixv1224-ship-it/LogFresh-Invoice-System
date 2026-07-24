@@ -720,7 +720,7 @@ function buildCustomerProductSummary_(data) {
     const description = getValue_(data, `Item ${i} Description`);
     const price = getValue_(data, `Item ${i} Unit Price`);
     if (qty || description || price) {
-      items.push(`${qty || 0} x ${description || 'Item'}${price ? ` @ ${price}` : ''}`);
+      items.push(`${quantity_(qty || 0)} x ${description || 'Item'}${price ? ` @ ${price}` : ''}`);
     }
   }
   return items.join('; ');

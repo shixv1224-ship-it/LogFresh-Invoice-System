@@ -197,6 +197,12 @@ This section only tracks GitHub commits and repository-level version history.
 - Added thousands separators to generated document money values, for example `$29692.85` now renders as `$29,692.85`.
 - Kept unit prices unchanged so high-precision values such as `$0.145` remain clean and are not forced into two decimals.
 
+### 2026-07-23 · `PENDING` - Apply display formatting to historical sheet records
+
+- Applied comma formatting to historical main order sheet quantity values and order totals.
+- Applied comma formatting to historical Customer Info product summaries and order totals.
+- Updated future Customer Info product summary generation so quantities keep thousands separators.
+
 ---
 
 ## Functional / Business Change History
@@ -250,6 +256,7 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Changed Customer Info behavior so repeat customers with multiple orders are stored as multiple order rows instead of being collapsed into one latest-customer record.
 - Standardized business date display to `MM/dd/yyyy` across documents, order rows, and Customer Info.
 - Added comma formatting for generated document quantity and amount columns while keeping unit prices unchanged.
+- Backfilled the same comma formatting into existing main sheet and Customer Info records.
 
 ## Customer Info Sync - 2026-07-22
 

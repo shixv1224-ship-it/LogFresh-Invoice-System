@@ -197,6 +197,12 @@
 - 生成文档中的金额会加入千位逗号，例如 `$29692.85` 会显示为 `$29,692.85`。
 - Unit Price 保持不变，像 `$0.145` 这种高精度单价不会被强制改成两位小数。
 
+### 2026-07-23 · `PENDING` - Apply display formatting to historical sheet records
+
+- 已将千位逗号格式应用到主订单表历史数量和订单总额。
+- 已将千位逗号格式应用到 Customer Info 历史 Product Summary 和 Order Total。
+- 更新后续 Customer Info Product Summary 生成逻辑，数量会继续保留千位逗号。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -250,6 +256,7 @@
 - Customer Info 改为保留每一笔订单；同一客户多次下单不会再被合并成一条 latest customer record。
 - 统一业务日期显示为 `MM/dd/yyyy`，覆盖文档、主订单表和 Customer Info。
 - 为生成文档中的数量和金额加入千位逗号，同时保持 Unit Price 显示逻辑不变。
+- 已将同样的千位逗号格式回填到现有主表和 Customer Info 历史记录。
 
 ## 2026-07-22
 
