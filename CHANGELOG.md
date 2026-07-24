@@ -185,6 +185,12 @@ This section only tracks GitHub commits and repository-level version history.
 - Existing orders are updated by `Order Number` or `Invoice Number` when shipping/tracking details change.
 - Renamed Customer Info order columns from `Latest Order Number` style labels to plain `Order Number`, `Invoice Number`, and `Tracking Number`.
 
+### 2026-07-23 · `PENDING` - Normalize business dates to MM/dd/yyyy
+
+- Normalized business date output to U.S. `MM/dd/yyyy` format across generated documents, main order sheet result columns, and Customer Info records.
+- Added date normalization to the `LogFresh > Sync Form Address Fields` maintenance action for historical rows.
+- Kept system-generated order/invoice numbering unchanged.
+
 ---
 
 ## Functional / Business Change History
@@ -236,6 +242,7 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Improved the address sync menu so it now rewrites the main order sheet columns in place, keeps split city/state/ZIP columns beside the address fields, hides duplicate legacy columns, and parses full U.S. state names into two-letter abbreviations.
 - Added automatic `Order Total` recalculation to the address/form sync menu so the main table is updated at the same time as the address split.
 - Changed Customer Info behavior so repeat customers with multiple orders are stored as multiple order rows instead of being collapsed into one latest-customer record.
+- Standardized business date display to `MM/dd/yyyy` across documents, order rows, and Customer Info.
 
 ## Customer Info Sync - 2026-07-22
 

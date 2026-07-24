@@ -185,6 +185,12 @@
 - 后续 shipping/tracking 更新会按 `Order Number` 或 `Invoice Number` 更新对应订单行。
 - Customer Info 表头从 `Latest Order Number` 这类最新记录命名，改成普通的 `Order Number`、`Invoice Number`、`Tracking Number`。
 
+### 2026-07-23 · `PENDING` - Normalize business dates to MM/dd/yyyy
+
+- 将业务日期输出统一为美国格式 `MM/dd/yyyy`，覆盖生成文档、主订单表结果列和 Customer Info 记录。
+- 将历史日期格式修复加入 `LogFresh > Sync Form Address Fields` 维护菜单。
+- 保持系统生成的 order/invoice 编号格式不变。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -236,6 +242,7 @@
 - 改进地址同步菜单：现在会原地重写主订单表地址列，把 city/state/ZIP 固定放在地址字段旁边，隐藏重复旧列，并支持把完整美国州名解析成两位缩写。
 - 地址/Form 同步菜单现在会同时重新计算 `Order Total`，让主表金额和地址拆分一起更新。
 - Customer Info 改为保留每一笔订单；同一客户多次下单不会再被合并成一条 latest customer record。
+- 统一业务日期显示为 `MM/dd/yyyy`，覆盖文档、主订单表和 Customer Info。
 
 ## 2026-07-22
 

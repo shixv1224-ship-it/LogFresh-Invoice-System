@@ -147,10 +147,11 @@ function syncFormAddressFields() {
   ensureGoogleFormsSetup_();
   rewriteMainSheetAddressColumns_();
   recalculateMainSheetOrderTotals_();
+  normalizeDateColumns_();
 
   SpreadsheetApp.getUi().alert(
     'Address Fields Synced',
-    'Form 1 address fields were synced, the main sheet address columns were rewritten in place, and Order Total was recalculated.',
+    'Form 1 address fields were synced, the main sheet address columns were rewritten in place, Order Total was recalculated, and date columns were normalized to MM/dd/yyyy.',
     SpreadsheetApp.getUi().ButtonSet.OK
   );
 }
@@ -474,8 +475,10 @@ function buildReplacements_(data, row, documentType) {
   const sameShipping = getValue_(data, 'Shipping Address Option').toLowerCase().includes('same');
   const orderNumber = getValue_(data, 'Order Number') || makeOrderNumber_(row);
   const invoiceNumber = getValue_(data, 'Invoice Number') || makeInvoiceNumberFromOrder_(orderNumber, row);
-  const invoiceDate = getValue_(data, 'Invoice Date') || today_();
-  const dueDate = getValue_(data, 'Due Date') || addDaysToDateText_(invoiceDate, 30);
+  const invoiceDate = normalizeDateText_(getValue_(data, 'Invoice Date')) || today_();
+  const dueDate = normalizeDateText_(getValue_(data, 'Due Date')) || addDaysToDateText_(invoiceDate, 30);
+  const orderDate = normalizeDateText_(getValue_(data, 'Order Date'));
+  const shipDate = normalizeDateText_(getValue_(data, 'Ship Date'));
   const subtotalInfo = buildLineItems_(data);
   const discount = numberValue_(data, 'Discount');
   const shipping = numberValue_(data, 'Shipping Charge');
@@ -497,11 +500,11 @@ function buildReplacements_(data, row, documentType) {
     '{{COMPANY_WEBSITE}}': CONFIG.COMPANY_WEBSITE,
 
     '{{ORDER_NUMBER}}': orderNumber,
-    '{{ORDER_DATE}}': getValue_(data, 'Order Date'),
+    '{{ORDER_DATE}}': orderDate,
     '{{INVOICE_NUMBER}}': invoiceNumber,
     '{{INVOICE_DATE}}': invoiceDate,
     '{{DUE_DATE}}': dueDate,
-    '{{SHIP_DATE}}': getValue_(data, 'Ship Date'),
+    '{{SHIP_DATE}}': shipDate,
 
     '{{SALESPERSON}}': getValue_(data, 'Salesperson'),
     '{{SALESPERSON_EMAIL}}': getValue_(data, 'Salesperson Email'),
@@ -683,7 +686,7 @@ function buildCustomerInfoRecord_(data) {
     'Billing ZIP': getAddressPart_(data, 'Bill To', 'ZIP'),
     'Payment Terms': getValue_(data, 'Payment Terms'),
     'Payment Method': getValue_(data, 'Payment Method'),
-    'Order Date': getValue_(data, 'Order Date'),
+    'Order Date': normalizeDateText_(getValue_(data, 'Order Date')),
     'Order Number': getValue_(data, 'Order Number'),
     'Invoice Number': getValue_(data, 'Invoice Number'),
     'Tracking Number': getValue_(data, 'Tracking Number'),
@@ -1242,6 +1245,37 @@ function recalculateMainSheetOrderTotals_() {
   }
 }
 
+function normalizeDateColumns_() {
+  normalizeDateColumnsForSheet_(getMainOrderSheet_(), [
+    'Order Date',
+    'Invoice Date',
+    'Due Date',
+    'Ship Date',
+    'Order Confirmation Sent At',
+    'Customer Approved At',
+    'Invoice Internal Archive Sent At',
+    'Invoice Sent At',
+  ]);
+
+  normalizeDateColumnsForSheet_(getOrCreateCustomerInfoSheet_(), [
+    'Order Date',
+  ]);
+}
+
+function normalizeDateColumnsForSheet_(sheet, headers) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return;
+
+  headers.forEach(header => {
+    const column = getColumnByHeader_(sheet, header);
+    if (!column) return;
+
+    const values = sheet.getRange(2, column, lastRow - 1, 1).getDisplayValues();
+    const normalizedValues = values.map(row => [normalizeDateText_(row[0]) || row[0]]);
+    sheet.getRange(2, column, normalizedValues.length, 1).setValues(normalizedValues);
+  });
+}
+
 function ensureAddressSplitColumnsForSheet_(sheet) {
   ensureSplitColumnsAfter_(sheet, 'Bill To Address', ['Bill To City', 'Bill To State', 'Bill To ZIP']);
   ensureSplitColumnsAfter_(sheet, getShipToAddressHeader_(sheet), ['Ship To City', 'Ship To State', 'Ship To ZIP']);
@@ -1533,7 +1567,17 @@ function findRowByHeaderValue_(sheet, header, value) {
 
 function writeResult_(sheet, row, header, value) {
   const column = ensureColumn_(sheet, header);
-  sheet.getRange(row, column).setValue(value);
+  sheet.getRange(row, column).setValue(formatResultValue_(header, value));
+}
+
+function formatResultValue_(header, value) {
+  if (!isDateLikeHeader_(header)) return value;
+  return normalizeDateText_(value) || value;
+}
+
+function isDateLikeHeader_(header) {
+  const text = String(header || '').toLowerCase();
+  return text.includes('date') || text.includes('sent at') || text.includes('approved at');
 }
 
 function ensureColumn_(sheet, header) {
@@ -1667,7 +1711,19 @@ function addDaysToDateText_(dateText, days) {
   return Utilities.formatDate(date, Session.getScriptTimeZone(), 'MM/dd/yyyy');
 }
 
+function normalizeDateText_(dateText) {
+  if (dateText instanceof Date) {
+    return Utilities.formatDate(dateText, Session.getScriptTimeZone(), 'MM/dd/yyyy');
+  }
+
+  const parsed = parseDateText_(dateText);
+  if (!parsed) return String(dateText || '').trim();
+  return Utilities.formatDate(parsed, Session.getScriptTimeZone(), 'MM/dd/yyyy');
+}
+
 function parseDateText_(dateText) {
+  if (dateText instanceof Date) return dateText;
+
   const text = String(dateText || '').trim();
   if (!text) return null;
 
@@ -1679,6 +1735,16 @@ function parseDateText_(dateText) {
   const yyyymmdd = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
   if (yyyymmdd) {
     return new Date(Number(yyyymmdd[1]), Number(yyyymmdd[2]) - 1, Number(yyyymmdd[3]));
+  }
+
+  const yyyymmddLeading = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s|$)/);
+  if (yyyymmddLeading) {
+    return new Date(Number(yyyymmddLeading[1]), Number(yyyymmddLeading[2]) - 1, Number(yyyymmddLeading[3]));
+  }
+
+  const yyyySlashDate = text.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})(?:\s|$)/);
+  if (yyyySlashDate) {
+    return new Date(Number(yyyySlashDate[1]), Number(yyyySlashDate[2]) - 1, Number(yyyySlashDate[3]));
   }
 
   const parsed = new Date(text);
