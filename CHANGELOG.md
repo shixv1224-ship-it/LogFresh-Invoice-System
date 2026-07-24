@@ -185,7 +185,7 @@ This section only tracks GitHub commits and repository-level version history.
 - Existing orders are updated by `Order Number` or `Invoice Number` when shipping/tracking details change.
 - Renamed Customer Info order columns from `Latest Order Number` style labels to plain `Order Number`, `Invoice Number`, and `Tracking Number`.
 
-### 2026-07-23 · `PENDING` - Normalize business dates to MM/dd/yyyy
+### 2026-07-23 · `a4927b7` - Normalize business dates to MM/dd/yyyy
 
 - Normalized business date output to U.S. `MM/dd/yyyy` format across generated documents, main order sheet result columns, and Customer Info records.
 - Added date normalization to the `LogFresh > Sync Form Address Fields` maintenance action for historical rows.

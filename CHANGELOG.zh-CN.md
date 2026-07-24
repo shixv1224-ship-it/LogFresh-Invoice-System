@@ -185,7 +185,7 @@
 - 后续 shipping/tracking 更新会按 `Order Number` 或 `Invoice Number` 更新对应订单行。
 - Customer Info 表头从 `Latest Order Number` 这类最新记录命名，改成普通的 `Order Number`、`Invoice Number`、`Tracking Number`。
 
-### 2026-07-23 · `PENDING` - Normalize business dates to MM/dd/yyyy
+### 2026-07-23 · `a4927b7` - Normalize business dates to MM/dd/yyyy
 
 - 将业务日期输出统一为美国格式 `MM/dd/yyyy`，覆盖生成文档、主订单表结果列和 Customer Info 记录。
 - 将历史日期格式修复加入 `LogFresh > Sync Form Address Fields` 维护菜单。
