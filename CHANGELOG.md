@@ -178,7 +178,7 @@ This section only tracks GitHub commits and repository-level version history.
 - The total is calculated from line-item quantities and unit prices, plus shipping charge, minus discount, with optional tax rate support.
 - Keeps `Order Total` visible in the main order table even before regenerating documents.
 
-### 2026-07-23 · `PENDING` - Store each customer order separately
+### 2026-07-23 · `c35fa05` - Store each customer order separately
 
 - Changed Customer Info sync from customer-summary matching to order-level matching.
 - Multiple orders from the same customer/email are now stored as separate rows.

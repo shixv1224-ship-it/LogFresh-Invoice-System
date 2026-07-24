@@ -178,7 +178,7 @@
 - Total 按 line item 的数量 × 单价计算，再加 shipping charge、减 discount，并保留 tax rate 支持。
 - 即使还没有重新生成 PDF，主订单表里也会显示最新 `Order Total`。
 
-### 2026-07-23 · `PENDING` - Store each customer order separately
+### 2026-07-23 · `c35fa05` - Store each customer order separately
 
 - 将 Customer Info 同步逻辑从“客户汇总匹配”改为“订单级匹配”。
 - 同一个客户/邮箱有多笔订单时，现在会保留多行订单记录。
