@@ -197,7 +197,7 @@
 - 生成文档中的金额会加入千位逗号，例如 `$29692.85` 会显示为 `$29,692.85`。
 - Unit Price 保持不变，像 `$0.145` 这种高精度单价不会被强制改成两位小数。
 
-### 2026-07-23 · `PENDING` - Apply display formatting to historical sheet records
+### 2026-07-23 · `00eccab` - Apply display formatting to historical sheet records
 
 - 已将千位逗号格式应用到主订单表历史数量和订单总额。
 - 已将千位逗号格式应用到 Customer Info 历史 Product Summary 和 Order Total。
