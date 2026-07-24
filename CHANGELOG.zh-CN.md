@@ -191,7 +191,7 @@
 - 将历史日期格式修复加入 `LogFresh > Sync Form Address Fields` 维护菜单。
 - 保持系统生成的 order/invoice 编号格式不变。
 
-### 2026-07-23 · `PENDING` - Add comma formatting to quantities and amounts
+### 2026-07-23 · `dd0bec9` - Add comma formatting to quantities and amounts
 
 - 生成文档中的数量会加入千位逗号，例如 `200000` 会显示为 `200,000`。
 - 生成文档中的金额会加入千位逗号，例如 `$29692.85` 会显示为 `$29,692.85`。

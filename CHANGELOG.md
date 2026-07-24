@@ -191,7 +191,7 @@ This section only tracks GitHub commits and repository-level version history.
 - Added date normalization to the `LogFresh > Sync Form Address Fields` maintenance action for historical rows.
 - Kept system-generated order/invoice numbering unchanged.
 
-### 2026-07-23 · `PENDING` - Add comma formatting to quantities and amounts
+### 2026-07-23 · `dd0bec9` - Add comma formatting to quantities and amounts
 
 - Added thousands separators to generated document quantity values, for example `200000` now renders as `200,000`.
 - Added thousands separators to generated document money values, for example `$29692.85` now renders as `$29,692.85`.
