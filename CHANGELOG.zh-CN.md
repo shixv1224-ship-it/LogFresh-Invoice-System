@@ -178,6 +178,13 @@
 - Total 按 line item 的数量 × 单价计算，再加 shipping charge、减 discount，并保留 tax rate 支持。
 - 即使还没有重新生成 PDF，主订单表里也会显示最新 `Order Total`。
 
+### 2026-07-23 · `PENDING` - Store each customer order separately
+
+- 将 Customer Info 同步逻辑从“客户汇总匹配”改为“订单级匹配”。
+- 同一个客户/邮箱有多笔订单时，现在会保留多行订单记录。
+- 后续 shipping/tracking 更新会按 `Order Number` 或 `Invoice Number` 更新对应订单行。
+- Customer Info 表头从 `Latest Order Number` 这类最新记录命名，改成普通的 `Order Number`、`Invoice Number`、`Tracking Number`。
+
 ---
 
 ## 功能 / 业务更新记录
@@ -228,6 +235,7 @@
 - 增加 Sheet 菜单操作，可同步 Form 1 地址字段和主表地址列。
 - 改进地址同步菜单：现在会原地重写主订单表地址列，把 city/state/ZIP 固定放在地址字段旁边，隐藏重复旧列，并支持把完整美国州名解析成两位缩写。
 - 地址/Form 同步菜单现在会同时重新计算 `Order Total`，让主表金额和地址拆分一起更新。
+- Customer Info 改为保留每一笔订单；同一客户多次下单不会再被合并成一条 latest customer record。
 
 ## 2026-07-22
 

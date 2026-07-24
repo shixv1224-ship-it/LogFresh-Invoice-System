@@ -623,10 +623,10 @@ function getCustomerInfoHeaders_() {
     'Billing ZIP',
     'Payment Terms',
     'Payment Method',
-    'Latest Order Date',
-    'Latest Order Number',
-    'Latest Invoice Number',
-    'Latest Tracking Number',
+    'Order Date',
+    'Order Number',
+    'Invoice Number',
+    'Tracking Number',
     'Product Summary',
     'Order Total',
     'Notes',
@@ -683,10 +683,10 @@ function buildCustomerInfoRecord_(data) {
     'Billing ZIP': getAddressPart_(data, 'Bill To', 'ZIP'),
     'Payment Terms': getValue_(data, 'Payment Terms'),
     'Payment Method': getValue_(data, 'Payment Method'),
-    'Latest Order Date': getValue_(data, 'Order Date'),
-    'Latest Order Number': getValue_(data, 'Order Number'),
-    'Latest Invoice Number': getValue_(data, 'Invoice Number'),
-    'Latest Tracking Number': getValue_(data, 'Tracking Number'),
+    'Order Date': getValue_(data, 'Order Date'),
+    'Order Number': getValue_(data, 'Order Number'),
+    'Invoice Number': getValue_(data, 'Invoice Number'),
+    'Tracking Number': getValue_(data, 'Tracking Number'),
     'Product Summary': productSummary,
     'Order Total': money_(total),
     'Notes': remarks,
@@ -736,8 +736,16 @@ function buildCustomerInfoRemarks_(data, billEmail, customerEmail) {
 }
 
 function makeCustomerInfoKey_(record) {
+  const orderNumber = normalizeComparable_(record['Order Number']);
+  if (orderNumber) return `order:${orderNumber}`;
+
+  const invoiceNumber = normalizeComparable_(record['Invoice Number']);
+  if (invoiceNumber) return `invoice:${invoiceNumber}`;
+
   const email = normalizeEmail_(record['Email']);
-  if (email) return `email:${email}`;
+  const orderDate = normalizeComparable_(record['Order Date']);
+  const productSummary = normalizeComparable_(record['Product Summary']);
+  if (email && orderDate && productSummary) return `email_order:${email}:${orderDate}:${productSummary}`;
 
   const company = normalizeComparable_(record['Company / Farm']);
   const name = normalizeComparable_(record['Customer Name']);
@@ -787,16 +795,6 @@ function mergeCustomerInfoRecords_(existingRecord, newRecord) {
 
 function customerInfoRecordsMatch_(record, key) {
   if (makeCustomerInfoKey_(record) === key) return true;
-
-  const keyParts = String(key || '').split(':');
-  const keyType = keyParts[0];
-  const keyValue = keyParts.slice(1).join(':');
-  const emails = [
-    normalizeEmail_(record['Email']),
-    ...String(record['Alternate Email / Notes'] || '').split(/[;,\s]+/).map(normalizeEmail_),
-  ].filter(Boolean);
-
-  if (keyType === 'email' && emails.includes(keyValue)) return true;
   return false;
 }
 

@@ -178,6 +178,13 @@ This section only tracks GitHub commits and repository-level version history.
 - The total is calculated from line-item quantities and unit prices, plus shipping charge, minus discount, with optional tax rate support.
 - Keeps `Order Total` visible in the main order table even before regenerating documents.
 
+### 2026-07-23 · `PENDING` - Store each customer order separately
+
+- Changed Customer Info sync from customer-summary matching to order-level matching.
+- Multiple orders from the same customer/email are now stored as separate rows.
+- Existing orders are updated by `Order Number` or `Invoice Number` when shipping/tracking details change.
+- Renamed Customer Info order columns from `Latest Order Number` style labels to plain `Order Number`, `Invoice Number`, and `Tracking Number`.
+
 ---
 
 ## Functional / Business Change History
@@ -228,6 +235,7 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Added a Sheet menu action to sync Form 1 address fields and main sheet address columns together.
 - Improved the address sync menu so it now rewrites the main order sheet columns in place, keeps split city/state/ZIP columns beside the address fields, hides duplicate legacy columns, and parses full U.S. state names into two-letter abbreviations.
 - Added automatic `Order Total` recalculation to the address/form sync menu so the main table is updated at the same time as the address split.
+- Changed Customer Info behavior so repeat customers with multiple orders are stored as multiple order rows instead of being collapsed into one latest-customer record.
 
 ## Customer Info Sync - 2026-07-22
 
