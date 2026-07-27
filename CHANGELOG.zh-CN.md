@@ -223,6 +223,9 @@
 - Form 3 会链接回主 response spreadsheet，并沿用现有 shipping update 处理逻辑。
 - Form 3 包含 Order Number、Invoice Number、Ship Date、Shipped Via、Shipping Charge、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email、Send Invoice Automatically、Internal Notes。
 - 已从 Form 3 删除 Ship Date，因为它属于内部记录字段，不需要出现在 invoice shipping info 流程里。
+- 同步 Form 1、Form 2、Form 3 的 shipping method 题型和选项。
+- 在统一 shipping method 选项中加入 `USPS Ground`。
+- 统一后的 shipping method 选项包括 UPS Ground、UPS 2nd Day Air、UPS 3rd Day Air、UPS Next Day Air、UPS Next Day Air Early、UPS Ground + UPS Next Day Air Early、USPS Ground、Other。
 
 ## 2026-07-23
 

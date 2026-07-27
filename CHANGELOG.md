@@ -223,6 +223,9 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Form 3 is linked back to the main response spreadsheet and is handled by the existing shipping update processor.
 - Form 3 includes Order Number, Invoice Number, Ship Date, Shipped Via, Shipping Charge, Tracking Number, Invoice Date, Due Date, Payment Method, Customer Email, Send Invoice Automatically, and Internal Notes.
 - Removed Ship Date from Form 3 because it is internal-only and does not need to appear in the invoice shipping info workflow.
+- Synchronized shipping method question types/options across Form 1, Form 2, and Form 3.
+- Added `USPS Ground` to the shared shipping method choices.
+- The shared shipping method choices now include UPS Ground, UPS 2nd Day Air, UPS 3rd Day Air, UPS Next Day Air, UPS Next Day Air Early, UPS Ground + UPS Next Day Air Early, USPS Ground, and Other.
 
 ## 2026-07-23
 

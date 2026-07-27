@@ -53,6 +53,17 @@ const STATUS = {
 const FORM_CHOICES = {
   WORKFLOW_TYPE: ['Invoice Only', 'Invoice Only - Needs Shipping Info', 'Confirmation First'],
   PAYMENT_METHOD: ['Credit Card', 'Prepaid', 'Check/Wire Transfer'],
+  SHIPPED_VIA: [
+    'UPS Ground (Free)',
+    'UPS Ground',
+    'UPS 2nd Day Air',
+    'UPS 3rd Day Air',
+    'UPS Next Day Air',
+    'UPS Next Day Air Early',
+    'UPS Ground + UPS Next Day Air Early',
+    'USPS Ground',
+    'Other',
+  ],
   US_STATES: [
     'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
     'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
@@ -1061,8 +1072,13 @@ function ensureGoogleFormsSetup_() {
   if (CONFIG.ORDER_FORM_ID) {
     const orderForm = FormApp.openById(CONFIG.ORDER_FORM_ID);
     updateWorkflowTypeItem_(orderForm);
+    ensureFormChoiceItem_(orderForm, 'Shipped Via', FORM_CHOICES.SHIPPED_VIA, false);
     ensureSplitAddressFields_(orderForm, 'Bill To');
     ensureSplitAddressFields_(orderForm, 'Ship To');
+  }
+
+  if (CONFIG.SHIPPING_UPDATE_FORM_ID) {
+    configureInvoiceShippingInfoForm_(FormApp.openById(CONFIG.SHIPPING_UPDATE_FORM_ID), false);
   }
 }
 
@@ -1311,14 +1327,22 @@ function getOrCreateInvoiceShippingInfoForm3_() {
 function configureInvoiceShippingInfoForm3_(form) {
   form.setTitle('LogFresh Invoice Shipping Info Update');
   form.setDescription('Internal form for completing shipping method, shipping charge, and tracking information before sending the final invoice.');
+  configureInvoiceShippingInfoForm_(form, false);
+}
+
+function configureInvoiceShippingInfoForm_(form, includeShipDate) {
   form.setCollectEmail(false);
   form.setAllowResponseEdits(false);
   form.setLimitOneResponsePerUser(false);
 
   ensureFormTextItem_(form, 'Order Number', true);
   ensureFormTextItem_(form, 'Invoice Number', false);
-  deleteFormItemByTitle_(form, 'Ship Date');
-  ensureFormTextItem_(form, 'Shipped Via', false);
+  if (includeShipDate) {
+    ensureFormDateItem_(form, 'Ship Date', false);
+  } else {
+    deleteFormItemByTitle_(form, 'Ship Date');
+  }
+  ensureFormChoiceItem_(form, 'Shipped Via', FORM_CHOICES.SHIPPED_VIA, false);
   ensureFormTextItem_(form, 'Shipping Charge', false);
   ensureFormTextItem_(form, 'Tracking Number', true);
   ensureFormDateItem_(form, 'Invoice Date', false);
@@ -1348,7 +1372,16 @@ function ensureFormDateItem_(form, title, required) {
 }
 
 function ensureFormChoiceItem_(form, title, choices, required) {
-  const item = findFormItemByTitle_(form, title);
+  const matchingItems = findFormItemsByTitle_(form, title);
+  const item = matchingItems.find(candidate =>
+    candidate.getType() === FormApp.ItemType.MULTIPLE_CHOICE ||
+    candidate.getType() === FormApp.ItemType.LIST
+  );
+
+  matchingItems
+    .filter(candidate => candidate.getId() !== (item && item.getId()))
+    .forEach(candidate => form.deleteItem(candidate));
+
   if (item && item.getType() === FormApp.ItemType.MULTIPLE_CHOICE) {
     item.asMultipleChoiceItem().setChoiceValues(choices).setRequired(required);
     return item;
@@ -1370,10 +1403,12 @@ function ensureFormParagraphItem_(form, title, required) {
 }
 
 function deleteFormItemByTitle_(form, title) {
+  findFormItemsByTitle_(form, title).forEach(item => form.deleteItem(item));
+}
+
+function findFormItemsByTitle_(form, title) {
   const wanted = String(title || '').trim().toLowerCase();
-  form.getItems()
-    .filter(item => item.getTitle().trim().toLowerCase() === wanted)
-    .forEach(item => form.deleteItem(item));
+  return form.getItems().filter(item => item.getTitle().trim().toLowerCase() === wanted);
 }
 
 function makeItemResponse_(item, value) {
