@@ -222,6 +222,7 @@
 - 增加 Google Sheets 菜单：`LogFresh > Create/Update Form 3: Invoice Shipping Info`。
 - Form 3 会链接回主 response spreadsheet，并沿用现有 shipping update 处理逻辑。
 - Form 3 包含 Order Number、Invoice Number、Ship Date、Shipped Via、Shipping Charge、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email、Send Invoice Automatically、Internal Notes。
+- 已从 Form 3 删除 Ship Date，因为它属于内部记录字段，不需要出现在 invoice shipping info 流程里。
 
 ## 2026-07-23
 

@@ -1243,7 +1243,6 @@ function makeInvoiceShippingInfoForm3Url_(data, row) {
   return makeDynamicPrefilledFormUrl_(form.getId(), {
     'Order Number': orderNumber,
     'Invoice Number': invoiceNumber,
-    'Ship Date': normalizeDateText_(getValue_(data, 'Ship Date')),
     'Shipped Via': getValue_(data, 'Shipped Via'),
     'Shipping Charge': getValue_(data, 'Shipping Charge'),
     'Tracking Number': getValue_(data, 'Tracking Number'),
@@ -1318,7 +1317,7 @@ function configureInvoiceShippingInfoForm3_(form) {
 
   ensureFormTextItem_(form, 'Order Number', true);
   ensureFormTextItem_(form, 'Invoice Number', false);
-  ensureFormDateItem_(form, 'Ship Date', false);
+  deleteFormItemByTitle_(form, 'Ship Date');
   ensureFormTextItem_(form, 'Shipped Via', false);
   ensureFormTextItem_(form, 'Shipping Charge', false);
   ensureFormTextItem_(form, 'Tracking Number', true);
@@ -1368,6 +1367,13 @@ function ensureFormParagraphItem_(form, title, required) {
     return item;
   }
   return form.addParagraphTextItem().setTitle(title).setRequired(required);
+}
+
+function deleteFormItemByTitle_(form, title) {
+  const wanted = String(title || '').trim().toLowerCase();
+  form.getItems()
+    .filter(item => item.getTitle().trim().toLowerCase() === wanted)
+    .forEach(item => form.deleteItem(item));
 }
 
 function makeItemResponse_(item, value) {
