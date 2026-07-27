@@ -1266,7 +1266,7 @@ function makeInvoiceShippingInfoForm3Url_(data, row) {
     'Due Date': dueDate,
     'Payment Method': getValue_(data, 'Payment Method'),
     'Customer Email': getValue_(data, 'Customer Email') || getValue_(data, 'Bill To Email'),
-    'Send Invoice Automatically': getValue_(data, 'Send Confirmation Automatically') || 'Yes',
+    'Send Invoice Automatically': 'Yes',
   }) || form.getPublishedUrl();
 }
 

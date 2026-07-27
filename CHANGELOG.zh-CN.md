@@ -226,6 +226,7 @@
 - 同步 Form 1、Form 2、Form 3 的 shipping method 题型和选项。
 - 在统一 shipping method 选项中加入 `USPS Ground`。
 - 统一后的 shipping method 选项包括 UPS Ground、UPS 2nd Day Air、UPS 3rd Day Air、UPS Next Day Air、UPS Next Day Air Early、UPS Ground + UPS Next Day Air Early、USPS Ground、Other。
+- 对于 `Invoice Only - Needs Shipping Info` 流程，第一版 invoice 只发送给内部；Form 3 后续更新链接会默认发送最终 invoice 给客户。
 
 ## 2026-07-23
 

@@ -226,6 +226,7 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Synchronized shipping method question types/options across Form 1, Form 2, and Form 3.
 - Added `USPS Ground` to the shared shipping method choices.
 - The shared shipping method choices now include UPS Ground, UPS 2nd Day Air, UPS 3rd Day Air, UPS Next Day Air, UPS Next Day Air Early, UPS Ground + UPS Next Day Air Early, USPS Ground, and Other.
+- For the `Invoice Only - Needs Shipping Info` workflow, the first generated invoice is sent internally only, and the Form 3 follow-up is prefilled to send the completed final invoice to the customer.
 
 ## 2026-07-23
 
