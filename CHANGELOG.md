@@ -218,6 +218,10 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - It then sends the salesperson an internal Form 2 link for shipping/tracking completion.
 - Form 2 prefill now supports `Shipping Charge` in addition to Order Number, Invoice Number, Ship Date, Shipped Via, Tracking Number, Invoice Date, Due Date, Payment Method, and Customer Email.
 - Form 2 prefill now uses the Google Form structure dynamically when possible, so future prefilled fields can be matched by question title instead of requiring manual entry IDs.
+- Added a dedicated Form 3 setup for the `Invoice Only - Needs Shipping Info` workflow.
+- Added a Google Sheets menu action: `LogFresh > Create/Update Form 3: Invoice Shipping Info`.
+- Form 3 is linked back to the main response spreadsheet and is handled by the existing shipping update processor.
+- Form 3 includes Order Number, Invoice Number, Ship Date, Shipped Via, Shipping Charge, Tracking Number, Invoice Date, Due Date, Payment Method, Customer Email, Send Invoice Automatically, and Internal Notes.
 
 ## 2026-07-23
 

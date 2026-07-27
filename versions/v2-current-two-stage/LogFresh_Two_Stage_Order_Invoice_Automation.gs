@@ -71,6 +71,7 @@ function onOpen() {
     .addItem('Generate Invoice PDF Only for Selected Row', 'generateInvoicePdfOnlyForSelectedRow')
     .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
     .addItem('Sync Form Address Fields', 'syncFormAddressFields')
+    .addItem('Create/Update Form 3: Invoice Shipping Info', 'createOrUpdateInvoiceShippingInfoForm3')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
     .addToUi();
@@ -143,6 +144,15 @@ function generateInvoicePdfOnlyForSelectedRow() {
 
 function rebuildCustomerInfoSheet() {
   rebuildCustomerInfoSheet_();
+}
+
+function createOrUpdateInvoiceShippingInfoForm3() {
+  const form = getOrCreateInvoiceShippingInfoForm3_();
+  SpreadsheetApp.getUi().alert(
+    'Form 3 Ready',
+    `Invoice Shipping Info Form 3 is ready.\n\nEdit URL:\n${form.getEditUrl()}\n\nPublic URL:\n${form.getPublishedUrl()}`,
+    SpreadsheetApp.getUi().ButtonSet.OK
+  );
 }
 
 function syncFormAddressFields() {
@@ -224,7 +234,7 @@ function processOrderCreateFormRow_(sheet, row) {
   if (isInvoiceNeedsShippingInfoWorkflow_(workflow)) {
     generateInvoiceForRow_(sheet, row, false, true);
     writeResult_(sheet, row, 'Order Status', STATUS.AWAITING_SHIPPING_INFO);
-    sendShippingUpdateReminder_(sheet, row);
+    sendInvoiceShippingInfoReminder_(sheet, row);
   } else if (workflow.includes('invoice only')) {
     const shouldSendInvoice = shouldSendAutomatically_(data);
     generateInvoiceForRow_(sheet, row, shouldSendInvoice, !shouldSendInvoice);
@@ -476,6 +486,38 @@ function sendShippingUpdateReminder_(sheet, row) {
       `Customer email: ${customerEmail}\n\n` +
       `After packaging is complete, submit tracking information here:\n${shippingUpdateUrl}\n\n` +
       `The update form should already include Order Number, Invoice Number, Shipped Via, Shipping Charge, Payment Method, and Customer Email where available.`,
+    name: CONFIG.COMPANY_NAME,
+    replyTo: CONFIG.COMPANY_EMAIL,
+  });
+}
+
+function sendInvoiceShippingInfoReminder_(sheet, row) {
+  const data = getRowData_(sheet, row);
+  const orderNumber = getValue_(data, 'Order Number') || makeOrderNumber_(row);
+  const invoiceNumber = getValue_(data, 'Invoice Number') || makeInvoiceNumberFromOrder_(orderNumber, row);
+  const customerName = getValue_(data, 'Bill To Name') || getValue_(data, 'Bill To Company') || 'Customer';
+  const salespersonEmail = getValue_(data, 'Salesperson Email');
+  const backupInternalEmail = CONFIG.INTERNAL_NOTIFICATION_EMAIL && !CONFIG.INTERNAL_NOTIFICATION_EMAIL.includes('PASTE_')
+    ? CONFIG.INTERNAL_NOTIFICATION_EMAIL
+    : '';
+  const internalNoticeTo = salespersonEmail || backupInternalEmail;
+  if (!internalNoticeTo) return;
+
+  const shippingInfoUrl = makeInvoiceShippingInfoForm3Url_(data, row);
+
+  MailApp.sendEmail({
+    to: internalNoticeTo,
+    cc: salespersonEmail ? backupInternalEmail : undefined,
+    subject: `[Ship Info] Invoice needs shipping info - ${invoiceNumber} / ${orderNumber}`,
+    body:
+      `Invoice ${invoiceNumber} for ${customerName} was created for internal archive only and still needs shipping information before customer delivery.\n\n` +
+      `Order Number: ${orderNumber}\n` +
+      `Invoice Number: ${invoiceNumber}\n` +
+      `Shipping method: ${getValue_(data, 'Shipped Via') || 'TBD'}\n` +
+      `Shipping charge: ${getValue_(data, 'Shipping Charge') || 'TBD'}\n` +
+      `Tracking number: ${getValue_(data, 'Tracking Number') || 'TBD'}\n\n` +
+      `Submit/update shipping information here:\n${shippingInfoUrl}\n\n` +
+      `Form 3 should already include the order and invoice details, plus any shipping method/charge values already entered.`,
     name: CONFIG.COMPANY_NAME,
     replyTo: CONFIG.COMPANY_EMAIL,
   });
@@ -1161,7 +1203,7 @@ function makeApprovalUrl_(orderNumber) {
 }
 
 function makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, customerEmail, trackingNumber, invoiceNumber, invoiceDate, dueDate, shipDate, shippingCharge) {
-  const dynamicUrl = makeDynamicShippingUpdateFormUrl_({
+  const dynamicUrl = makeDynamicPrefilledFormUrl_(CONFIG.SHIPPING_UPDATE_FORM_ID, {
     'Order Number': orderNumber,
     'Ship Date': shipDate,
     'Shipped Via': shippedVia,
@@ -1191,11 +1233,33 @@ function makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, cust
     .replace('{{SHIPPING_CHARGE}}', encodeURIComponent(shippingCharge || ''));
 }
 
-function makeDynamicShippingUpdateFormUrl_(prefillValues) {
-  if (!CONFIG.SHIPPING_UPDATE_FORM_ID) return '';
+function makeInvoiceShippingInfoForm3Url_(data, row) {
+  const form = getOrCreateInvoiceShippingInfoForm3_();
+  const orderNumber = getValue_(data, 'Order Number') || makeOrderNumber_(row);
+  const invoiceNumber = getValue_(data, 'Invoice Number') || makeInvoiceNumberFromOrder_(orderNumber, row);
+  const invoiceDate = normalizeDateText_(getValue_(data, 'Invoice Date')) || today_();
+  const dueDate = normalizeDateText_(getValue_(data, 'Due Date')) || addDaysToDateText_(invoiceDate, 30);
+
+  return makeDynamicPrefilledFormUrl_(form.getId(), {
+    'Order Number': orderNumber,
+    'Invoice Number': invoiceNumber,
+    'Ship Date': normalizeDateText_(getValue_(data, 'Ship Date')),
+    'Shipped Via': getValue_(data, 'Shipped Via'),
+    'Shipping Charge': getValue_(data, 'Shipping Charge'),
+    'Tracking Number': getValue_(data, 'Tracking Number'),
+    'Invoice Date': invoiceDate,
+    'Due Date': dueDate,
+    'Payment Method': getValue_(data, 'Payment Method'),
+    'Customer Email': getValue_(data, 'Customer Email') || getValue_(data, 'Bill To Email'),
+    'Send Invoice Automatically': getValue_(data, 'Send Confirmation Automatically') || 'Yes',
+  }) || form.getPublishedUrl();
+}
+
+function makeDynamicPrefilledFormUrl_(formId, prefillValues) {
+  if (!formId) return '';
 
   try {
-    const form = FormApp.openById(CONFIG.SHIPPING_UPDATE_FORM_ID);
+    const form = FormApp.openById(formId);
     const response = form.createResponse();
     let addedResponse = false;
 
@@ -1213,9 +1277,97 @@ function makeDynamicShippingUpdateFormUrl_(prefillValues) {
 
     return addedResponse ? response.toPrefilledUrl() : '';
   } catch (error) {
-    Logger.log(`Could not build dynamic Form 2 prefilled URL: ${error.message}`);
+    Logger.log(`Could not build dynamic prefilled URL: ${error.message}`);
     return '';
   }
+}
+
+function getOrCreateInvoiceShippingInfoForm3_() {
+  const properties = PropertiesService.getScriptProperties();
+  const existingFormId = properties.getProperty('INVOICE_SHIPPING_INFO_FORM3_ID');
+
+  if (existingFormId) {
+    try {
+      const existingForm = FormApp.openById(existingFormId);
+      configureInvoiceShippingInfoForm3_(existingForm);
+      return existingForm;
+    } catch (error) {
+      Logger.log(`Could not open existing Form 3, creating a new one: ${error.message}`);
+    }
+  }
+
+  const form = FormApp.create('LogFresh Invoice Shipping Info Update');
+  properties.setProperty('INVOICE_SHIPPING_INFO_FORM3_ID', form.getId());
+  configureInvoiceShippingInfoForm3_(form);
+
+  try {
+    form.setDestination(FormApp.DestinationType.SPREADSHEET, SpreadsheetApp.getActiveSpreadsheet().getId());
+  } catch (error) {
+    Logger.log(`Could not link Form 3 responses to active spreadsheet: ${error.message}`);
+  }
+
+  return form;
+}
+
+function configureInvoiceShippingInfoForm3_(form) {
+  form.setTitle('LogFresh Invoice Shipping Info Update');
+  form.setDescription('Internal form for completing shipping method, shipping charge, and tracking information before sending the final invoice.');
+  form.setCollectEmail(false);
+  form.setAllowResponseEdits(false);
+  form.setLimitOneResponsePerUser(false);
+
+  ensureFormTextItem_(form, 'Order Number', true);
+  ensureFormTextItem_(form, 'Invoice Number', false);
+  ensureFormDateItem_(form, 'Ship Date', false);
+  ensureFormTextItem_(form, 'Shipped Via', false);
+  ensureFormTextItem_(form, 'Shipping Charge', false);
+  ensureFormTextItem_(form, 'Tracking Number', true);
+  ensureFormDateItem_(form, 'Invoice Date', false);
+  ensureFormDateItem_(form, 'Due Date', false);
+  ensureFormChoiceItem_(form, 'Payment Method', FORM_CHOICES.PAYMENT_METHOD, false);
+  ensureFormTextItem_(form, 'Customer Email', false);
+  ensureFormChoiceItem_(form, 'Send Invoice Automatically', ['Yes', 'No'], true);
+  ensureFormParagraphItem_(form, 'Internal Notes', false);
+}
+
+function ensureFormTextItem_(form, title, required) {
+  const item = findFormItemByTitle_(form, title);
+  if (item && item.getType() === FormApp.ItemType.TEXT) {
+    item.asTextItem().setRequired(required);
+    return item;
+  }
+  return form.addTextItem().setTitle(title).setRequired(required);
+}
+
+function ensureFormDateItem_(form, title, required) {
+  const item = findFormItemByTitle_(form, title);
+  if (item && item.getType() === FormApp.ItemType.DATE) {
+    item.asDateItem().setRequired(required);
+    return item;
+  }
+  return form.addDateItem().setTitle(title).setRequired(required);
+}
+
+function ensureFormChoiceItem_(form, title, choices, required) {
+  const item = findFormItemByTitle_(form, title);
+  if (item && item.getType() === FormApp.ItemType.MULTIPLE_CHOICE) {
+    item.asMultipleChoiceItem().setChoiceValues(choices).setRequired(required);
+    return item;
+  }
+  if (item && item.getType() === FormApp.ItemType.LIST) {
+    item.asListItem().setChoiceValues(choices).setRequired(required);
+    return item;
+  }
+  return form.addMultipleChoiceItem().setTitle(title).setChoiceValues(choices).setRequired(required);
+}
+
+function ensureFormParagraphItem_(form, title, required) {
+  const item = findFormItemByTitle_(form, title);
+  if (item && item.getType() === FormApp.ItemType.PARAGRAPH_TEXT) {
+    item.asParagraphTextItem().setRequired(required);
+    return item;
+  }
+  return form.addParagraphTextItem().setTitle(title).setRequired(required);
 }
 
 function makeItemResponse_(item, value) {

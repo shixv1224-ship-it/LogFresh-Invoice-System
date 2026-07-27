@@ -218,6 +218,10 @@
 - 生成后会发给对应销售一个内部 Form 2 链接，用于后续补 shipping / tracking 信息。
 - Form 2 预填现在支持 `Shipping Charge`，同时保留 Order Number、Invoice Number、Ship Date、Shipped Via、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email 等预填。
 - Form 2 预填优先使用 Google Form 结构动态生成，尽量按题目标题匹配，不再完全依赖手动 entry ID。
+- 为 `Invoice Only - Needs Shipping Info` 新增专用 Form 3 设置。
+- 增加 Google Sheets 菜单：`LogFresh > Create/Update Form 3: Invoice Shipping Info`。
+- Form 3 会链接回主 response spreadsheet，并沿用现有 shipping update 处理逻辑。
+- Form 3 包含 Order Number、Invoice Number、Ship Date、Shipped Via、Shipping Charge、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email、Send Invoice Automatically、Internal Notes。
 
 ## 2026-07-23
 
