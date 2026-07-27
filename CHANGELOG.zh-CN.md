@@ -226,7 +226,10 @@
 - 同步 Form 1、Form 2、Form 3 的 shipping method 题型和选项。
 - 在统一 shipping method 选项中加入 `USPS Ground`。
 - 统一后的 shipping method 选项包括 UPS Ground、UPS 2nd Day Air、UPS 3rd Day Air、UPS Next Day Air、UPS Next Day Air Early、UPS Ground + UPS Next Day Air Early、USPS Ground、Other。
-- 对于 `Invoice Only - Needs Shipping Info` 流程，第一版 invoice 只发送给内部；Form 3 后续更新链接会默认发送最终 invoice 给客户。
+- 对于 `Invoice Only - Needs Shipping Info` 流程，第一版 invoice 只发送给内部；Form 3 后续更新链接由内部人员选择是否发送最终 invoice 给客户。
+- 调整 Form 2 / Form 3 发送逻辑：只有明确选择 `Send Invoice Automatically = Yes` 才发送最终 invoice 给客户；空白或 `No` 都会改为发送内部存档/抄送。
+- 给自动邮件增加正式 Logfresh 邮件签名，包含公司 logo、地址、电话、邮箱和官网。
+- 统一邮件签名公司信息为 `Logfresh Biotechnology Co., Ltd` 和 `708 N 29th Ave, Unit 2, Yakima, WA 98902`。
 
 ## 2026-07-23
 
