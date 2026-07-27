@@ -45,11 +45,13 @@ const CONFIG = {
 const STATUS = {
   PENDING_APPROVAL: 'Pending Customer Approval',
   APPROVED: 'Customer Approved',
+  AWAITING_SHIPPING_INFO: 'Awaiting Shipping Info',
   INVOICE_CREATED: 'Invoice Created',
   INVOICE_SENT: 'Invoice Sent',
 };
 
 const FORM_CHOICES = {
+  WORKFLOW_TYPE: ['Invoice Only', 'Invoice Only - Needs Shipping Info', 'Confirmation First'],
   PAYMENT_METHOD: ['Credit Card', 'Prepaid', 'Check/Wire Transfer'],
   US_STATES: [
     'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
@@ -188,7 +190,8 @@ function doGet(e) {
   const invoiceDate = getValue_(data, 'Invoice Date');
   const dueDate = getValue_(data, 'Due Date');
   const shipDate = getValue_(data, 'Ship Date');
-  const shippingUpdateUrl = makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, customerEmail, trackingNumber, invoiceNumber, invoiceDate, dueDate, shipDate);
+  const shippingCharge = getValue_(data, 'Shipping Charge');
+  const shippingUpdateUrl = makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, customerEmail, trackingNumber, invoiceNumber, invoiceDate, dueDate, shipDate, shippingCharge);
   const backupInternalEmail = CONFIG.INTERNAL_NOTIFICATION_EMAIL && !CONFIG.INTERNAL_NOTIFICATION_EMAIL.includes('PASTE_')
     ? CONFIG.INTERNAL_NOTIFICATION_EMAIL
     : '';
@@ -218,7 +221,11 @@ function processOrderCreateFormRow_(sheet, row) {
   const data = getRowData_(sheet, row);
   const workflow = getValue_(data, 'Workflow Type').toLowerCase();
 
-  if (workflow.includes('invoice only')) {
+  if (isInvoiceNeedsShippingInfoWorkflow_(workflow)) {
+    generateInvoiceForRow_(sheet, row, false, true);
+    writeResult_(sheet, row, 'Order Status', STATUS.AWAITING_SHIPPING_INFO);
+    sendShippingUpdateReminder_(sheet, row);
+  } else if (workflow.includes('invoice only')) {
     const shouldSendInvoice = shouldSendAutomatically_(data);
     generateInvoiceForRow_(sheet, row, shouldSendInvoice, !shouldSendInvoice);
   } else {
@@ -246,6 +253,7 @@ function processShippingUpdateFormRow_(updateSheet, updateRow) {
     'Due Date',
     'Payment Method',
     'Customer Email',
+    'Shipping Charge',
     'Internal Notes',
   ].forEach(header => {
     const value = getValue_(updateData, header);
@@ -448,7 +456,8 @@ function sendShippingUpdateReminder_(sheet, row) {
   const invoiceDate = getValue_(data, 'Invoice Date');
   const dueDate = getValue_(data, 'Due Date');
   const shipDate = getValue_(data, 'Ship Date');
-  const shippingUpdateUrl = makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, customerEmail, trackingNumber, invoiceNumber, invoiceDate, dueDate, shipDate);
+  const shippingCharge = getValue_(data, 'Shipping Charge');
+  const shippingUpdateUrl = makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, customerEmail, trackingNumber, invoiceNumber, invoiceDate, dueDate, shipDate, shippingCharge);
   const backupInternalEmail = CONFIG.INTERNAL_NOTIFICATION_EMAIL && !CONFIG.INTERNAL_NOTIFICATION_EMAIL.includes('PASTE_')
     ? CONFIG.INTERNAL_NOTIFICATION_EMAIL
     : '';
@@ -463,9 +472,10 @@ function sendShippingUpdateReminder_(sheet, row) {
     body:
       `Order ${orderNumber} for ${customerName} is ready for shipping / packaging follow-up.\n\n` +
       `Shipping method: ${shippedVia}\n` +
+      `Shipping charge: ${shippingCharge || 'TBD'}\n` +
       `Customer email: ${customerEmail}\n\n` +
       `After packaging is complete, submit tracking information here:\n${shippingUpdateUrl}\n\n` +
-      `The update form should already include Order Number, Shipped Via, Payment Method, and Customer Email if the pre-filled Form 2 URL is configured.`,
+      `The update form should already include Order Number, Invoice Number, Shipped Via, Shipping Charge, Payment Method, and Customer Email where available.`,
     name: CONFIG.COMPANY_NAME,
     replyTo: CONFIG.COMPANY_EMAIL,
   });
@@ -1008,9 +1018,28 @@ function ensureGoogleFormsSetup_() {
 
   if (CONFIG.ORDER_FORM_ID) {
     const orderForm = FormApp.openById(CONFIG.ORDER_FORM_ID);
+    updateWorkflowTypeItem_(orderForm);
     ensureSplitAddressFields_(orderForm, 'Bill To');
     ensureSplitAddressFields_(orderForm, 'Ship To');
   }
+}
+
+function updateWorkflowTypeItem_(form) {
+  const item = form.getItems().find(candidate => candidate.getTitle().trim().toLowerCase() === 'workflow type');
+  if (!item) return false;
+
+  const type = item.getType();
+  if (type === FormApp.ItemType.MULTIPLE_CHOICE) {
+    item.asMultipleChoiceItem().setChoiceValues(FORM_CHOICES.WORKFLOW_TYPE);
+    return true;
+  }
+
+  if (type === FormApp.ItemType.LIST) {
+    item.asListItem().setChoiceValues(FORM_CHOICES.WORKFLOW_TYPE);
+    return true;
+  }
+
+  throw new Error(`Workflow Type must be a multiple choice or dropdown item. Current type: ${type}`);
 }
 
 function ensureSplitAddressFields_(form, prefix) {
@@ -1131,7 +1160,21 @@ function makeApprovalUrl_(orderNumber) {
   return `${CONFIG.WEB_APP_URL}?action=approve&order=${encodeURIComponent(orderNumber)}`;
 }
 
-function makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, customerEmail, trackingNumber, invoiceNumber, invoiceDate, dueDate, shipDate) {
+function makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, customerEmail, trackingNumber, invoiceNumber, invoiceDate, dueDate, shipDate, shippingCharge) {
+  const dynamicUrl = makeDynamicShippingUpdateFormUrl_({
+    'Order Number': orderNumber,
+    'Ship Date': shipDate,
+    'Shipped Via': shippedVia,
+    'Tracking Number': trackingNumber,
+    'Invoice Number': invoiceNumber,
+    'Invoice Date': invoiceDate,
+    'Due Date': dueDate,
+    'Payment Method': paymentMethod,
+    'Customer Email': customerEmail,
+    'Shipping Charge': shippingCharge,
+  });
+  if (dynamicUrl) return dynamicUrl;
+
   if (!CONFIG.SHIPPING_UPDATE_PREFILL_URL || CONFIG.SHIPPING_UPDATE_PREFILL_URL.includes('PASTE_')) {
     return 'FORM_2_PREFILLED_URL_NOT_CONFIGURED';
   }
@@ -1144,7 +1187,55 @@ function makeShippingUpdateFormUrl_(orderNumber, shippedVia, paymentMethod, cust
     .replace('{{INVOICE_NUMBER}}', encodeURIComponent(invoiceNumber || ''))
     .replace('{{INVOICE_DATE}}', encodeURIComponent(invoiceDate || ''))
     .replace('{{DUE_DATE}}', encodeURIComponent(dueDate || ''))
-    .replace('{{SHIP_DATE}}', encodeURIComponent(shipDate || ''));
+    .replace('{{SHIP_DATE}}', encodeURIComponent(shipDate || ''))
+    .replace('{{SHIPPING_CHARGE}}', encodeURIComponent(shippingCharge || ''));
+}
+
+function makeDynamicShippingUpdateFormUrl_(prefillValues) {
+  if (!CONFIG.SHIPPING_UPDATE_FORM_ID) return '';
+
+  try {
+    const form = FormApp.openById(CONFIG.SHIPPING_UPDATE_FORM_ID);
+    const response = form.createResponse();
+    let addedResponse = false;
+
+    form.getItems().forEach(item => {
+      const title = item.getTitle().trim();
+      const value = prefillValues[title];
+      if (value === undefined || value === null || String(value).trim() === '') return;
+
+      const itemResponse = makeItemResponse_(item, value);
+      if (!itemResponse) return;
+
+      response.withItemResponse(itemResponse);
+      addedResponse = true;
+    });
+
+    return addedResponse ? response.toPrefilledUrl() : '';
+  } catch (error) {
+    Logger.log(`Could not build dynamic Form 2 prefilled URL: ${error.message}`);
+    return '';
+  }
+}
+
+function makeItemResponse_(item, value) {
+  const textValue = String(value || '').trim();
+  const type = item.getType();
+
+  try {
+    if (type === FormApp.ItemType.TEXT) return item.asTextItem().createResponse(textValue);
+    if (type === FormApp.ItemType.PARAGRAPH_TEXT) return item.asParagraphTextItem().createResponse(textValue);
+    if (type === FormApp.ItemType.MULTIPLE_CHOICE) return item.asMultipleChoiceItem().createResponse(textValue);
+    if (type === FormApp.ItemType.LIST) return item.asListItem().createResponse(textValue);
+    if (type === FormApp.ItemType.DATE) {
+      const date = parseDateText_(textValue);
+      return date ? item.asDateItem().createResponse(date) : null;
+    }
+  } catch (error) {
+    Logger.log(`Could not prefill ${item.getTitle()}: ${error.message}`);
+  }
+
+  return null;
 }
 
 function ensureInternalColumns_(sheet) {
@@ -1678,6 +1769,15 @@ function joinEmails_(...groups) {
 
 function shouldSendAutomatically_(data) {
   return getValue_(data, 'Send Confirmation Automatically').toLowerCase() !== 'no';
+}
+
+function isInvoiceNeedsShippingInfoWorkflow_(workflow) {
+  const text = String(workflow || '').toLowerCase();
+  return text.includes('invoice only') && (
+    text.includes('needs shipping') ||
+    text.includes('without tracking') ||
+    text.includes('no tracking')
+  );
 }
 
 function normalizeEmail_(value) {

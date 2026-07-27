@@ -209,6 +209,16 @@
 
 这一部分记录 LogFresh 自动化系统本身的流程、模板、表单、邮件和客户资料功能变化。
 
+## 2026-07-27
+
+### Added
+
+- 新增 workflow 选项：`Invoice Only - Needs Shipping Info`。
+- 这个流程会先生成内部 invoice 存档，不会直接发送给客户。
+- 生成后会发给对应销售一个内部 Form 2 链接，用于后续补 shipping / tracking 信息。
+- Form 2 预填现在支持 `Shipping Charge`，同时保留 Order Number、Invoice Number、Ship Date、Shipped Via、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email 等预填。
+- Form 2 预填优先使用 Google Form 结构动态生成，尽量按题目标题匹配，不再完全依赖手动 entry ID。
+
 ## 2026-07-23
 
 ### Changed

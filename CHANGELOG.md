@@ -209,6 +209,16 @@ This section only tracks GitHub commits and repository-level version history.
 
 This section tracks the actual workflow, template, form, email, and customer-data changes made for the LogFresh automation system.
 
+## 2026-07-27
+
+### Added
+
+- Added a new workflow option: `Invoice Only - Needs Shipping Info`.
+- This workflow generates an internal invoice archive first, without sending the invoice to the customer.
+- It then sends the salesperson an internal Form 2 link for shipping/tracking completion.
+- Form 2 prefill now supports `Shipping Charge` in addition to Order Number, Invoice Number, Ship Date, Shipped Via, Tracking Number, Invoice Date, Due Date, Payment Method, and Customer Email.
+- Form 2 prefill now uses the Google Form structure dynamically when possible, so future prefilled fields can be matched by question title instead of requiring manual entry IDs.
+
 ## 2026-07-23
 
 ### Changed
