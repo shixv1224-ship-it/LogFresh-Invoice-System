@@ -500,6 +500,17 @@ function sendShippingUpdateReminder_(sheet, row) {
       `Customer email: ${customerEmail}\n\n` +
       `After packaging is complete, submit tracking information here:\n${shippingUpdateUrl}\n\n` +
       `The update form should already include Order Number, Invoice Number, Shipped Via, Shipping Charge, Payment Method, and Customer Email where available.`,
+    htmlBody:
+      `<p>Order <strong>${escapeHtml_(orderNumber)}</strong> for <strong>${escapeHtml_(customerName)}</strong> is ready for shipping / packaging follow-up.</p>` +
+      `<p>` +
+      `Shipping method: ${escapeHtml_(shippedVia)}<br>` +
+      `Shipping charge: ${escapeHtml_(shippingCharge || 'TBD')}<br>` +
+      `Customer email: ${escapeHtml_(customerEmail)}` +
+      `</p>` +
+      `<p>After packaging is complete, click the button below to submit tracking / shipping information.</p>` +
+      buildEmailButtonHtml_(shippingUpdateUrl, 'Open Shipping Update Form') +
+      `<p style="font-size:12px;color:#666;margin-top:14px;">The update form should already include Order Number, Invoice Number, Shipped Via, Shipping Charge, Payment Method, and Customer Email where available.</p>` +
+      buildEmailFallbackLinkHtml_(shippingUpdateUrl),
     name: CONFIG.COMPANY_NAME,
     replyTo: CONFIG.COMPANY_EMAIL,
   });
@@ -532,6 +543,19 @@ function sendInvoiceShippingInfoReminder_(sheet, row) {
       `Tracking number: ${getValue_(data, 'Tracking Number') || 'TBD'}\n\n` +
       `Submit/update shipping information here:\n${shippingInfoUrl}\n\n` +
       `Form 3 should already include the order and invoice details, plus any shipping method/charge values already entered.`,
+    htmlBody:
+      `<p>Invoice <strong>${escapeHtml_(invoiceNumber)}</strong> for <strong>${escapeHtml_(customerName)}</strong> was created for internal archive only and still needs shipping information before customer delivery.</p>` +
+      `<p>` +
+      `Order Number: ${escapeHtml_(orderNumber)}<br>` +
+      `Invoice Number: ${escapeHtml_(invoiceNumber)}<br>` +
+      `Shipping method: ${escapeHtml_(getValue_(data, 'Shipped Via') || 'TBD')}<br>` +
+      `Shipping charge: ${escapeHtml_(getValue_(data, 'Shipping Charge') || 'TBD')}<br>` +
+      `Tracking number: ${escapeHtml_(getValue_(data, 'Tracking Number') || 'TBD')}` +
+      `</p>` +
+      `<p>Click the button below to submit or update shipping information.</p>` +
+      buildEmailButtonHtml_(shippingInfoUrl, 'Open Shipping Info Form') +
+      `<p style="font-size:12px;color:#666;margin-top:14px;">Form 3 should already include the order and invoice details, plus any shipping method/charge values already entered.</p>` +
+      buildEmailFallbackLinkHtml_(shippingInfoUrl),
     name: CONFIG.COMPANY_NAME,
     replyTo: CONFIG.COMPANY_EMAIL,
   });
@@ -2035,6 +2059,23 @@ function joinEmails_(...groups) {
     .filter(Boolean)
     .filter((email, index, array) => array.indexOf(email) === index)
     .join(',');
+}
+
+function buildEmailButtonHtml_(url, label) {
+  const safeUrl = escapeHtml_(url);
+  const safeLabel = escapeHtml_(label);
+  return `<p style="margin:20px 0;">` +
+    `<a href="${safeUrl}" target="_blank" ` +
+    `style="background:#2f8f2f;color:#ffffff;text-decoration:none;display:inline-block;padding:11px 18px;border-radius:6px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold;">` +
+    `${safeLabel}` +
+    `</a>` +
+    `</p>`;
+}
+
+function buildEmailFallbackLinkHtml_(url) {
+  const safeUrl = escapeHtml_(url);
+  return `<p style="font-size:11px;color:#888;margin-top:10px;">If the button does not work, copy and paste this link:<br>` +
+    `<a href="${safeUrl}" style="color:#2f6b2f;word-break:break-all;">${safeUrl}</a></p>`;
 }
 
 function sendLogFreshEmail_(options) {

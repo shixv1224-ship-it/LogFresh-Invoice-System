@@ -235,6 +235,7 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Enabled an `Other` option on Shipped Via multiple-choice fields so non-standard shipping methods do not block prefill generation.
 - Updated `Invoice Only - Needs Shipping Info` so the first-stage incomplete invoice is saved to Drive without sending a separate internal invoice archive email; only the shipping info update email is sent.
 - Confirmed the Form 3 follow-up invoice generation replaces the earlier no-shipping invoice file.
+- Replaced raw shipping update URLs in internal emails with clear HTML buttons, while keeping a fallback link for email clients that do not support buttons.
 
 ## 2026-07-23
 

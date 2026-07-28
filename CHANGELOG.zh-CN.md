@@ -235,6 +235,7 @@
 - Shipped Via 单选题启用 `Other` 选项，避免非标准 shipping method 阻止预填链接生成。
 - 更新 `Invoice Only - Needs Shipping Info`：第一阶段未完成 shipping 的 invoice 只保存到 Drive，不再额外发送 internal invoice archive 邮件；只发送 shipping info update 邮件。
 - 确认 Form 3 后续生成的新 invoice 会替换前面没有 shipping 信息的 invoice 文件。
+- 将内部 shipping update 邮件中的裸长链接改为清晰的 HTML 按钮，同时保留不支持按钮邮箱的备用链接。
 
 ## 2026-07-23
 
