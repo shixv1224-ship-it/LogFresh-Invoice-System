@@ -245,7 +245,7 @@ function processOrderCreateFormRow_(sheet, row) {
   const workflow = getValue_(data, 'Workflow Type').toLowerCase();
 
   if (isInvoiceNeedsShippingInfoWorkflow_(workflow)) {
-    generateInvoiceForRow_(sheet, row, false, true);
+    generateInvoiceForRow_(sheet, row, false, false);
     writeResult_(sheet, row, 'Order Status', STATUS.AWAITING_SHIPPING_INFO);
     sendInvoiceShippingInfoReminder_(sheet, row);
   } else if (workflow.includes('invoice only')) {

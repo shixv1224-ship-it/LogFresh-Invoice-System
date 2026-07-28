@@ -233,6 +233,8 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Improved Form 3 prefilled links so Payment Method, Customer Email, and Shipped Via can be matched by title aliases instead of exact title text only.
 - Added normalization for Shipped Via and Payment Method values before prefill, including mapping USPS values to `USPS Ground`.
 - Enabled an `Other` option on Shipped Via multiple-choice fields so non-standard shipping methods do not block prefill generation.
+- Updated `Invoice Only - Needs Shipping Info` so the first-stage incomplete invoice is saved to Drive without sending a separate internal invoice archive email; only the shipping info update email is sent.
+- Confirmed the Form 3 follow-up invoice generation replaces the earlier no-shipping invoice file.
 
 ## 2026-07-23
 
