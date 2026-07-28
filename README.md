@@ -9,8 +9,9 @@ Google Forms + Google Sheets + Google Docs + Apps Script automation for LogFresh
 - Setup guide / 部署指南: [docs/setup-guide.md](docs/setup-guide.md)
 - 中文部署指南: [docs/setup-guide.zh-CN.md](docs/setup-guide.zh-CN.md)
 - Version archive / 版本归档: [versions/](versions/)
-- Changelog / 更新日志: [CHANGELOG.md](CHANGELOG.md)
+- Feature changelog / 功能更新记录: [CHANGELOG.md](CHANGELOG.md)
 - 中文更新日志: [CHANGELOG.zh-CN.md](CHANGELOG.zh-CN.md)
+- Version timeline / 版本时间线: [VERSION_TIMELINE.md](VERSION_TIMELINE.md)
 
 ## What this system does / 系统功能
 
@@ -92,10 +93,12 @@ docs/
 
 versions/
   v1-legacy-single-invoice/
+  v1.5-invoice-needs-shipping-info/
   v2-current-two-stage/
 
 CHANGELOG.md
 CHANGELOG.zh-CN.md
+VERSION_TIMELINE.md
 README.md
 README.zh-CN.md
 ```

@@ -6,6 +6,30 @@ This folder keeps script snapshots from the major workflow stages of the LogFres
 
 ## Versions / 版本
 
+### v1.5-invoice-needs-shipping-info
+
+Current v1.5 workflow snapshot for the new invoice shipping information process.
+
+当前 v1.5 workflow 快照，用于新的 invoice shipping 信息补全流程。
+
+Main behavior:
+
+- Adds `Invoice Only - Needs Shipping Info`.
+- Generates an internal invoice before tracking information is ready.
+- Uses Form 3 to collect/update shipping and tracking information.
+- Lets internal users decide whether the final invoice should be sent to the customer.
+- Replaces the earlier no-shipping invoice when the final invoice is generated.
+- Shows shipping update links as email buttons.
+
+主要功能：
+
+- 新增 `Invoice Only - Needs Shipping Info`。
+- tracking 信息未准备好时，先生成内部 invoice。
+- 通过 Form 3 补齐 / 更新 shipping 和 tracking 信息。
+- 内部人员可决定最终 invoice 是否发送给客户。
+- 最终 invoice 生成后替换旧的无 shipping invoice。
+- shipping update 链接在邮件中显示为按钮。
+
 ### v1-legacy-single-invoice
 
 Early single-stage invoice generation script.

@@ -1,380 +1,80 @@
-# 更新日志
+# 功能更新记录
 
-## GitHub Commit 版本时间线
+这个文件只记录 LogFresh Invoice System 的业务功能变化。
+GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE.md)。
 
-这一部分只记录 GitHub commit 和 repo 层面的版本历史。
+## 2026-07-27 · v1.5 Invoice Shipping Info Workflow
 
-### 2026-07-20 · `a5dcef5` - Initial LogFresh invoice automation system
-
-- 创建第一版 GitHub 项目结构。
-- 添加正式 Apps Script 文件。
-- 添加严格版 Invoice 和 Order Confirmation 模板。
-- 添加第一版英文 README、CHANGELOG 和部署指南。
-- 将完整双流程自动化系统作为 GitHub 初始版本保存。
-
-### 2026-07-20 · `cc9c812` - Bilingual docs and version archive
-
-- 添加中文文档。
-- 添加中文部署指南。
-- 添加历史版本归档目录。
-- 增加 `v1-legacy-single-invoice`，归档早期单阶段 invoice 脚本。
-- 增加 `v2-current-two-stage`，归档当前双阶段 workflow 脚本。
-
-### 2026-07-20 · `1cabffa` - Bilingual homepage README
-
-- 将 GitHub 主页 README 改为中英双语对照。
-- 增加双语说明：workflow、字段、编号、日期、邮件标题、部署说明等。
-
-### 2026-07-21 · `631fcdf` - U.S. invoice date format
-
-- 将 invoice 日期输出从 `dd/MM/yyyy` 改为美国常用 `MM/dd/yyyy`。
-- 更新斜杠日期解析逻辑，按美国月/日顺序读取。
-- 同步更新中英文文档中的日期说明。
-
-### 2026-07-21 · `8a3449d` - Latest invoice and order confirmation templates
-
-- 用最新提供的 Word 模板替换 GitHub 中的模板文件。
-- 保留模板占位符与 Apps Script 的兼容性。
-
-### 2026-07-21 · `d80950c` - Company suffix casing in templates
-
-- 将模板顶部公司后缀从 `LTD` 改为 `Ltd`。
-- 确认模板顶部为 `Logfresh Biotechnology Co., Ltd`。
-
-### 2026-07-21 · `84be5ca` - Customer info sync
-
-- 增加客户汇总表自动同步功能。
-- 在生成 Order Confirmation 和 Invoice 后自动新增/更新客户记录。
-- 增加从历史订单重建客户汇总表的菜单操作。
-
-### 2026-07-21 · `e1b6748` - July 21 changelog refinements
-
-- 补充 2026-07-21 模板细节更新日志。
-- 保留远端新增的客户信息同步 changelog。
-- rebase 后推送合并后的 changelog。
-
-### 2026-07-21 · `8e35385` - Separate customer info spreadsheet support
-
-- 增加脚本支持：客户有效信息可以写入主 Form response 表之外的独立 Google Sheet。
-- 增加按配置 ID 打开客户信息表的辅助逻辑。
-- 保留兼容模式：如果没有配置独立表 ID，仍可写入当前订单回复表中的 `客户有效信息` tab。
-
-### 2026-07-21 · `34ac08a` - Configure separate customer info spreadsheet
-
-- 创建并连接独立的 `LogFresh Customer Info` Google Sheet。
-- 配置 `CUSTOMER_INFO_SPREADSHEET_ID`，使客户资料写入单独客户资料库。
-- 同步更新输出脚本副本，确保 GitHub、本地文件和生产 Apps Script 源码一致。
-
-### 2026-07-21 · `02d8a3f` - Apps Script deployment support
-
-- 增加 `clasp` 配置，支持从本地/GitHub 项目直接推送到 Google Apps Script。
-- 增加 Apps Script manifest 文件。
-- 将 repo 连接到正式 Apps Script 项目 ID，方便后续直接同步脚本。
-
-### 2026-07-21 · `13fc87d` - Remove duplicate clasp script file
-
-- 删除 Apps Script 源码目录中重复的 `Code.js` 文件。
-- 重新推送 Apps Script，现在只包含 manifest 和主自动化脚本。
-- 避免 Apps Script 编辑器里出现重复顶层变量/函数定义。
-
-### 2026-07-21 · `be1aaf8` - Customer info deployment changelog
-
-- 更新中英文 changelog，补充 customer info 部署细节。
-- 记录独立客户资料表的配置。
-- 记录 `clasp` 部署后 Apps Script 源码目录清理。
-
-### 2026-07-23 · `202a70c` - Disable invoice-only update reminder email
-
-- 取消 `Invoice Only` 流程中自动发送的 `[Update] Invoice shipping information required` 内部提醒邮件。
-- 保留 invoice 生成和是否发送 invoice 的原有逻辑。
-- 保留客户确认后的 `[Approved]` shipping 信息提醒邮件。
-
-### 2026-07-23 · `455c26b` - Manual invoice PDF-only menu action
-
-- 增加 Google Sheet 菜单操作，可对选中的订单行只生成 invoice PDF，不发送任何邮件。
-- 生成前增加确认弹窗。
-- 生成后增加完成弹窗，并显示 Drive 中保存的 invoice 链接。
-
-### 2026-07-23 · `c3b65c1` - Use company names in generated file names
-
-- 将后续生成的 Order Confirmation 文件名改为优先使用账单公司名，而不是客户个人名。
-- 将后续生成的 Invoice 文件名改为优先使用账单公司名，而不是客户个人名。
-- 邮件称呼和文档正文内容保持不变。
-
-### 2026-07-23 · `d589642` - Add batch rename for existing generated files
-
-- 增加 Google Sheet 菜单操作，可批量重命名 Drive 里已经生成过的 Order Confirmation 和 Invoice 文件。
-- 批量重命名会读取每个旧 Google Doc 里的 `BILL TO` 区域，用公司名重命名对应的 Google Doc 和 PDF。
-- 如果某个文件无法安全识别公司名，会自动跳过，避免误改。
-
-### 2026-07-23 · `366766a` - Update unit price and payment method requirements
-
-- 修改 line-item unit price 显示逻辑，保留表单输入的小数位数，不再强制两位小数。
-- Subtotal、Total、Balance Due 等计算总金额仍保持美元两位小数。
-- 记录 Form 1 / Form 2 统一付款方式选项：`Credit Card`、`Prepaid`、`Check/Wire Transfer`。
-
-### 2026-07-23 · `b4fc186` - Add one-click Google Form payment method updater
-
-- 将 Form 1 和 Form 2 的 ID 加入 Apps Script 配置。
-- 增加 Google Sheet 菜单操作，可一键更新两个 Google Form 的 `Payment Method` 选项。
-- 该更新器兼容单选题和下拉题类型的 `Payment Method` 字段。
-
-### 2026-07-23 · `08d7b3a` - Split generated files into order and invoice folders
-
-- 在 Drive 输出目录下创建独立的 Order Confirmations 和 Invoices 文件夹。
-- 更新 Apps Script，使后续 Order Confirmation 文件自动保存到 Order Confirmations 文件夹。
-- 更新 Apps Script，使后续 Invoice 文件自动保存到 Invoices 文件夹。
-- 删除仍然使用客户个人姓名作为文件名的旧生成文件。
-- 将现有已经改成公司名的文件按 Order Confirmation / Invoice 移动到对应文件夹。
-
-### 2026-07-23 · `0098ba5` - Remove temporary maintenance menu items
-
-- 删除临时的 `Rename Existing Files to Company Names` Google Sheets 菜单项。
-- 删除临时的 `Update Google Form Payment Methods` Google Sheets 菜单项。
-- 保留永久自动生效的公司名文件命名、文件夹分流和付款方式配置。
-
-### 2026-07-23 · `c8fd4ec` - Customer info English columns and address split
-
-- 将客户汇总 tab 从 `客户有效信息` 改名为 `Customer Info`。
-- 将 Customer Info 表头从中文改为英文。
-- 将账单城市、州、ZIP 拆成独立列，方便后续 Excel 导出和筛选报表。
-- 在主订单表自动列和 Customer Info 输出中加入 `Order Total`。
-- 增加 Form 1 自动维护逻辑：拆分 `Bill To City`、`Bill To State`、`Bill To ZIP`、`Ship To City`、`Ship To State`、`Ship To ZIP`。
-- 增加美国两位州缩写下拉选项自动维护。
-- 保留旧的合并 city/state/ZIP 模板占位符 fallback，避免旧模板立即失效。
-
-### 2026-07-23 · `23d6a87` - Invoice-only internal archive email
-
-- 调整 `Invoice Only` 在 `Send Confirmation Automatically = No` 时的行为。
-- 不再是什么邮件都不发；系统会把生成好的 invoice 发送给 `Salesperson Email`，并 CC 固定内部邮箱列表，用作内部存档。
-- `Invoice Only` 在 `Send Confirmation Automatically = Yes` 时仍然照旧发给客户。
-- Sheet 菜单里的 `Generate Invoice PDF Only for Selected Row` 仍然是真正只生成 PDF，不发任何邮件。
-- 新增 `Invoice Internal Archive Sent At` 主订单表记录列，用于单独追踪内部存档邮件。
-
-### 2026-07-23 · `a0e5cf6` - Remove old invoice files on invoice update
-
-- 更新 Form 2 的 invoice update 流程：同一订单重新生成 invoice 时，会替换旧 invoice 文件。
-- 新 invoice 成功生成后，旧的匹配 invoice PDF / Google Doc 会被移到 Drive 垃圾桶。
-- `Invoice Only` 和手动 PDF-only 生成不会自动删除旧文件。
-
-### 2026-07-23 · `620aca2` - Sync split address fields to main sheet and form
-
-- 在主 `Order Confirmation` 回复表中加入拆分地址列：`Bill To City`、`Bill To State`、`Bill To ZIP`、`Ship To City`、`Ship To State`、`Ship To ZIP`。
-- 已把现有订单行的 city、state、ZIP 解析并回填。
-- 增加 `LogFresh > Sync Form Address Fields` 菜单操作，授权用户可一键同步 Form 1 地址问题，并重新同步主表地址拆分列。
-- 保留后续生成文件时的自动回填逻辑。
-
-### 2026-07-23 · `4d38a60` - Rewrite main sheet address columns in place
-
-- 改进 `LogFresh > Sync Form Address Fields`：现在会把主 `Order Confirmation` 表里的地址列原地重写整理，而不是只在最右边追加/回填新列。
-- Billing 地址列会固定整理到 `Bill To Address` 旁边：`Bill To City`、`Bill To State`、`Bill To ZIP`。
-- Shipping 地址列会固定整理到 `Ship To Street Address` 旁边：`Ship To City`、`Ship To State`、`Ship To ZIP`。
-- 同步后会隐藏重复的旧地址列，而不是直接删除，避免误删历史数据。
-- 改进州名解析，像 `North Carolina`、`Michigan` 这类完整州名会自动转成两位州缩写。
-
-### 2026-07-23 · `2bc6cea` - Recalculate order totals during sheet sync
-
-- 改进 `LogFresh > Sync Form Address Fields`：同步地址字段时，会同时重新计算每一行订单的 `Order Total`。
-- Total 按 line item 的数量 × 单价计算，再加 shipping charge、减 discount，并保留 tax rate 支持。
-- 即使还没有重新生成 PDF，主订单表里也会显示最新 `Order Total`。
-
-### 2026-07-23 · `c35fa05` - Store each customer order separately
-
-- 将 Customer Info 同步逻辑从“客户汇总匹配”改为“订单级匹配”。
-- 同一个客户/邮箱有多笔订单时，现在会保留多行订单记录。
-- 后续 shipping/tracking 更新会按 `Order Number` 或 `Invoice Number` 更新对应订单行。
-- Customer Info 表头从 `Latest Order Number` 这类最新记录命名，改成普通的 `Order Number`、`Invoice Number`、`Tracking Number`。
-
-### 2026-07-23 · `a4927b7` - Normalize business dates to MM/dd/yyyy
-
-- 将业务日期输出统一为美国格式 `MM/dd/yyyy`，覆盖生成文档、主订单表结果列和 Customer Info 记录。
-- 将历史日期格式修复加入 `LogFresh > Sync Form Address Fields` 维护菜单。
-- 保持系统生成的 order/invoice 编号格式不变。
-
-### 2026-07-23 · `dd0bec9` - Add comma formatting to quantities and amounts
-
-- 生成文档中的数量会加入千位逗号，例如 `200000` 会显示为 `200,000`。
-- 生成文档中的金额会加入千位逗号，例如 `$29692.85` 会显示为 `$29,692.85`。
-- Unit Price 保持不变，像 `$0.145` 这种高精度单价不会被强制改成两位小数。
-
-### 2026-07-23 · `00eccab` - Apply display formatting to historical sheet records
-
-- 已将千位逗号格式应用到主订单表历史数量和订单总额。
-- 已将千位逗号格式应用到 Customer Info 历史 Product Summary 和 Order Total。
-- 更新后续 Customer Info Product Summary 生成逻辑，数量会继续保留千位逗号。
-
----
-
-## 功能 / 业务更新记录
-
-这一部分记录 LogFresh 自动化系统本身的流程、模板、表单、邮件和客户资料功能变化。
-
-## 2026-07-27
-
-### Added
+### 新增
 
 - 新增 workflow 选项：`Invoice Only - Needs Shipping Info`。
-- 这个流程会先生成内部 invoice 存档，不会直接发送给客户。
-- 生成后会发给对应销售一个内部 Form 2 链接，用于后续补 shipping / tracking 信息。
-- Form 2 预填现在支持 `Shipping Charge`，同时保留 Order Number、Invoice Number、Ship Date、Shipped Via、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email 等预填。
-- Form 2 预填优先使用 Google Form 结构动态生成，尽量按题目标题匹配，不再完全依赖手动 entry ID。
-- 为 `Invoice Only - Needs Shipping Info` 新增专用 Form 3 设置。
-- 增加 Google Sheets 菜单：`LogFresh > Create/Update Form 3: Invoice Shipping Info`。
-- Form 3 会链接回主 response spreadsheet，并沿用现有 shipping update 处理逻辑。
-- Form 3 包含 Order Number、Invoice Number、Ship Date、Shipped Via、Shipping Charge、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email、Send Invoice Automatically、Internal Notes。
-- 已从 Form 3 删除 Ship Date，因为它属于内部记录字段，不需要出现在 invoice shipping info 流程里。
+- 这个流程会先生成内部 invoice，等 shipping / tracking 信息补齐后，再生成最终 invoice 发给客户。
+- 新增专用 Form 3，用于 invoice shipping 信息更新。
+- Form 3 包含 Order Number、Invoice Number、Shipped Via、Shipping Charge、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email、Send Invoice Automatically、Internal Notes。
+- 自动邮件加入正式 HTML 签名，包含 Logfresh logo、公司地址、电话、邮箱和官网。
+- shipping update 邮件里的长预填链接改成清晰按钮，内部同事不需要再看到一整串 URL。
+
+### 修改
+
+- Form 3 删除 Ship Date，因为 invoice 上不显示这个字段。
 - 同步 Form 1、Form 2、Form 3 的 shipping method 题型和选项。
-- 在统一 shipping method 选项中加入 `USPS Ground`。
-- 统一后的 shipping method 选项包括 UPS Ground、UPS 2nd Day Air、UPS 3rd Day Air、UPS Next Day Air、UPS Next Day Air Early、UPS Ground + UPS Next Day Air Early、USPS Ground、Other。
-- 对于 `Invoice Only - Needs Shipping Info` 流程，第一版 invoice 只发送给内部；Form 3 后续更新链接由内部人员选择是否发送最终 invoice 给客户。
-- 调整 Form 2 / Form 3 发送逻辑：只有明确选择 `Send Invoice Automatically = Yes` 才发送最终 invoice 给客户；空白或 `No` 都会改为发送内部存档/抄送。
-- 给自动邮件增加正式 Logfresh 邮件签名，包含公司 logo、地址、电话、邮箱和官网。
-- 统一邮件签名公司信息为 `Logfresh Biotechnology Co., Ltd` 和 `708 N 29th Ave, Unit 2, Yakima, WA 98902`。
-- 改进 Form 3 预填链接，Payment Method、Customer Email、Shipped Via 现在支持题目别名匹配，不再只依赖完全一致的题目标题。
-- Form 3 预填前会自动标准化 Shipped Via 和 Payment Method，例如 USPS 相关值会映射为 `USPS Ground`。
-- Shipped Via 单选题启用 `Other` 选项，避免非标准 shipping method 阻止预填链接生成。
-- 更新 `Invoice Only - Needs Shipping Info`：第一阶段未完成 shipping 的 invoice 只保存到 Drive，不再额外发送 internal invoice archive 邮件；只发送 shipping info update 邮件。
-- 确认 Form 3 后续生成的新 invoice 会替换前面没有 shipping 信息的 invoice 文件。
-- 将内部 shipping update 邮件中的裸长链接改为清晰的 HTML 按钮，同时保留不支持按钮邮箱的备用链接。
+- shipping method 选项中加入 `USPS Ground`。
+- 改进 Form 3 预填匹配逻辑，Payment Method、Customer Email、Shipped Via 等字段支持题目别名匹配。
+- 生成 Form 3 预填链接前会自动标准化 shipping method 和 payment method。
+- 最终 invoice 发送逻辑调整：只有明确选择 `Send Invoice Automatically = Yes` 才发送给客户；空白或 `No` 都只发送内部/抄送。
+- 新的 pending-shipping workflow 第一阶段只把未完成 shipping 的 invoice 存到 Drive，不再额外发送 internal archive 邮件。
+- Form 3 后续生成的新 invoice 会替换前面没有 shipping 信息的旧 invoice 文件。
 
-## 2026-07-23
+## 2026-07-23 · Form、Sheet、文件和 Invoice 数据清理
 
-### Changed
+### 新增
 
-- 取消 `Invoice Only` 流程里自动发送的 `[Update] Invoice shipping information required` 内部提醒邮件。
-- `Invoice Only` 现在只生成 invoice，并按照表单里的发送选项决定是否发送 invoice。
-- `Confirmation First` 流程中，客户点击确认后发送的 `[Approved] Order Confirmation needs shipping info` 邮件仍然保留。
-- 增加一个手动 Sheet 菜单选项：
-  - `LogFresh > Generate Invoice PDF Only for Selected Row`
-- 这个选项只生成/更新 invoice PDF，保存到 Drive，永远不会发送邮件。
-- 后续生成的 Order Confirmation 和 Invoice 文件名会优先使用 `Bill To Company`。
-- 如果 `Bill To Company` 为空，系统才会 fallback 到客户个人名。
-- 增加一个手动 Sheet 菜单选项：
-  - `LogFresh > Rename Existing Files to Company Names`
-- 这个选项会扫描现有输出 Drive 文件夹，把旧的 Google Docs/PDFs 尽量批量改成公司名。
-- 更新 unit price 显示逻辑：每个 line item 的单价保留表单输入的小数位数。
-- 统一两个 form 的 payment method 选项：
-  - `Credit Card`
-  - `Prepaid`
-  - `Check/Wire Transfer`
-- 增加一个手动 Sheet 菜单选项：
-  - `LogFresh > Update Google Form Payment Methods`
-- 这个选项会更新两个 Google Form 里的 `Payment Method` 题目选项。
-- 将生成文件拆分到两个 Drive 文件夹：
-  - `Order Confirmations`
-  - `Invoices`
-- 删除仍然使用客户个人姓名作为文件名的旧生成文件。
-- 一次性清理完成后，删除两个临时维护菜单项：
-  - `Rename Existing Files to Company Names`
-  - `Update Google Form Payment Methods`
-- 将客户汇总 tab 从 `客户有效信息` 改为 `Customer Info`。
-- 将 Customer Info 表头改为英文。
-- 将账单 City、State、ZIP 拆成独立列，方便 Excel 导出和筛选。
-- 在主订单表和 Customer Info 输出中加入 `Order Total`。
-- 增加 Form 1 自动维护：拆分 billing/shipping 的 City、State、ZIP 问题。
-- 增加 `Bill To State` 和 `Ship To State` 的美国州缩写下拉自动维护。
-- 更新 `Invoice Only` 逻辑：`Send Confirmation Automatically = No` 时，invoice 会发送给 `Salesperson Email` 并 CC 固定内部邮箱做存档。
-- 保留手动 PDF-only 菜单为不发邮件操作。
-- 新增 `Invoice Internal Archive Sent At`，将内部存档邮件和客户 invoice 邮件分开记录。
-- 更新 Form 2 invoice update：同一订单重新生成 invoice 后，会移除旧的匹配 invoice 文件。
-- 已将主订单表现有订单同步到独立 billing/shipping city、state、ZIP 列。
-- 增加 Sheet 菜单操作，可同步 Form 1 地址字段和主表地址列。
-- 改进地址同步菜单：现在会原地重写主订单表地址列，把 city/state/ZIP 固定放在地址字段旁边，隐藏重复旧列，并支持把完整美国州名解析成两位缩写。
-- 地址/Form 同步菜单现在会同时重新计算 `Order Total`，让主表金额和地址拆分一起更新。
-- Customer Info 改为保留每一笔订单；同一客户多次下单不会再被合并成一条 latest customer record。
-- 统一业务日期显示为 `MM/dd/yyyy`，覆盖文档、主订单表和 Customer Info。
-- 为生成文档中的数量和金额加入千位逗号，同时保持 Unit Price 显示逻辑不变。
-- 已将同样的千位逗号格式回填到现有主表和 Customer Info 历史记录。
+- 新增 Google Sheets 手动菜单：只生成 invoice PDF，不发送客户邮件。
+- 支持 `Send Invoice Automatically = No` 时把 invoice 发送给内部/抄送用于存档。
+- Customer Info 改为按订单记录，每一单都保留一行。
+- Billing / Shipping 地址拆分为 Street Address、City、State、ZIP。
+- 新增订单总额计算，并同步到主表和 Customer Info。
 
-## 2026-07-22
+### 修改
 
-- 增加 `客户有效信息` 客户汇总页自动维护。
-- 增加可选 `CUSTOMER_INFO_SPREADSHEET_ID` 配置，使客户有效信息可以写入独立 Google Sheets 文件。
-- 已创建并配置独立的 `LogFresh Customer Info` Google Sheet 用于客户汇总数据。
-- 已连接独立客户资料表：
-  - `1J-5LH2qpLD7jpPPRB-XpEKfODC7YOgrJFM6z6b3TSpk`
-- 每次生成 Order Confirmation 后自动新增/更新客户信息。
-- 每次生成 Invoice 后自动新增/更新客户信息，包括 Form 2 触发的 invoice 生成。
-- 在 `LogFresh` 菜单中增加 `Rebuild Customer Info Sheet`，可从历史订单重建客户汇总页。
-- 客户汇总字段包含客户、Salesperson、公司/农场、电话、邮箱、账单地址、付款条款、付款方式、最近订单号、最近发票号、最近 tracking、产品摘要、备注。
-- 自动排除明显测试/内部记录，包括 Barry Foley 和 LogFresh/AWT 内部邮箱记录。
-- 客户匹配优先使用邮箱；缺少邮箱时使用姓名+公司或姓名+电话。
-- 增加 `clasp` 部署支持，可从本地项目直接推送到 Google Apps Script。
-- 清理 Apps Script 源码目录，现在只部署主自动化脚本和 manifest，避免重复代码冲突。
+- 生成的 PDF / DOCX 文件名改为使用客户公司名，而不是个人联系人姓名。
+- Order Confirmation 和 Invoice 分流到不同 Drive 文件夹。
+- invoice update 生成新 invoice 时，会删除/替换旧的重复 invoice 文件。
+- Unit Price 保留表单输入的小数精度，不再强制两位小数。
+- Payment Method 统一为 `Credit Card`、`Prepaid`、`Check/Wire Transfer`。
+- 所有业务日期统一为美国格式 `MM/dd/yyyy`。
+- Quantity 和 Amount 相关列显示千位逗号。
+- 已有表格记录已回填 address 拆分、order total、customer info、日期格式和千位逗号格式。
 
-## 2026-07-21
+### 删除
 
-- 根据实际 invoice 细节反馈，更新 Invoice 和 Order Confirmation 模板。
-- 将模板中的公司名大小写更新为：
-  - `Logfresh Biotechnology Co., Ltd`
-- 将模板地址统一为：
-  - `708 N 29th Avenue, Unit 2, Yakima, WA 98902`
-- 将 invoice 日期输出格式改为美国标准：
-  - `MM/dd/yyyy`
-- 更新日期解析逻辑，使斜杠日期按美国 `MM/dd/yyyy` 读取。
-- 用最新提供的 Word 模板替换 GitHub 项目中的模板文件。
-- 将 GitHub 主页 README 改为中英双语对照介绍。
-- 将上述更新推送到 GitHub。
+- 删除临时维护菜单项，因为相关功能已经改为自动执行。
+- 取消旧的 invoice-only 自动 `[Update] Invoice shipping information required` 内部提醒。
 
-备注：
+## 2026-07-21 · 模板、Customer Info 和部署设置
 
-- GitHub 中的模板文件已更新。
-- 如果 Google Drive 里的生产 Google Docs 模板还没有替换，需要在 Drive 中单独更新模板文件。
+### 新增
 
-## 2026-07-08
+- 新增独立 Customer Info spreadsheet 支持。
+- 文档生成后自动同步 customer info。
+- 新增 Customer Info 重建菜单。
+- 新增 `clasp` 部署设置，可以从本地直接推送 Apps Script。
+- 新增双语 README 和 setup guide。
 
-- 规划最初的 invoice 模板和 Google Form 自动化思路。
-- 根据 Harvest Smart / LogFresh logo 设计 invoice 模板。
-- 多次优化模板排版，解决太紧凑、字体不好看、导入 Google Docs 后变形的问题。
-- 设计 Google Form → Google Sheets → Google Docs → PDF 的基础流程。
-- 创建早期单阶段 invoice 自动生成脚本。
-- 解释模板 ID、文件夹 ID、Apps Script、trigger、deploy 的基础操作。
+### 修改
 
-## 2026-07-10
+- 更新 invoice 和 order confirmation 模板为最新版 Word / Google Docs 兼容模板。
+- 模板中公司名后缀统一为 `Logfresh Biotechnology Co., Ltd`。
+- invoice 日期输出改为美国格式 `MM/dd/yyyy`。
+- 清理 Apps Script 部署源文件，只保留主脚本和 manifest。
 
-- 将单阶段 invoice 流程扩展为双阶段订单系统。
-- 设计 `Invoice Only` 和 `Confirmation First` 两种流程。
-- 设计 Form 1 订单创建表。
-- 设计 Form 2 shipping / invoice update 表。
-- 增加客户确认按钮。
-- 配置客户无需登录 Google 即可确认订单。
-- 增加固定 CC 邮箱列表。
-- 增加 `Salesperson Email`，用于通知对应销售。
-- 移除 Approval Token，改为使用 `Order Number` 匹配订单。
-- 创建严格按照用户模板的 Order Confirmation 和 Invoice 模板。
-- 清理旧模板和旧脚本。
-- 处理多次 Apps Script 部署、权限、触发器和邮件发送问题。
+## 2026-07-20 · 初始 GitHub 项目
 
-## 2026-07-20
+### 新增
 
-- 取消 invoice 对 Tracking Number 的强制要求。
-- 支持 invoice 先生成，tracking 后续通过 Form 2 更新。
-- 增加 Invoice Only 后的内部 shipping/tracking 提醒。
-- 扩展 Form 2 预填链接字段：
-  - Order Number
-  - Ship Date
-  - Shipped Via
-  - Tracking Number
-  - Invoice Number
-  - Invoice Date
-  - Due Date
-  - Payment Method
-  - Customer Email
-- 统一 Form 1 的发送逻辑：`Send Confirmation Automatically` 同时控制 confirmation/invoice 是否发送。
-- 保留 Form 2 的 `Send Invoice Automatically` 控制最终 invoice 是否发送。
-- 更新邮件标题格式：
-  - `[ORD] Order Confirmation with LogFresh`
-  - `[INV] Invoice with LogFresh`
-  - `[Approved] Order Confirmation needs shipping info`
-  - `[Update] Invoice shipping information required`
-- 更新编号格式：
-  - `ORD-YYYYMMDD-###`
-  - `INV-YYYYMMDD-###`
-- 增加 Due Date 自动逻辑：留空时默认为 Invoice Date + 30 天。
-- 更新日期输出格式为 `MM/dd/yyyy`。
-- 更新公司信息、模板 ID、输出文件夹 ID。
-- 创建 GitHub 项目结构。
-- 增加 README、CHANGELOG、setup guide。
-- 推送项目到 GitHub。
-- 更新当前最终模板。
-- 新增历史版本归档目录 `versions/`。
+- 创建 LogFresh invoice automation GitHub 项目结构。
+- 添加正式 Apps Script 自动化脚本。
+- 添加严格版 Invoice 和 Order Confirmation 模板。
+- 添加 README、changelog、setup guide 和版本归档结构。
+- 归档早期单阶段 invoice 脚本：`v1-legacy-single-invoice`。
+- 归档原始双阶段工作流：`v2-current-two-stage`。

@@ -45,6 +45,7 @@ README.md
 README.zh-CN.md
 CHANGELOG.md
 CHANGELOG.zh-CN.md
+VERSION_TIMELINE.md
 ```
 
 ## 编号规则
@@ -120,4 +121,10 @@ docs/setup-guide.md
 
 ```text
 versions/
+```
+
+版本时间线见：
+
+```text
+VERSION_TIMELINE.md
 ```
