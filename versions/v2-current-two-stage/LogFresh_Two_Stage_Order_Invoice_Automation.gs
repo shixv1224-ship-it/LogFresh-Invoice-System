@@ -1282,7 +1282,7 @@ function makeDynamicPrefilledFormUrl_(formId, prefillValues) {
 
     form.getItems().forEach(item => {
       const title = item.getTitle().trim();
-      const value = prefillValues[title];
+      const value = getPrefillValueForItem_(prefillValues, title);
       if (value === undefined || value === null || String(value).trim() === '') return;
 
       const itemResponse = makeItemResponse_(item, value);
@@ -1297,6 +1297,79 @@ function makeDynamicPrefilledFormUrl_(formId, prefillValues) {
     Logger.log(`Could not build dynamic prefilled URL: ${error.message}`);
     return '';
   }
+}
+
+function getPrefillValueForItem_(prefillValues, title) {
+  const direct = prefillValues[title];
+  if (direct !== undefined) return normalizePrefillValue_(title, direct);
+
+  const normalizedTitle = normalizeComparable_(title);
+  const aliases = {
+    ordernumber: ['Order Number'],
+    invoicenumber: ['Invoice Number'],
+    shippedvia: ['Shipped Via', 'Shipping Method', 'Shipping Via'],
+    shippingmethod: ['Shipped Via', 'Shipping Method', 'Shipping Via'],
+    shippingvia: ['Shipped Via', 'Shipping Method', 'Shipping Via'],
+    shippingcharge: ['Shipping Charge', 'Shipping Fee', 'Shipping Cost'],
+    shippingfee: ['Shipping Charge', 'Shipping Fee', 'Shipping Cost'],
+    shippingcost: ['Shipping Charge', 'Shipping Fee', 'Shipping Cost'],
+    trackingnumber: ['Tracking Number', 'Tracking #', 'Tracking'],
+    tracking: ['Tracking Number', 'Tracking #', 'Tracking'],
+    invoicedate: ['Invoice Date'],
+    duedate: ['Due Date'],
+    paymentmethod: ['Payment Method'],
+    customeremail: ['Customer Email', 'Customer Email Address', 'Bill To Email', 'Email'],
+    customeremailaddress: ['Customer Email', 'Customer Email Address', 'Bill To Email', 'Email'],
+    billtoemail: ['Customer Email', 'Customer Email Address', 'Bill To Email', 'Email'],
+    email: ['Customer Email', 'Customer Email Address', 'Bill To Email', 'Email'],
+    sendinvoiceautomatically: ['Send Invoice Automatically'],
+    internalnotes: ['Internal Notes'],
+  };
+
+  const candidateKeys = aliases[normalizedTitle] || [];
+  for (const key of candidateKeys) {
+    if (prefillValues[key] !== undefined) return normalizePrefillValue_(title, prefillValues[key]);
+  }
+
+  return undefined;
+}
+
+function normalizePrefillValue_(title, value) {
+  const normalizedTitle = normalizeComparable_(title);
+  if (normalizedTitle === 'shippedvia' || normalizedTitle === 'shippingmethod' || normalizedTitle === 'shippingvia') {
+    return normalizeShippedViaChoice_(value);
+  }
+  if (normalizedTitle === 'paymentmethod') {
+    return normalizePaymentMethodChoice_(value);
+  }
+  return value;
+}
+
+function normalizeShippedViaChoice_(value) {
+  const text = String(value || '').trim();
+  const normalized = text.toLowerCase();
+  if (!text) return '';
+  if (FORM_CHOICES.SHIPPED_VIA.includes(text)) return text;
+  if (normalized.includes('usps')) return 'USPS Ground';
+  if (normalized.includes('ground') && normalized.includes('next day air early')) return 'UPS Ground + UPS Next Day Air Early';
+  if (normalized.includes('next day air early')) return 'UPS Next Day Air Early';
+  if (normalized.includes('next day')) return 'UPS Next Day Air';
+  if (normalized.includes('3rd day') || normalized.includes('third day')) return 'UPS 3rd Day Air';
+  if (normalized.includes('2nd day') || normalized.includes('second day')) return 'UPS 2nd Day Air';
+  if (normalized.includes('ups') && normalized.includes('ground') && normalized.includes('free')) return 'UPS Ground (Free)';
+  if (normalized.includes('ups') && normalized.includes('ground')) return 'UPS Ground';
+  return 'Other';
+}
+
+function normalizePaymentMethodChoice_(value) {
+  const text = String(value || '').trim();
+  const normalized = text.toLowerCase();
+  if (!text) return '';
+  if (FORM_CHOICES.PAYMENT_METHOD.includes(text)) return text;
+  if (normalized.includes('credit')) return 'Credit Card';
+  if (normalized.includes('prepaid')) return 'Prepaid';
+  if (normalized.includes('check') || normalized.includes('cheque') || normalized.includes('wire')) return 'Check/Wire Transfer';
+  return text;
 }
 
 function getOrCreateInvoiceShippingInfoForm3_() {
@@ -1385,14 +1458,16 @@ function ensureFormChoiceItem_(form, title, choices, required) {
     .forEach(candidate => form.deleteItem(candidate));
 
   if (item && item.getType() === FormApp.ItemType.MULTIPLE_CHOICE) {
-    item.asMultipleChoiceItem().setChoiceValues(choices).setRequired(required);
+    item.asMultipleChoiceItem().setChoiceValues(choices).showOtherOption(title === 'Shipped Via').setRequired(required);
     return item;
   }
   if (item && item.getType() === FormApp.ItemType.LIST) {
     item.asListItem().setChoiceValues(choices).setRequired(required);
     return item;
   }
-  return form.addMultipleChoiceItem().setTitle(title).setChoiceValues(choices).setRequired(required);
+  const newItem = form.addMultipleChoiceItem().setTitle(title).setChoiceValues(choices).setRequired(required);
+  if (title === 'Shipped Via') newItem.showOtherOption(true);
+  return newItem;
 }
 
 function ensureFormParagraphItem_(form, title, required) {

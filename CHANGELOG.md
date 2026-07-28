@@ -230,6 +230,9 @@ This section tracks the actual workflow, template, form, email, and customer-dat
 - Changed Form 2/Form 3 send behavior so the final invoice is sent to the customer only when `Send Invoice Automatically` is explicitly set to `Yes`; blank or `No` sends the invoice internally for archive instead.
 - Added a formal Logfresh email signature with the company logo, address, phone, email, and website to automated HTML emails.
 - Updated the shared company signature details to `Logfresh Biotechnology Co., Ltd` and `708 N 29th Ave, Unit 2, Yakima, WA 98902`.
+- Improved Form 3 prefilled links so Payment Method, Customer Email, and Shipped Via can be matched by title aliases instead of exact title text only.
+- Added normalization for Shipped Via and Payment Method values before prefill, including mapping USPS values to `USPS Ground`.
+- Enabled an `Other` option on Shipped Via multiple-choice fields so non-standard shipping methods do not block prefill generation.
 
 ## 2026-07-23
 

@@ -230,6 +230,9 @@
 - 调整 Form 2 / Form 3 发送逻辑：只有明确选择 `Send Invoice Automatically = Yes` 才发送最终 invoice 给客户；空白或 `No` 都会改为发送内部存档/抄送。
 - 给自动邮件增加正式 Logfresh 邮件签名，包含公司 logo、地址、电话、邮箱和官网。
 - 统一邮件签名公司信息为 `Logfresh Biotechnology Co., Ltd` 和 `708 N 29th Ave, Unit 2, Yakima, WA 98902`。
+- 改进 Form 3 预填链接，Payment Method、Customer Email、Shipped Via 现在支持题目别名匹配，不再只依赖完全一致的题目标题。
+- Form 3 预填前会自动标准化 Shipped Via 和 Payment Method，例如 USPS 相关值会映射为 `USPS Ground`。
+- Shipped Via 单选题启用 `Other` 选项，避免非标准 shipping method 阻止预填链接生成。
 
 ## 2026-07-23
 
