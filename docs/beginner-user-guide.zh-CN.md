@@ -285,6 +285,8 @@ Check/Wire Transfer
 
 美国使用 `Check`，不是 `Cheque`。
 
+注意：所有 `Prepaid` 订单都表示客户已经通过 `logfresh.net` 网站下单 / 预付。销售在表单里选择 `Prepaid` 时，应确认该订单来自 LogFresh 网站订单流程。
+
 ### 3.10 Billing 信息
 
 Billing 是账单信息，也就是 invoice 上的 `Bill To`。
@@ -1081,31 +1083,3 @@ LogFresh > Back to Normal
 如果必须改问题标题，改完需要同步脚本字段名称。
 
 ---
-
-## 16. 截图位置建议
-
-当前教程先以文字为主。以后可以补这些截图：
-
-| 截图编号 | 建议截图内容 | 放在教程位置 |
-|---|---|---|
-| Screenshot 1 | Form 1 顶部：Workflow Type / Salesperson Email | 第 3 章 |
-| Screenshot 2 | Form 1 地址字段：City / State / ZIP 分开填写 | 第 3.10 / 3.11 |
-| Screenshot 3 | Form 1 产品价格字段 | 第 3.12 |
-| Screenshot 4 | Sheet 顶部 LogFresh 菜单 | 第 8 章 |
-| Screenshot 5 | Test Email Only 提示窗口 | 第 8.5 / 第 12 章 |
-| Screenshot 6 | 客户 Order Confirmation 邮件和 Approve Order 按钮 | 第 9.1 |
-| Screenshot 7 | 内部 `[Ship Info]` 邮件和 Open Shipping Info Form 按钮 | 第 9.4 |
-| Screenshot 8 | Form 3 预填后的样子 | 第 5.4 |
-| Screenshot 9 | Customer Info 表格 | 第 11 章 |
-
-如果你之后把截图发给 Codex，可以继续把图片插入到这份 Markdown 教程里。
-
----
-
-## 17. 一句话版本
-
-如果你只记一件事：
-
-```text
-先开 Test Email Only 测试 → 用 Form 1 填订单 → 根据情况选 workflow → 看 mcp 邮箱确认 → 没问题再 Back to Normal 正式发送。
-```

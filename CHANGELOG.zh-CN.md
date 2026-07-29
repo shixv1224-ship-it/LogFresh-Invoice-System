@@ -17,6 +17,8 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 
 ### 修改
 
+- 更新新手教程和 PDF，说明所有 `Prepaid` 订单都来自 `logfresh.net` 网站下单 / 预付流程。
+- 删除新手教程 PDF 末尾旧的截图规划和一句话总结章节。
 - 简化 LogFresh Google Sheets 菜单，去掉日常不需要显示的 `Sync Form Address Fields` 和 `Create/Update Form 3` 维护项。
 - 所有价格显示默认保留两位小数。
 - 如果价格本身有三位或更多小数，系统会保留额外精度，不再强制压成两位。

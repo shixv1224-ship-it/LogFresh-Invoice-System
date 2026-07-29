@@ -17,6 +17,8 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 
 ### Changed
 
+- Updated the beginner guide and PDF to clarify that all `Prepaid` orders are placed through `logfresh.net`.
+- Removed the old screenshot-planning and one-sentence-summary sections from the beginner guide PDF.
 - Simplified the LogFresh Google Sheets menu by removing the daily-visible `Sync Form Address Fields` and `Create/Update Form 3` maintenance items.
 - Updated all price displays to default to two decimal places.
 - If a price has three or more decimal places, the system now preserves the additional precision instead of rounding it down to two decimals.
