@@ -5,8 +5,15 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 
 ## 2026-07-29 · Price Formatting Rule
 
+### Added
+
+- Added `Test Email Only` and `Back to Normal` controls to the LogFresh Google Sheets menu.
+- `Test Email Only` routes every automated email only to `mcp@logfresh.net` and includes the original To/Cc/Bcc at the top of the test email.
+- `Back to Normal` restores the regular customer/internal recipients and multi-address CC behavior.
+
 ### Changed
 
+- Simplified the LogFresh Google Sheets menu by removing the daily-visible `Sync Form Address Fields` and `Create/Update Form 3` maintenance items.
 - Updated all price displays to default to two decimal places.
 - If a price has three or more decimal places, the system now preserves the additional precision instead of rounding it down to two decimals.
 - Applied the same rule to Unit Price, line Amount, Subtotal, Discount, Shipping, Tax, Total, Balance Due, Order Total, and Customer Info product summaries.

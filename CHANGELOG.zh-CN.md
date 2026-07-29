@@ -5,8 +5,15 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 
 ## 2026-07-29 · 价格格式规则
 
+### 新增
+
+- LogFresh Google Sheets 菜单新增 `Test Email Only` 和 `Back to Normal`。
+- `Test Email Only` 会把所有自动邮件只发送到 `mcp@logfresh.net`，并在测试邮件顶部显示原本的 To/Cc/Bcc。
+- `Back to Normal` 会恢复正常客户/内部收件人和多人 CC。
+
 ### 修改
 
+- 简化 LogFresh Google Sheets 菜单，去掉日常不需要显示的 `Sync Form Address Fields` 和 `Create/Update Form 3` 维护项。
 - 所有价格显示默认保留两位小数。
 - 如果价格本身有三位或更多小数，系统会保留额外精度，不再强制压成两位。
 - 同步应用到 Unit Price、line Amount、Subtotal、Discount、Shipping、Tax、Total、Balance Due、Order Total 和 Customer Info 产品摘要。

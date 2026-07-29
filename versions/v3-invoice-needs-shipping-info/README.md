@@ -15,6 +15,7 @@ This folder archives the Apps Script snapshot for the v3 workflow update.
 - Replaces the older no-shipping invoice when the final invoice is generated.
 - Shows the shipping update link as an email button instead of a long raw URL.
 - Price fields default to two decimals, but preserve three-or-more decimal precision when needed.
+- The LogFresh Sheet menu includes `Test Email Only` and `Back to Normal` for safe email testing.
 
 - 新增 `Invoice Only - Needs Shipping Info`。
 - 当 shipping / tracking 还没准备好时，先生成内部 invoice。
@@ -25,6 +26,7 @@ This folder archives the Apps Script snapshot for the v3 workflow update.
 - 生成最终 invoice 时会替换旧的无 shipping invoice。
 - shipping update 链接以邮件按钮显示，不再直接显示长 URL。
 - 价格字段默认两位小数；如果有三位或更多小数，则保留更多精度。
+- LogFresh Sheet 菜单包含 `Test Email Only` 和 `Back to Normal`，方便安全测试邮件。
 
 ## Snapshot / 快照
 

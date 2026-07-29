@@ -40,6 +40,9 @@ const CONFIG = {
 
   // These addresses are automatically copied on customer-facing emails.
   CUSTOMER_EMAIL_CC: 'lloyd@awt-biotech.com,tony@awt-biotech.com,aoweite6@awt-biotech.com,sales@awt-biotech.com,mcp@logfresh.net',
+
+  // When Test Email Only mode is enabled from the Sheet menu, all automated emails are routed here only.
+  TEST_EMAIL_ONLY_RECIPIENT: 'mcp@logfresh.net',
 };
 
 const STATUS = {
@@ -83,12 +86,23 @@ function onOpen() {
     .addItem('Generate & Email Invoice for Selected Row', 'generateAndEmailInvoiceForSelectedRow')
     .addItem('Generate Invoice PDF Only for Selected Row', 'generateInvoicePdfOnlyForSelectedRow')
     .addItem('Rebuild Customer Info Sheet', 'rebuildCustomerInfoSheet')
-    .addItem('Sync Form Address Fields', 'syncFormAddressFields')
-    .addItem('Create/Update Form 3: Invoice Shipping Info', 'createOrUpdateInvoiceShippingInfoForm3')
+    .addSeparator()
+    .addItem('Test Email Only', 'enableTestEmailOnly')
+    .addItem('Back to Normal', 'backToNormalEmailSending')
     .addSeparator()
     .addItem('Test Latest Row: Order Confirmation', 'testLatestRowOrderConfirmation')
     .addToUi();
   ensureGoogleFormsSetupSafely_();
+}
+
+function enableTestEmailOnly() {
+  PropertiesService.getScriptProperties().setProperty('EMAIL_ROUTING_MODE', 'TEST_ONLY');
+  SpreadsheetApp.getUi().alert(`Test Email Only is ON.\n\nAll automated emails will be sent only to ${CONFIG.TEST_EMAIL_ONLY_RECIPIENT}.`);
+}
+
+function backToNormalEmailSending() {
+  PropertiesService.getScriptProperties().deleteProperty('EMAIL_ROUTING_MODE');
+  SpreadsheetApp.getUi().alert('Back to Normal is ON.\n\nAutomated emails will use the normal customer/internal recipients and CC list.');
 }
 
 function onFormSubmit(e) {
@@ -2106,10 +2120,35 @@ function buildEmailFallbackLinkHtml_(url) {
 function sendLogFreshEmail_(options) {
   const emailOptions = Object.assign({}, options);
   const originalBody = String(emailOptions.body || '');
+  let bodyForSend = originalBody;
+  let htmlBodyForSend = emailOptions.htmlBody || plainTextToHtml_(originalBody);
+
   emailOptions.name = emailOptions.name || CONFIG.COMPANY_NAME;
   emailOptions.replyTo = emailOptions.replyTo || CONFIG.COMPANY_EMAIL;
-  emailOptions.body = appendPlainTextSignature_(originalBody);
-  emailOptions.htmlBody = appendHtmlSignature_(emailOptions.htmlBody || plainTextToHtml_(originalBody));
+
+  if (isTestEmailOnly_()) {
+    const originalRecipients = formatOriginalRecipientsForTestMode_(emailOptions);
+    const testNoticePlain =
+      `TEST EMAIL ONLY MODE\n` +
+      `This email was routed only to ${CONFIG.TEST_EMAIL_ONLY_RECIPIENT}.\n` +
+      `Original recipients: ${originalRecipients}`;
+    const testNoticeHtml =
+      `<div style="border:1px solid #f0b429;background:#fff8e1;color:#5f4300;padding:10px 12px;margin-bottom:14px;font-family:Arial,sans-serif;font-size:13px;line-height:1.45;">` +
+      `<strong>TEST EMAIL ONLY MODE</strong><br>` +
+      `This email was routed only to ${escapeHtml_(CONFIG.TEST_EMAIL_ONLY_RECIPIENT)}.<br>` +
+      `Original recipients: ${escapeHtml_(originalRecipients)}` +
+      `</div>`;
+
+    emailOptions.to = CONFIG.TEST_EMAIL_ONLY_RECIPIENT;
+    delete emailOptions.cc;
+    delete emailOptions.bcc;
+    emailOptions.subject = `[TEST EMAIL ONLY] ${emailOptions.subject || 'LogFresh Email'}`;
+    bodyForSend = `${testNoticePlain}\n\n${originalBody}`;
+    htmlBodyForSend = testNoticeHtml + htmlBodyForSend;
+  }
+
+  emailOptions.body = appendPlainTextSignature_(bodyForSend);
+  emailOptions.htmlBody = appendHtmlSignature_(htmlBodyForSend);
 
   const inlineImages = getEmailInlineImages_();
   if (Object.keys(inlineImages).length) {
@@ -2117,6 +2156,18 @@ function sendLogFreshEmail_(options) {
   }
 
   MailApp.sendEmail(emailOptions);
+}
+
+function isTestEmailOnly_() {
+  return PropertiesService.getScriptProperties().getProperty('EMAIL_ROUTING_MODE') === 'TEST_ONLY';
+}
+
+function formatOriginalRecipientsForTestMode_(emailOptions) {
+  return [
+    `To: ${emailOptions.to || '(blank)'}`,
+    `Cc: ${emailOptions.cc || '(blank)'}`,
+    `Bcc: ${emailOptions.bcc || '(blank)'}`,
+  ].join(' | ');
 }
 
 function appendPlainTextSignature_(body) {
