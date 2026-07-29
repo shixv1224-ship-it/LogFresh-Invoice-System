@@ -9,6 +9,7 @@ Google Forms + Google Sheets + Google Docs + Apps Script automation for LogFresh
 - Setup guide / 部署指南: [docs/setup-guide.md](docs/setup-guide.md)
 - 中文部署指南: [docs/setup-guide.zh-CN.md](docs/setup-guide.zh-CN.md)
 - Beginner user guide / 新手完整使用教程: [docs/beginner-user-guide.zh-CN.md](docs/beginner-user-guide.zh-CN.md)
+- PDF beginner guide / PDF 版新手教程: [docs/LogFresh_Beginner_User_Guide_zh-CN.pdf](docs/LogFresh_Beginner_User_Guide_zh-CN.pdf)
 - Version archive / 版本归档: [versions/](versions/)
 - Feature changelog / 功能更新记录: [CHANGELOG.md](CHANGELOG.md)
 - 中文更新日志: [CHANGELOG.zh-CN.md](CHANGELOG.zh-CN.md)
@@ -89,9 +90,13 @@ templates/
   Harvest_Smart_Order_Confirmation_Template_Strict.docx
 
 docs/
+  LogFresh_Beginner_User_Guide_zh-CN.pdf
   beginner-user-guide.zh-CN.md
   setup-guide.md
   setup-guide.zh-CN.md
+
+scripts/
+  build_beginner_guide_pdf.py
 
 versions/
   v1-legacy-single-invoice/

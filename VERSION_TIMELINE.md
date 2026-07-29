@@ -11,6 +11,8 @@ For business-facing feature changes, see [CHANGELOG.md](CHANGELOG.md) and [CHANG
 ### v3 maintenance · Price Formatting Rule · 2026-07-29
 
 - Added a complete beginner-friendly Chinese user guide for day-to-day sales/internal use.
+- Added a polished PDF beginner guide generated from the Markdown source.
+- Added a reusable script for rebuilding the PDF guide.
 - Added redacted Apple Mail screenshots to the beginner guide.
 - Updated the v3 script snapshot so price fields default to two decimals while preserving three-or-more decimal precision when entered or calculated.
 - Added menu-based email routing controls for test-only email delivery and normal production delivery.

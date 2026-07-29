@@ -8,6 +8,8 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 ### Added
 
 - Added a complete beginner-friendly Chinese user guide for non-technical sales/internal users.
+- Added a polished PDF version of the beginner guide with cover page, tables, screenshots, headers, footers, and page numbers.
+- Added a reusable PDF build script so the formatted guide can be regenerated from the Markdown source.
 - Added redacted Apple Mail screenshots to the beginner guide for invoice and shipping-info email examples.
 - Added `Test Email Only` and `Back to Normal` controls to the LogFresh Google Sheets menu.
 - `Test Email Only` routes every automated email only to `mcp@logfresh.net` and includes the original To/Cc/Bcc at the top of the test email.
