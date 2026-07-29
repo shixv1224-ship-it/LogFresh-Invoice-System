@@ -7,6 +7,7 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 
 ### Added
 
+- Added a complete beginner-friendly Chinese user guide for non-technical sales/internal users.
 - Added `Test Email Only` and `Back to Normal` controls to the LogFresh Google Sheets menu.
 - `Test Email Only` routes every automated email only to `mcp@logfresh.net` and includes the original To/Cc/Bcc at the top of the test email.
 - `Back to Normal` restores the regular customer/internal recipients and multi-address CC behavior.

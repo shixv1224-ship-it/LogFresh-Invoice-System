@@ -40,6 +40,7 @@
 apps-script/LogFresh_Two_Stage_Order_Invoice_Automation.gs
 templates/
 docs/setup-guide.md
+docs/beginner-user-guide.zh-CN.md
 versions/
 README.md
 README.zh-CN.md
@@ -113,6 +114,12 @@ Ship To ZIP
 
 ```text
 docs/setup-guide.md
+```
+
+新手完整使用教程：
+
+```text
+docs/beginner-user-guide.zh-CN.md
 ```
 
 ## 历史版本

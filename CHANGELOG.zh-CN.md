@@ -7,6 +7,7 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 
 ### 新增
 
+- 新增一份面向非技术销售 / 内部人员的中文新手完整使用教程。
 - LogFresh Google Sheets 菜单新增 `Test Email Only` 和 `Back to Normal`。
 - `Test Email Only` 会把所有自动邮件只发送到 `mcp@logfresh.net`，并在测试邮件顶部显示原本的 To/Cc/Bcc。
 - `Back to Normal` 会恢复正常客户/内部收件人和多人 CC。
