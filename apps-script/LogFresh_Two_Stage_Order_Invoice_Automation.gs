@@ -810,7 +810,7 @@ function buildCustomerProductSummary_(data) {
     const description = getValue_(data, `Item ${i} Description`);
     const price = getValue_(data, `Item ${i} Unit Price`);
     if (qty || description || price) {
-      items.push(`${quantity_(qty || 0)} x ${description || 'Item'}${price ? ` @ ${price}` : ''}`);
+      items.push(`${quantity_(qty || 0)} x ${description || 'Item'}${price ? ` @ ${unitPrice_(price)}` : ''}`);
     }
   }
   return items.join('; ');
@@ -2018,7 +2018,7 @@ function parseNumber_(value) {
 }
 
 function money_(value) {
-  return '$' + formatNumberWithCommas_(Number(value || 0).toFixed(2));
+  return '$' + formatNumberWithCommas_(formatPriceDecimalText_(value));
 }
 
 function quantity_(value) {
@@ -2049,7 +2049,32 @@ function unitPrice_(value) {
   const number = Number(cleaned);
   if (!Number.isFinite(number)) return text;
 
-  return '$' + cleaned;
+  return '$' + formatNumberWithCommas_(formatPriceDecimalText_(cleaned));
+}
+
+function formatPriceDecimalText_(value) {
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return '';
+    const normalizedNumberText = value.toFixed(8).replace(/0+$/, '').replace(/\.$/, '');
+    const inferredDecimalMatch = normalizedNumberText.match(/\.(\d+)$/);
+    const inferredDecimals = inferredDecimalMatch ? inferredDecimalMatch[1].length : 0;
+    return value.toFixed(Math.max(2, inferredDecimals));
+  }
+
+  const text = String(value || '').trim().replace(/[$,\s]/g, '');
+  const number = Number(text);
+  if (!Number.isFinite(number)) return String(value || '');
+
+  const explicitDecimalMatch = text.match(/\.(\d+)$/);
+  if (explicitDecimalMatch) {
+    const explicitDecimals = explicitDecimalMatch[1].length;
+    return number.toFixed(Math.max(2, explicitDecimals));
+  }
+
+  const normalizedNumberText = number.toFixed(8).replace(/0+$/, '').replace(/\.$/, '');
+  const inferredDecimalMatch = normalizedNumberText.match(/\.(\d+)$/);
+  const inferredDecimals = inferredDecimalMatch ? inferredDecimalMatch[1].length : 0;
+  return number.toFixed(Math.max(2, inferredDecimals));
 }
 
 function joinEmails_(...groups) {

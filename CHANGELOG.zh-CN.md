@@ -3,6 +3,14 @@
 这个文件只记录 LogFresh Invoice System 的业务功能变化。
 GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE.md)。
 
+## 2026-07-29 · 价格格式规则
+
+### 修改
+
+- 所有价格显示默认保留两位小数。
+- 如果价格本身有三位或更多小数，系统会保留额外精度，不再强制压成两位。
+- 同步应用到 Unit Price、line Amount、Subtotal、Discount、Shipping、Tax、Total、Balance Due、Order Total 和 Customer Info 产品摘要。
+
 ## 2026-07-27 · v3 Invoice Shipping Info Workflow
 
 ### 新增

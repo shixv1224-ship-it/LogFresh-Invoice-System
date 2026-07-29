@@ -14,6 +14,7 @@ This folder archives the Apps Script snapshot for the v3 workflow update.
 - Blank or `No` sends the final invoice internally/CC only.
 - Replaces the older no-shipping invoice when the final invoice is generated.
 - Shows the shipping update link as an email button instead of a long raw URL.
+- Price fields default to two decimals, but preserve three-or-more decimal precision when needed.
 
 - 新增 `Invoice Only - Needs Shipping Info`。
 - 当 shipping / tracking 还没准备好时，先生成内部 invoice。
@@ -23,6 +24,7 @@ This folder archives the Apps Script snapshot for the v3 workflow update.
 - 空白或 `No` 时只发送内部/抄送。
 - 生成最终 invoice 时会替换旧的无 shipping invoice。
 - shipping update 链接以邮件按钮显示，不再直接显示长 URL。
+- 价格字段默认两位小数；如果有三位或更多小数，则保留更多精度。
 
 ## Snapshot / 快照
 

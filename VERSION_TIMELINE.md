@@ -8,6 +8,11 @@ For business-facing feature changes, see [CHANGELOG.md](CHANGELOG.md) and [CHANG
 
 ## Version Checkpoints / 版本节点
 
+### v3 maintenance · Price Formatting Rule · 2026-07-29
+
+- Updated the v3 script snapshot so price fields default to two decimals while preserving three-or-more decimal precision when entered or calculated.
+- Snapshot folder: [`versions/v3-invoice-needs-shipping-info/`](versions/v3-invoice-needs-shipping-info/)
+
 ### v3 · Invoice Shipping Info Workflow · 2026-07-27
 
 - Added the new `Invoice Only - Needs Shipping Info` workflow.

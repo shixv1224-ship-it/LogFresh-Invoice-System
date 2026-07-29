@@ -3,6 +3,14 @@
 This file tracks business-facing feature changes for the LogFresh Invoice System.
 For GitHub commit history and repository version checkpoints, see [VERSION_TIMELINE.md](VERSION_TIMELINE.md).
 
+## 2026-07-29 · Price Formatting Rule
+
+### Changed
+
+- Updated all price displays to default to two decimal places.
+- If a price has three or more decimal places, the system now preserves the additional precision instead of rounding it down to two decimals.
+- Applied the same rule to Unit Price, line Amount, Subtotal, Discount, Shipping, Tax, Total, Balance Due, Order Total, and Customer Info product summaries.
+
 ## 2026-07-27 · v3 Invoice Shipping Info Workflow
 
 ### Added
