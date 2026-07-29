@@ -751,6 +751,10 @@ Approve Order
 [INV] Invoice with LogFresh - INV-20260729-001 / ORD-20260729-001
 ```
 
+下面是 Apple Mail 中的 invoice 邮件示例。截图已打码，实际邮件会显示真实客户邮箱、订单号和附件预览。
+
+![Apple Mail invoice 邮件示例](images/apple-mail-invoice-preview-redacted.png)
+
 附件：
 
 - Invoice PDF
@@ -790,6 +794,10 @@ Open Shipping Info Form
 ```
 
 点进去后补 tracking，并决定是否发最终 invoice 给客户。
+
+下面这张截图来自早期测试邮件，截图里还能看到长链接；新版邮件已经改为按钮显示，目的是避免长链接被邮箱自动换行或拆开。截图已打码。
+
+![Apple Mail shipping info 邮件示例](images/apple-mail-ship-info-redacted.png)
 
 ### 9.5 内部 Invoice Archive 邮件
 
@@ -1101,4 +1109,3 @@ LogFresh > Back to Normal
 ```text
 先开 Test Email Only 测试 → 用 Form 1 填订单 → 根据情况选 workflow → 看 mcp 邮箱确认 → 没问题再 Back to Normal 正式发送。
 ```
-
