@@ -8,13 +8,13 @@ For business-facing feature changes, see [CHANGELOG.md](CHANGELOG.md) and [CHANG
 
 ## Version Checkpoints / 版本节点
 
-### v1.5 · Invoice Shipping Info Workflow · 2026-07-27
+### v3 · Invoice Shipping Info Workflow · 2026-07-27
 
 - Added the new `Invoice Only - Needs Shipping Info` workflow.
 - Added dedicated Form 3 for completing shipping/tracking details after the first internal invoice is generated.
 - Final invoice sending is controlled by `Send Invoice Automatically`.
 - Shipping update emails now use clear buttons instead of exposed long prefilled URLs.
-- Snapshot folder: [`versions/v1.5-invoice-needs-shipping-info/`](versions/v1.5-invoice-needs-shipping-info/)
+- Snapshot folder: [`versions/v3-invoice-needs-shipping-info/`](versions/v3-invoice-needs-shipping-info/)
 
 ### v2-current-two-stage · Two-Stage Production Workflow · 2026-07-20+
 

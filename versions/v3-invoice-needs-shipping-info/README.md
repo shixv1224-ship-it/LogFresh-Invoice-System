@@ -1,8 +1,8 @@
-# v1.5 Invoice Shipping Info Workflow / v1.5 Invoice Shipping 信息流程
+# v3 Invoice Shipping Info Workflow / v3 Invoice Shipping 信息流程
 
-This folder archives the Apps Script snapshot for the v1.5 workflow update.
+This folder archives the Apps Script snapshot for the v3 workflow update.
 
-这个文件夹保存 v1.5 workflow 更新时的 Apps Script 快照。
+这个文件夹保存 v3 workflow 更新时的 Apps Script 快照。
 
 ## Main behavior / 主要功能
 

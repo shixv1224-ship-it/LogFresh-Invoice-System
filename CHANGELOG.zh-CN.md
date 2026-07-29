@@ -3,7 +3,7 @@
 这个文件只记录 LogFresh Invoice System 的业务功能变化。
 GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE.md)。
 
-## 2026-07-27 · v1.5 Invoice Shipping Info Workflow
+## 2026-07-27 · v3 Invoice Shipping Info Workflow
 
 ### 新增
 

@@ -93,7 +93,7 @@ docs/
 
 versions/
   v1-legacy-single-invoice/
-  v1.5-invoice-needs-shipping-info/
+  v3-invoice-needs-shipping-info/
   v2-current-two-stage/
 
 CHANGELOG.md

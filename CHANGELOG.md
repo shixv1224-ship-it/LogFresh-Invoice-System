@@ -3,7 +3,7 @@
 This file tracks business-facing feature changes for the LogFresh Invoice System.
 For GitHub commit history and repository version checkpoints, see [VERSION_TIMELINE.md](VERSION_TIMELINE.md).
 
-## 2026-07-27 · v1.5 Invoice Shipping Info Workflow
+## 2026-07-27 · v3 Invoice Shipping Info Workflow
 
 ### Added
 

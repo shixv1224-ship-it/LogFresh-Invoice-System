@@ -6,11 +6,11 @@ This folder keeps script snapshots from the major workflow stages of the LogFres
 
 ## Versions / 版本
 
-### v1.5-invoice-needs-shipping-info
+### v3-invoice-needs-shipping-info
 
-Current v1.5 workflow snapshot for the new invoice shipping information process.
+Current v3 workflow snapshot for the new invoice shipping information process.
 
-当前 v1.5 workflow 快照，用于新的 invoice shipping 信息补全流程。
+当前 v3 workflow 快照，用于新的 invoice shipping 信息补全流程。
 
 Main behavior:
 
