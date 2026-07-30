@@ -195,6 +195,11 @@ function syncFormAddressFields() {
   );
 }
 
+function syncFormsForCli() {
+  ensureGoogleFormsSetup_();
+  return 'Google Forms setup synced.';
+}
+
 function doGet(e) {
   const params = e.parameter || {};
   if (params.action !== 'approve') {

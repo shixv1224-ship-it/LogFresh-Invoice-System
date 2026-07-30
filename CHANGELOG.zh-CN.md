@@ -7,6 +7,8 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 
 ### 新增
 
+- Apps Script manifest 新增 API executable 设置和明确 OAuth scopes。
+- 新增 `syncFormsForCli()`，作为命令行/编辑器可运行的表单同步入口。
 - 新增多包裹 tracking 支持：shipping update 表单里的 `Tracking Number` 改为可多行输入。
 - 新增填写说明：一个订单多个包裹时，每行填写一个 tracking number。
 - 内部 `[Ship Info]` 邮件新增客户 / 订单详情块，包含产品数量、单价、客户姓名、公司、账单/收货地址、电话和邮箱。

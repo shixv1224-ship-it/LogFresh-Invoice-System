@@ -20,6 +20,7 @@ For business-facing feature changes, see [CHANGELOG.md](CHANGELOG.md) and [CHANG
 - Updated the v3 script snapshot so price fields default to two decimals while preserving three-or-more decimal precision when entered or calculated.
 - Added menu-based email routing controls for test-only email delivery and normal production delivery.
 - Removed daily-visible maintenance actions from the LogFresh Sheet menu.
+- Added Apps Script API executable manifest settings and a CLI-safe form sync wrapper; the setup was run once through Edge/Apps Script authorization.
 - Snapshot folder: [`versions/v3-invoice-needs-shipping-info/`](versions/v3-invoice-needs-shipping-info/)
 
 ### v3 · Invoice Shipping Info Workflow · 2026-07-27

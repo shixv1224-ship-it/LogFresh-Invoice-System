@@ -2,5 +2,16 @@
   "timeZone": "America/Los_Angeles",
   "dependencies": {},
   "exceptionLogging": "STACKDRIVER",
+  "executionApi": {
+    "access": "MYSELF"
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/documents",
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/forms",
+    "https://www.googleapis.com/auth/script.container.ui",
+    "https://www.googleapis.com/auth/script.send_mail",
+    "https://www.googleapis.com/auth/spreadsheets"
+  ],
   "runtimeVersion": "V8"
 }

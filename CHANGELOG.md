@@ -7,6 +7,8 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 
 ### Added
 
+- Added API executable manifest settings and explicit OAuth scopes for the Apps Script project.
+- Added `syncFormsForCli()` as a CLI-safe setup wrapper for syncing Google Form configuration from Apps Script.
 - Added multi-package tracking support by changing `Tracking Number` in shipping update forms to a multi-line paragraph field.
 - Added instructions to enter one tracking number per line when an order has multiple packages.
 - Added customer/order detail blocks to internal `[Ship Info]` emails, including item quantity, item unit price, customer name, company, billing/shipping address, phone, and email.
