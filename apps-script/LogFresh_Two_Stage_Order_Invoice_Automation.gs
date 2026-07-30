@@ -6,7 +6,7 @@ const CONFIG = {
   INVOICE_OUTPUT_FOLDER_ID: '1ywiGiGlVqRbtdETpYNZ7q7MzBiBgehkv',
 
   // After you deploy this as a Web App, paste the Web App URL here.
-  WEB_APP_URL: 'PASTE_WEB_APP_URL_HERE',
+  WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbzTCUmG5RLjUoalUT_sM0MV1rkx2kuewbzqrdszYFHlRVkF7BMIUKWK9OjplnrQGJ2n/exec',
 
   // Keep these sheet tab names stable in the response spreadsheet.
   MAIN_ORDER_SHEET_NAME: 'Order Confirmation',

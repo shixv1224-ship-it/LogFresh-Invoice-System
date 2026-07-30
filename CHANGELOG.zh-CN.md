@@ -20,6 +20,8 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 - `Test Email Only` 会把所有自动邮件只发送到 `mcp@logfresh.net`，并在测试邮件顶部显示原本的 To/Cc/Bcc。
 - `Back to Normal` 会恢复正常客户/内部收件人和多人 CC。
 - Order Confirmation Form 的 `Invoice Only` 区域新增多行 `Tracking Number` 支持。
+- 已部署客户确认用 Web App endpoint，并把正式 URL 写入 `CONFIG.WEB_APP_URL`。
+- Apps Script manifest 明确加入 Web App 设置，支持客户无需登录 Google 访问确认链接。
 
 ### 修改
 

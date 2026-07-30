@@ -20,6 +20,8 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 - `Test Email Only` routes every automated email only to `mcp@logfresh.net` and includes the original To/Cc/Bcc at the top of the test email.
 - `Back to Normal` restores the regular customer/internal recipients and multi-address CC behavior.
 - Added multi-line `Tracking Number` support to the Order Confirmation Form’s `Invoice Only` section.
+- Deployed the approval Web App endpoint and saved its production URL in `CONFIG.WEB_APP_URL`.
+- Added explicit Web App manifest settings for public customer approval access without Google login.
 
 ### Changed
 
