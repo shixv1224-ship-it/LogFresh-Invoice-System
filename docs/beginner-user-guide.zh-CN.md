@@ -508,6 +508,14 @@ Open Shipping Info Form
 12. 如果只要内部存档，选 `No` 或留空；
 13. Submit。
 
+如果一个订单有多个包裹，在 `Tracking Number` 里一行填写一个 tracking number。可以加简单备注，例如：
+
+```text
+1Z123456789 - Box 1
+1Z987654321 - Box 2
+9400110200881234567890 - USPS small box
+```
+
 ### 5.5 Form 3 提交后会发生什么
 
 系统会：
@@ -574,6 +582,8 @@ Open Shipping Info Form
 - `Customer Email`
 - `Send Invoice Automatically`
 - `Internal Notes`
+
+如果有多个包裹，`Tracking Number` 可以多行填写，一行一个 tracking number。
 
 如果 `Send Invoice Automatically = Yes`：
 
@@ -765,7 +775,7 @@ Approve Order
 
 - Order Number；
 - Shipping Method；
-- Tracking Number。
+- Tracking Number(s)。
 
 ### 9.3 内部 Order Approved 邮件
 

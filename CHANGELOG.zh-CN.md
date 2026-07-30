@@ -7,6 +7,8 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 
 ### 新增
 
+- 新增多包裹 tracking 支持：shipping update 表单里的 `Tracking Number` 改为可多行输入。
+- 新增填写说明：一个订单多个包裹时，每行填写一个 tracking number。
 - 内部 `[Ship Info]` 邮件新增客户 / 订单详情块，包含产品数量、单价、客户姓名、公司、账单/收货地址、电话和邮箱。
 - 新增一份面向非技术销售 / 内部人员的中文新手完整使用教程。
 - 新增排版版 PDF 新手教程，包含封面、表格、截图、页眉页脚和页码。
@@ -18,6 +20,7 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 
 ### 修改
 
+- invoice 客户邮件和内部存档邮件的 tracking 标签改为 `Tracking Number(s)`，HTML 邮件会保留多行 tracking 换行。
 - 更新新手教程和 PDF，说明所有 `Prepaid` 订单都来自 `logfresh.net` 网站下单 / 预付流程。
 - 删除新手教程 PDF 末尾旧的截图规划和一句话总结章节。
 - 简化 LogFresh Google Sheets 菜单，去掉日常不需要显示的 `Sync Form Address Fields` 和 `Create/Update Form 3` 维护项。

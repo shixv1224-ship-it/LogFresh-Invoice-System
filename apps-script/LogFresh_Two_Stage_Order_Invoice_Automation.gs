@@ -414,13 +414,13 @@ function generateInvoiceForRow_(sheet, row, sendEmail, sendInternalArchive, repl
           `Hi ${customerName},\n\n` +
           `Attached is the invoice for Order ${orderNumber}.\n\n` +
           `Shipping Method: ${getValue_(data, 'Shipped Via')}\n` +
-          `Tracking Number: ${trackingNumber}\n\n` +
+          `Tracking Number(s): ${trackingNumber}\n\n` +
           `Thank you,\n${CONFIG.COMPANY_NAME}`,
         htmlBody:
           `<p>Hi ${escapeHtml_(customerName)},</p>` +
           `<p>Attached is the invoice for Order <strong>${escapeHtml_(orderNumber)}</strong>.</p>` +
           `<p>Shipping Method: ${escapeHtml_(getValue_(data, 'Shipped Via'))}<br>` +
-          `Tracking Number: ${escapeHtml_(trackingNumber)}</p>` +
+          `Tracking Number(s): ${formatMultilineHtml_(trackingNumber)}</p>` +
           `<p>Thank you,<br>${escapeHtml_(CONFIG.COMPANY_NAME)}</p>`,
         attachments: [result.pdfBlob],
         cc: joinEmails_(CONFIG.CUSTOMER_EMAIL_CC, salespersonEmail),
@@ -465,7 +465,7 @@ function sendInvoiceInternalArchiveEmail_({ data, result, invoiceNumber, orderNu
       `Order Number: ${orderNumber}\n` +
       `Invoice Number: ${invoiceNumber}\n` +
       `Shipping Method: ${getValue_(data, 'Shipped Via')}\n` +
-      `Tracking Number: ${trackingNumber}\n\n` +
+      `Tracking Number(s): ${trackingNumber}\n\n` +
       `Invoice Drive URL: ${result.pdfFile.getUrl()}`,
     htmlBody:
       `<p><strong>Internal archive copy only.</strong> This invoice was not sent to the customer automatically.</p>` +
@@ -473,7 +473,7 @@ function sendInvoiceInternalArchiveEmail_({ data, result, invoiceNumber, orderNu
       `Order Number: ${escapeHtml_(orderNumber)}<br>` +
       `Invoice Number: ${escapeHtml_(invoiceNumber)}<br>` +
       `Shipping Method: ${escapeHtml_(getValue_(data, 'Shipped Via'))}<br>` +
-      `Tracking Number: ${escapeHtml_(trackingNumber)}</p>` +
+      `Tracking Number(s): ${formatMultilineHtml_(trackingNumber)}</p>` +
       `<p>Invoice Drive URL: <a href="${result.pdfFile.getUrl()}">${result.pdfFile.getUrl()}</a></p>`,
     attachments: [result.pdfBlob],
     name: CONFIG.COMPANY_NAME,
@@ -556,7 +556,7 @@ function sendInvoiceShippingInfoReminder_(sheet, row) {
       `Invoice Number: ${invoiceNumber}\n` +
       `Shipping method: ${getValue_(data, 'Shipped Via') || 'TBD'}\n` +
       `Shipping charge: ${formatOptionalMoney_(getValue_(data, 'Shipping Charge')) || 'TBD'}\n` +
-      `Tracking number: ${getValue_(data, 'Tracking Number') || 'TBD'}\n\n` +
+      `Tracking number(s): ${getValue_(data, 'Tracking Number') || 'TBD'}\n\n` +
       shippingInfoPlainDetails +
       `\n\n` +
       `Submit/update shipping information here:\n${shippingInfoUrl}\n\n` +
@@ -568,7 +568,7 @@ function sendInvoiceShippingInfoReminder_(sheet, row) {
       `Invoice Number: ${escapeHtml_(invoiceNumber)}<br>` +
       `Shipping method: ${escapeHtml_(getValue_(data, 'Shipped Via') || 'TBD')}<br>` +
       `Shipping charge: ${escapeHtml_(formatOptionalMoney_(getValue_(data, 'Shipping Charge')) || 'TBD')}<br>` +
-      `Tracking number: ${escapeHtml_(getValue_(data, 'Tracking Number') || 'TBD')}` +
+      `Tracking number(s): ${formatMultilineHtml_(getValue_(data, 'Tracking Number') || 'TBD')}` +
       `</p>` +
       shippingInfoHtmlDetails +
       `<p>Click the button below to submit or update shipping information.</p>` +
@@ -1586,7 +1586,12 @@ function configureInvoiceShippingInfoForm_(form, includeShipDate) {
   }
   ensureFormChoiceItem_(form, 'Shipped Via', FORM_CHOICES.SHIPPED_VIA, false);
   ensureFormTextItem_(form, 'Shipping Charge', false);
-  ensureFormTextItem_(form, 'Tracking Number', true);
+  ensureFormParagraphItem_(
+    form,
+    'Tracking Number',
+    true,
+    'If there are multiple packages, enter one tracking number per line. You may also add notes such as Box 1 / Box 2.'
+  );
   ensureFormDateItem_(form, 'Invoice Date', false);
   ensureFormDateItem_(form, 'Due Date', false);
   ensureFormChoiceItem_(form, 'Payment Method', FORM_CHOICES.PAYMENT_METHOD, false);
@@ -1637,13 +1642,23 @@ function ensureFormChoiceItem_(form, title, choices, required) {
   return newItem;
 }
 
-function ensureFormParagraphItem_(form, title, required) {
-  const item = findFormItemByTitle_(form, title);
-  if (item && item.getType() === FormApp.ItemType.PARAGRAPH_TEXT) {
-    item.asParagraphTextItem().setRequired(required);
+function ensureFormParagraphItem_(form, title, required, helpText) {
+  const matchingItems = findFormItemsByTitle_(form, title);
+  const item = matchingItems.find(candidate => candidate.getType() === FormApp.ItemType.PARAGRAPH_TEXT);
+
+  matchingItems
+    .filter(candidate => candidate.getId() !== (item && item.getId()))
+    .forEach(candidate => form.deleteItem(candidate));
+
+  if (item) {
+    const paragraphItem = item.asParagraphTextItem().setRequired(required);
+    if (helpText !== undefined) paragraphItem.setHelpText(helpText);
     return item;
   }
-  return form.addParagraphTextItem().setTitle(title).setRequired(required);
+
+  const newItem = form.addParagraphTextItem().setTitle(title).setRequired(required);
+  if (helpText !== undefined) newItem.setHelpText(helpText);
+  return newItem;
 }
 
 function deleteFormItemByTitle_(form, title) {
@@ -2332,6 +2347,10 @@ function appendHtmlSignature_(htmlBody) {
 
 function plainTextToHtml_(body) {
   return `<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.5;color:#333;">${escapeHtml_(body).replace(/\n/g, '<br>')}</div>`;
+}
+
+function formatMultilineHtml_(text) {
+  return escapeHtml_(text).replace(/\n/g, '<br>');
 }
 
 function getEmailInlineImages_() {

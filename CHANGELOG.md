@@ -7,6 +7,8 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 
 ### Added
 
+- Added multi-package tracking support by changing `Tracking Number` in shipping update forms to a multi-line paragraph field.
+- Added instructions to enter one tracking number per line when an order has multiple packages.
 - Added customer/order detail blocks to internal `[Ship Info]` emails, including item quantity, item unit price, customer name, company, billing/shipping address, phone, and email.
 - Added a complete beginner-friendly Chinese user guide for non-technical sales/internal users.
 - Added a polished PDF version of the beginner guide with cover page, tables, screenshots, headers, footers, and page numbers.
@@ -18,6 +20,7 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 
 ### Changed
 
+- Updated invoice and internal archive emails to label tracking as `Tracking Number(s)` and preserve multi-line tracking numbers in HTML email.
 - Updated the beginner guide and PDF to clarify that all `Prepaid` orders are placed through `logfresh.net`.
 - Removed the old screenshot-planning and one-sentence-summary sections from the beginner guide PDF.
 - Simplified the LogFresh Google Sheets menu by removing the daily-visible `Sync Form Address Fields` and `Create/Update Form 3` maintenance items.
