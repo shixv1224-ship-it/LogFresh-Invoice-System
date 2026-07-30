@@ -124,7 +124,7 @@ Send Invoice Automatically = Yes
 - 客户点击按钮后，不需要登录 Google；
 - 系统把订单状态改成 `Customer Approved`；
 - 系统给 Salesperson Email / 内部人员发 `[Approved]` 邮件；
-- 内部人员再通过邮件里的 Shipping Update Form 链接补 shipping / tracking；
+- 内部人员再点击邮件里的 `Open Shipping Update Form` 按钮补 shipping / tracking；
 - Shipping Update Form 提交后生成 invoice；
 - 如果 Shipping Update Form 的 `Send Invoice Automatically = Yes`，invoice 会发给客户。
 
@@ -581,11 +581,11 @@ Access: ANYONE_ANONYMOUS
 - 把订单状态改成 `Customer Approved`；
 - 记录 `Customer Approved At` 时间；
 - 给 Salesperson Email / 内部邮箱发送 `[Approved] Order Confirmation needs shipping info` 邮件；
-- 邮件里会带 Shipping Update Form 的 update link。
+- 邮件里会显示 `Open Shipping Update Form` 按钮，而不是一整串很长的预填链接。
 
 ### 6.5 内部人员提交 Shipping Update Form
 
-打开 `[Approved]` 邮件里的 update link，填写：
+打开 `[Approved]` 邮件里的 `Open Shipping Update Form` 按钮，填写：
 
 - `Order Number`
 - `Ship Date`
@@ -806,6 +806,15 @@ Approve Order
 - 客户已经确认；
 - 内部需要补 shipping / tracking；
 - 然后生成 invoice。
+
+邮件里会有按钮：
+
+```text
+Open Shipping Update Form
+```
+
+点击按钮后会打开已经预填订单号、shipping method、payment method、customer email 等信息的 Shipping Update Form。  
+如果按钮打不开，邮件下方仍会保留一个小号备用链接。
 
 ### 9.4 内部 Invoice Shipping Info 邮件
 

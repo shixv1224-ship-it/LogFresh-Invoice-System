@@ -125,7 +125,7 @@ The system will:
 - Let the customer approve without logging in to Google.
 - Change the order status to `Customer Approved`.
 - Send an `[Approved]` email to the Salesperson Email/internal team.
-- Include a Shipping Update Form link.
+- Include an `Open Shipping Update Form` button.
 - Generate the final invoice after shipping/tracking is submitted.
 - If the Shipping Update Form has `Send Invoice Automatically = Yes`, send the invoice to the customer.
 
@@ -561,11 +561,11 @@ The system will:
 - Change `Order Status` to `Customer Approved`.
 - Record `Customer Approved At`.
 - Send `[Approved] Order Confirmation needs shipping info` to the Salesperson Email/internal team.
-- Include a Shipping Update Form link.
+- Include an `Open Shipping Update Form` button instead of showing a long raw prefilled URL as the main content.
 
 ### 6.5 Internal team submits the Shipping Update Form
 
-Open the update link from the `[Approved]` email and fill:
+Click the `Open Shipping Update Form` button from the `[Approved]` email and fill:
 
 - `Order Number`
 - `Ship Date`
@@ -726,6 +726,8 @@ They include:
 - Phone and email.
 - Product quantity and unit price.
 - Button to open the correct update form.
+- For the customer-approved workflow, the button label is `Open Shipping Update Form`.
+- If the button does not open, a small fallback link remains below the button.
 
 ---
 
@@ -810,7 +812,7 @@ Confirm:
 - Order Confirmation email is generated.
 - Approval button opens without Google login.
 - Internal `[Approved]` email is generated after approval.
-- Shipping Update Form link works.
+- `Open Shipping Update Form` button works and opens the prefilled Shipping Update Form.
 
 ### Step 6: Return to normal
 
@@ -891,4 +893,3 @@ Do not casually rename these, because the script matches exact field names:
 - Apps Script trigger.
 
 If a form question title must be changed, the script field mapping should be updated at the same time.
-
