@@ -24,10 +24,12 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 - Added multi-line `Tracking Number` support to the Order Confirmation Form’s `Invoice Only` section.
 - Deployed the approval Web App endpoint and saved its production URL in `CONFIG.WEB_APP_URL`.
 - Added explicit Web App manifest settings for public customer approval access without Google login.
+- Added a button-style `Open Shipping Update Form` link to the internal `[Approved]` email sent after customer PO/order confirmation approval.
 
 ### Changed
 
 - Updated invoice and internal archive emails to label tracking as `Tracking Number(s)` and preserve multi-line tracking numbers in HTML email.
+- Updated the approval-follow-up shipping email so internal users see a clean button instead of a long raw prefilled URL.
 - Positioned `Tracking Number` after `Due Date` in the Order Confirmation Form’s `Invoice Only` section so sales can enter multiple package tracking numbers before billing/shipping details.
 - Updated the beginner guide and PDF to clarify that all `Prepaid` orders are placed through `logfresh.net`.
 - Removed the old screenshot-planning and one-sentence-summary sections from the beginner guide PDF.

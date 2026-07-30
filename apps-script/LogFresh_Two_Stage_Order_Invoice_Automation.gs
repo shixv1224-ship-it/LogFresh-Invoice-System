@@ -247,8 +247,15 @@ function doGet(e) {
       body:
         `Order ${orderNumber} has been approved by ${customerName}.\n\n` +
         `Shipping method: ${shippedVia}\n\n` +
-        `Next step: submit shipping / tracking information here:\n${shippingUpdateUrl}\n\n` +
+        `Next step: open the Shipping Update Form:\n${shippingUpdateUrl}\n\n` +
         `Order Number, Shipped Via, Payment Method, and Customer Email should already be filled in if the pre-filled Form 2 URL is configured.`,
+      htmlBody:
+        `<p>Order <strong>${escapeHtml_(orderNumber)}</strong> has been approved by ${escapeHtml_(customerName)}.</p>` +
+        `<p><strong>Shipping method:</strong> ${escapeHtml_(shippedVia)}</p>` +
+        `<p>Next step: click the button below to submit shipping / tracking information.</p>` +
+        buildEmailButtonHtml_(shippingUpdateUrl, 'Open Shipping Update Form') +
+        `<p style="font-size:13px;color:#555;">Order Number, Shipped Via, Payment Method, and Customer Email should already be filled in if the pre-filled Shipping Update Form URL is configured.</p>` +
+        buildEmailFallbackLinkHtml_(shippingUpdateUrl),
       name: CONFIG.COMPANY_NAME,
       replyTo: CONFIG.COMPANY_EMAIL,
     });

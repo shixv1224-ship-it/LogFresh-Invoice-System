@@ -24,10 +24,12 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 - Order Confirmation Form 的 `Invoice Only` 区域新增多行 `Tracking Number` 支持。
 - 已部署客户确认用 Web App endpoint，并把正式 URL 写入 `CONFIG.WEB_APP_URL`。
 - Apps Script manifest 明确加入 Web App 设置，支持客户无需登录 Google 访问确认链接。
+- 客户 PO / order confirmation 确认后发给内部的 `[Approved]` 邮件新增 `Open Shipping Update Form` 按钮链接。
 
 ### 修改
 
 - invoice 客户邮件和内部存档邮件的 tracking 标签改为 `Tracking Number(s)`，HTML 邮件会保留多行 tracking 换行。
+- approval 后续 shipping 邮件改为显示清晰按钮，避免内部同事直接看到很长的预填 URL。
 - Order Confirmation Form 中的 `Tracking Number` 会固定放在 `Invoice Only` 区域的 `Due Date` 后面，方便销售在初始 invoice-only 流程里输入多个包裹 tracking。
 - 更新新手教程和 PDF，说明所有 `Prepaid` 订单都来自 `logfresh.net` 网站下单 / 预付流程。
 - 删除新手教程 PDF 末尾旧的截图规划和一句话总结章节。

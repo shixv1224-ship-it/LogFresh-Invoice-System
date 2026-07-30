@@ -21,6 +21,7 @@ For business-facing feature changes, see [CHANGELOG.md](CHANGELOG.md) and [CHANG
 - Added menu-based email routing controls for test-only email delivery and normal production delivery.
 - Removed daily-visible maintenance actions from the LogFresh Sheet menu.
 - Added Apps Script API executable manifest settings and a CLI-safe form sync wrapper; the setup was run once through Edge/Apps Script authorization.
+- Updated the customer-approved internal shipping follow-up email to use a button-style Shipping Update Form link.
 - Snapshot folder: [`versions/v3-invoice-needs-shipping-info/`](versions/v3-invoice-needs-shipping-info/)
 
 ### v3 · Invoice Shipping Info Workflow · 2026-07-27
