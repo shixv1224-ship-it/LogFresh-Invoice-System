@@ -19,10 +19,12 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 - Added `Test Email Only` and `Back to Normal` controls to the LogFresh Google Sheets menu.
 - `Test Email Only` routes every automated email only to `mcp@logfresh.net` and includes the original To/Cc/Bcc at the top of the test email.
 - `Back to Normal` restores the regular customer/internal recipients and multi-address CC behavior.
+- Added multi-line `Tracking Number` support to the Order Confirmation Form’s `Invoice Only` section.
 
 ### Changed
 
 - Updated invoice and internal archive emails to label tracking as `Tracking Number(s)` and preserve multi-line tracking numbers in HTML email.
+- Positioned `Tracking Number` after `Due Date` in the Order Confirmation Form’s `Invoice Only` section so sales can enter multiple package tracking numbers before billing/shipping details.
 - Updated the beginner guide and PDF to clarify that all `Prepaid` orders are placed through `logfresh.net`.
 - Removed the old screenshot-planning and one-sentence-summary sections from the beginner guide PDF.
 - Simplified the LogFresh Google Sheets menu by removing the daily-visible `Sync Form Address Fields` and `Create/Update Form 3` maintenance items.
@@ -44,7 +46,7 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 ### Changed
 
 - Removed Ship Date from Form 3 because it is not shown on the invoice.
-- Synchronized shipping method choices across Form 1, Form 2, and Form 3.
+- Synchronized shipping method choices across the Order Confirmation Form, Shipping Update Form, and Invoice Shipping Info Update Form.
 - Added `USPS Ground` to the shared shipping method options.
 - Improved Form 3 prefill matching for Payment Method, Customer Email, Shipped Via, and related title aliases.
 - Standardized prefilled shipping and payment values before generating the Form 3 link.

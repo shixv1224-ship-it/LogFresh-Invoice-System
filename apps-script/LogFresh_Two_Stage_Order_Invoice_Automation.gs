@@ -1248,6 +1248,13 @@ function ensureGoogleFormsSetup_() {
     const orderForm = FormApp.openById(CONFIG.ORDER_FORM_ID);
     updateWorkflowTypeItem_(orderForm);
     ensureFormChoiceItem_(orderForm, 'Shipped Via', FORM_CHOICES.SHIPPED_VIA, false);
+    const orderTrackingItem = ensureFormParagraphItem_(
+      orderForm,
+      'Tracking Number',
+      false,
+      'If there are multiple packages, enter one tracking number per line. You may also add notes such as Box 1 / Box 2.'
+    );
+    moveFormItemAfter_(orderForm, orderTrackingItem, findFormItemByTitle_(orderForm, 'Due Date'));
     ensureSplitAddressFields_(orderForm, 'Bill To');
     ensureSplitAddressFields_(orderForm, 'Ship To');
   }

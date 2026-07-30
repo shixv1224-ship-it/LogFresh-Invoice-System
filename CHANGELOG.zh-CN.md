@@ -19,10 +19,12 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 - LogFresh Google Sheets 菜单新增 `Test Email Only` 和 `Back to Normal`。
 - `Test Email Only` 会把所有自动邮件只发送到 `mcp@logfresh.net`，并在测试邮件顶部显示原本的 To/Cc/Bcc。
 - `Back to Normal` 会恢复正常客户/内部收件人和多人 CC。
+- Order Confirmation Form 的 `Invoice Only` 区域新增多行 `Tracking Number` 支持。
 
 ### 修改
 
 - invoice 客户邮件和内部存档邮件的 tracking 标签改为 `Tracking Number(s)`，HTML 邮件会保留多行 tracking 换行。
+- Order Confirmation Form 中的 `Tracking Number` 会固定放在 `Invoice Only` 区域的 `Due Date` 后面，方便销售在初始 invoice-only 流程里输入多个包裹 tracking。
 - 更新新手教程和 PDF，说明所有 `Prepaid` 订单都来自 `logfresh.net` 网站下单 / 预付流程。
 - 删除新手教程 PDF 末尾旧的截图规划和一句话总结章节。
 - 简化 LogFresh Google Sheets 菜单，去掉日常不需要显示的 `Sync Form Address Fields` 和 `Create/Update Form 3` 维护项。
@@ -44,7 +46,7 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 ### 修改
 
 - Form 3 删除 Ship Date，因为 invoice 上不显示这个字段。
-- 同步 Form 1、Form 2、Form 3 的 shipping method 题型和选项。
+- 同步 Order Confirmation Form、Shipping Update Form、Invoice Shipping Info Update Form 的 shipping method 题型和选项。
 - shipping method 选项中加入 `USPS Ground`。
 - 改进 Form 3 预填匹配逻辑，Payment Method、Customer Email、Shipped Via 等字段支持题目别名匹配。
 - 生成 Form 3 预填链接前会自动标准化 shipping method 和 payment method。
