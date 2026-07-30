@@ -13,8 +13,10 @@ GitHub commit 历史和版本节点请看 [VERSION_TIMELINE.md](VERSION_TIMELINE
 - 新增填写说明：一个订单多个包裹时，每行填写一个 tracking number。
 - 内部 `[Ship Info]` 邮件新增客户 / 订单详情块，包含产品数量、单价、客户姓名、公司、账单/收货地址、电话和邮箱。
 - 新增一份面向非技术销售 / 内部人员的中文新手完整使用教程。
+- 新增一份面向非技术销售 / 内部人员的英文新手完整使用教程。
 - 新增排版版 PDF 新手教程，包含封面、表格、截图、页眉页脚和页码。
 - 新增可复用 PDF 生成脚本，后续可从 Markdown 教程重新生成格式化 PDF。
+- PDF 生成脚本现在可以生成中文、英文或双语两份教程。
 - 在新手教程中加入 Apple Mail 打码截图，用于展示 invoice 邮件和 shipping info 邮件示例。
 - LogFresh Google Sheets 菜单新增 `Test Email Only` 和 `Back to Normal`。
 - `Test Email Only` 会把所有自动邮件只发送到 `mcp@logfresh.net`，并在测试邮件顶部显示原本的 To/Cc/Bcc。

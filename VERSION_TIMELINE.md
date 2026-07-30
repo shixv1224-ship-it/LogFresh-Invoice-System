@@ -10,9 +10,9 @@ For business-facing feature changes, see [CHANGELOG.md](CHANGELOG.md) and [CHANG
 
 ### v3 maintenance · Price Formatting Rule · 2026-07-29
 
-- Added a complete beginner-friendly Chinese user guide for day-to-day sales/internal use.
-- Added a polished PDF beginner guide generated from the Markdown source.
-- Added a reusable script for rebuilding the PDF guide.
+- Added complete beginner-friendly Chinese and English user guides for day-to-day sales/internal use.
+- Added polished Chinese and English PDF beginner guides generated from Markdown source.
+- Added a reusable script for rebuilding one or both PDF guides.
 - Added redacted Apple Mail screenshots to the beginner guide.
 - Clarified the `Prepaid` payment method and trimmed obsolete closing sections from the PDF guide.
 - Added customer, address, and item detail blocks to internal `[Ship Info]` emails.

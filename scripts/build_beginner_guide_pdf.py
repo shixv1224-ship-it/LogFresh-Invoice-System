@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build the Chinese beginner user guide as a polished PDF.
+"""Build the beginner user guides as polished PDFs.
 
 The source stays in Markdown so it is easy to edit on GitHub. This script turns
-that Markdown into a printable PDF with LogFresh styling, screenshots, headers,
+Markdown into printable PDFs with LogFresh styling, screenshots, headers,
 footers, and page numbers.
 """
 
@@ -12,6 +12,7 @@ import html
 import re
 from datetime import date
 from pathlib import Path
+from dataclasses import dataclass
 from typing import Iterable
 
 from PIL import Image as PILImage
@@ -37,8 +38,6 @@ from reportlab.pdfbase.ttfonts import TTFont
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS_DIR = ROOT / "docs"
-SOURCE_MD = DOCS_DIR / "beginner-user-guide.zh-CN.md"
-OUTPUT_PDF = DOCS_DIR / "LogFresh_Beginner_User_Guide_zh-CN.pdf"
 LOGO_PATH = ROOT / "work" / "harvest_smart_logo_cropped.png"
 
 BRAND_ORANGE = colors.HexColor("#f39a00")
@@ -192,6 +191,56 @@ def make_styles() -> dict[str, ParagraphStyle]:
 STYLES = make_styles()
 
 
+@dataclass(frozen=True)
+class GuideConfig:
+    source_md: Path
+    output_pdf: Path
+    title: str
+    subtitle: str
+    cover_intro: str
+    quick_rows: list[list[str]]
+    header_title: str
+
+
+GUIDES = {
+    "zh": GuideConfig(
+        source_md=DOCS_DIR / "beginner-user-guide.zh-CN.md",
+        output_pdf=DOCS_DIR / "LogFresh_Beginner_User_Guide_zh-CN.pdf",
+        title="LogFresh 订单与发票系统",
+        subtitle="新手完整操作教程",
+        cover_intro=(
+            "本教程适合只会基础电脑操作的使用者。按步骤操作即可完成订单录入、"
+            "Order Confirmation、Invoice、shipping 信息更新、邮件确认和 Drive 文件查询。"
+        ),
+        quick_rows=[
+            ["最常用入口", "Order Confirmation Form、Google Sheet 后台、内部提醒邮件按钮"],
+            ["常用流程", "Invoice Only、Invoice Only - Needs Shipping Info、Confirmation First"],
+            ["重要提醒", "客户确认按钮不需要登录 Google；测试模式只发 mcp@logfresh.net"],
+            ["版本日期", date.today().strftime("%m/%d/%Y")],
+        ],
+        header_title="LogFresh 订单与发票系统新手教程",
+    ),
+    "en": GuideConfig(
+        source_md=DOCS_DIR / "beginner-user-guide.md",
+        output_pdf=DOCS_DIR / "LogFresh_Beginner_User_Guide_EN.pdf",
+        title="LogFresh Order and Invoice System",
+        subtitle="Complete Beginner User Guide",
+        cover_intro=(
+            "This guide is for users with basic computer skills. Follow the steps to enter orders, "
+            "create Order Confirmations and Invoices, update shipping information, confirm emails, "
+            "and find generated files in Drive."
+        ),
+        quick_rows=[
+            ["Main entry points", "Order Confirmation Form, Google Sheet backend, internal email buttons"],
+            ["Common workflows", "Invoice Only, Invoice Only - Needs Shipping Info, Confirmation First"],
+            ["Important reminder", "Customer approval does not require Google login; Test Email Only sends to mcp@logfresh.net"],
+            ["Version date", date.today().strftime("%m/%d/%Y")],
+        ],
+        header_title="LogFresh Beginner User Guide",
+    ),
+}
+
+
 def escape_inline(text: str) -> str:
     """Escape Markdown-ish inline text for ReportLab Paragraphs."""
     text = html.escape(text.strip())
@@ -253,7 +302,7 @@ def add_table(story: list, lines: list[str], max_width: float) -> None:
 
 def add_image(story: list, image_path: Path, caption: str, max_width: float) -> None:
     if not image_path.exists():
-        story.append(Paragraph(f"图片未找到：{escape_inline(str(image_path))}", STYLES["small"]))
+        story.append(Paragraph(f"Image not found: {escape_inline(str(image_path))}", STYLES["small"]))
         return
 
     with PILImage.open(image_path) as img:
@@ -382,7 +431,7 @@ def parse_markdown(md_path: Path, doc_width: float) -> list:
     return story
 
 
-def cover_story() -> list:
+def cover_story(config: GuideConfig) -> list:
     story: list = []
     story.append(Spacer(1, 0.45 * inch))
     if LOGO_PATH.exists():
@@ -393,17 +442,13 @@ def cover_story() -> list:
         story.append(Image(str(LOGO_PATH), width=width, height=height, hAlign="CENTER"))
         story.append(Spacer(1, 0.35 * inch))
 
-    story.append(Paragraph("LogFresh 订单与发票系统", STYLES["cover_title"]))
-    story.append(Paragraph("新手完整操作教程", STYLES["cover_title"]))
+    story.append(Paragraph(config.title, STYLES["cover_title"]))
+    story.append(Paragraph(config.subtitle, STYLES["cover_title"]))
     story.append(Paragraph("Beginner User Guide for Order Confirmation and Invoice Workflows", STYLES["cover_subtitle"]))
     story.append(Spacer(1, 0.35 * inch))
 
-    intro = (
-        "本教程适合只会基础电脑操作的使用者。按步骤操作即可完成订单录入、"
-        "Order Confirmation、Invoice、shipping 信息更新、邮件确认和 Drive 文件查询。"
-    )
     callout = Table(
-        [[Paragraph(escape_inline(intro), STYLES["body"])]],
+        [[Paragraph(escape_inline(config.cover_intro), STYLES["body"])]],
         colWidths=[5.7 * inch],
         hAlign="CENTER",
     )
@@ -422,14 +467,8 @@ def cover_story() -> list:
     story.append(callout)
     story.append(Spacer(1, 0.35 * inch))
 
-    quick = [
-        ["最常用入口", "Order Confirmation Form、Google Sheet 后台、内部提醒邮件按钮"],
-        ["常用流程", "Invoice Only、Invoice Only - Needs Shipping Info、Confirmation First"],
-        ["重要提醒", "客户确认按钮不需要登录 Google；测试模式只发 mcp@logfresh.net"],
-        ["版本日期", date.today().strftime("%m/%d/%Y")],
-    ]
     table = Table(
-        [[Paragraph(escape_inline(a), STYLES["table_header"]), Paragraph(escape_inline(b), STYLES["table"])] for a, b in quick],
+        [[Paragraph(escape_inline(a), STYLES["table_header"]), Paragraph(escape_inline(b), STYLES["table"])] for a, b in config.quick_rows],
         colWidths=[1.45 * inch, 4.25 * inch],
         hAlign="CENTER",
     )
@@ -453,6 +492,7 @@ def cover_story() -> list:
 
 
 def draw_header_footer(canvas, doc) -> None:
+    config = getattr(doc, "guide_config", GUIDES["zh"])
     canvas.saveState()
     page = doc.page
     width, height = letter
@@ -463,7 +503,7 @@ def draw_header_footer(canvas, doc) -> None:
         canvas.line(doc.leftMargin, height - 0.55 * inch, width - doc.rightMargin, height - 0.55 * inch)
         canvas.setFont(HEADING_FONT, 8.5)
         canvas.setFillColor(BRAND_GREEN)
-        canvas.drawString(doc.leftMargin, height - 0.42 * inch, "LogFresh 订单与发票系统新手教程")
+        canvas.drawString(doc.leftMargin, height - 0.42 * inch, config.header_title)
         canvas.setFillColor(MUTED)
         canvas.setFont(BODY_FONT, 8)
         canvas.drawRightString(width - doc.rightMargin, height - 0.42 * inch, "Harvest Smart · LogFresh")
@@ -478,23 +518,34 @@ def draw_header_footer(canvas, doc) -> None:
     canvas.restoreState()
 
 
-def build() -> None:
-    OUTPUT_PDF.parent.mkdir(parents=True, exist_ok=True)
+def build(config: GuideConfig) -> None:
+    config.output_pdf.parent.mkdir(parents=True, exist_ok=True)
     doc = SimpleDocTemplate(
-        str(OUTPUT_PDF),
+        str(config.output_pdf),
         pagesize=letter,
         rightMargin=0.62 * inch,
         leftMargin=0.62 * inch,
         topMargin=0.75 * inch,
         bottomMargin=0.78 * inch,
-        title="LogFresh 订单与发票系统新手完整教程",
+        title=config.title,
         author="LogFresh Biotechnology Co., LTD",
     )
-    story = cover_story()
-    story.extend(parse_markdown(SOURCE_MD, doc.width))
+    doc.guide_config = config
+    story = cover_story(config)
+    story.extend(parse_markdown(config.source_md, doc.width))
     doc.build(story, onFirstPage=draw_header_footer, onLaterPages=draw_header_footer)
-    print(OUTPUT_PDF)
+    print(config.output_pdf)
 
 
 if __name__ == "__main__":
-    build()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Build LogFresh beginner guide PDFs.")
+    parser.add_argument("--lang", choices=["zh", "en", "all"], default="all")
+    args = parser.parse_args()
+
+    if args.lang == "all":
+        for guide in GUIDES.values():
+            build(guide)
+    else:
+        build(GUIDES[args.lang])
