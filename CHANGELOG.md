@@ -7,6 +7,7 @@ For GitHub commit history and repository version checkpoints, see [VERSION_TIMEL
 
 ### Added
 
+- Added customer/order detail blocks to internal `[Ship Info]` emails, including item quantity, item unit price, customer name, company, billing/shipping address, phone, and email.
 - Added a complete beginner-friendly Chinese user guide for non-technical sales/internal users.
 - Added a polished PDF version of the beginner guide with cover page, tables, screenshots, headers, footers, and page numbers.
 - Added a reusable PDF build script so the formatted guide can be regenerated from the Markdown source.

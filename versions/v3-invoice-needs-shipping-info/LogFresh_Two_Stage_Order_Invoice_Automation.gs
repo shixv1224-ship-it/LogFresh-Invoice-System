@@ -543,6 +543,8 @@ function sendInvoiceShippingInfoReminder_(sheet, row) {
   if (!internalNoticeTo) return;
 
   const shippingInfoUrl = makeInvoiceShippingInfoForm3Url_(data, row);
+  const shippingInfoPlainDetails = buildShippingInfoNeededPlainDetails_(data);
+  const shippingInfoHtmlDetails = buildShippingInfoNeededHtmlDetails_(data);
 
   sendLogFreshEmail_({
     to: internalNoticeTo,
@@ -553,8 +555,10 @@ function sendInvoiceShippingInfoReminder_(sheet, row) {
       `Order Number: ${orderNumber}\n` +
       `Invoice Number: ${invoiceNumber}\n` +
       `Shipping method: ${getValue_(data, 'Shipped Via') || 'TBD'}\n` +
-      `Shipping charge: ${getValue_(data, 'Shipping Charge') || 'TBD'}\n` +
+      `Shipping charge: ${formatOptionalMoney_(getValue_(data, 'Shipping Charge')) || 'TBD'}\n` +
       `Tracking number: ${getValue_(data, 'Tracking Number') || 'TBD'}\n\n` +
+      shippingInfoPlainDetails +
+      `\n\n` +
       `Submit/update shipping information here:\n${shippingInfoUrl}\n\n` +
       `Form 3 should already include the order and invoice details, plus any shipping method/charge values already entered.`,
     htmlBody:
@@ -563,9 +567,10 @@ function sendInvoiceShippingInfoReminder_(sheet, row) {
       `Order Number: ${escapeHtml_(orderNumber)}<br>` +
       `Invoice Number: ${escapeHtml_(invoiceNumber)}<br>` +
       `Shipping method: ${escapeHtml_(getValue_(data, 'Shipped Via') || 'TBD')}<br>` +
-      `Shipping charge: ${escapeHtml_(getValue_(data, 'Shipping Charge') || 'TBD')}<br>` +
+      `Shipping charge: ${escapeHtml_(formatOptionalMoney_(getValue_(data, 'Shipping Charge')) || 'TBD')}<br>` +
       `Tracking number: ${escapeHtml_(getValue_(data, 'Tracking Number') || 'TBD')}` +
       `</p>` +
+      shippingInfoHtmlDetails +
       `<p>Click the button below to submit or update shipping information.</p>` +
       buildEmailButtonHtml_(shippingInfoUrl, 'Open Shipping Info Form') +
       `<p style="font-size:12px;color:#666;margin-top:14px;">Form 3 should already include the order and invoice details, plus any shipping method/charge values already entered.</p>` +
@@ -573,6 +578,130 @@ function sendInvoiceShippingInfoReminder_(sheet, row) {
     name: CONFIG.COMPANY_NAME,
     replyTo: CONFIG.COMPANY_EMAIL,
   });
+}
+
+function buildShippingInfoNeededPlainDetails_(data) {
+  const sameShipping = getValue_(data, 'Shipping Address Option').toLowerCase().includes('same');
+  const billTo = buildCustomerAddressBlock_(data, 'Bill To', false);
+  const shipTo = sameShipping
+    ? Object.assign({}, billTo, { label: 'Ship To', note: 'Same as Bill To' })
+    : buildCustomerAddressBlock_(data, 'Ship To', true);
+  const items = buildShippingInfoItemLines_(data);
+
+  return [
+    'Customer Details:',
+    `Name: ${billTo.name || 'TBD'}`,
+    `Company: ${billTo.company || 'TBD'}`,
+    `Phone: ${billTo.phone || 'TBD'}`,
+    `Email: ${billTo.email || getValue_(data, 'Customer Email') || 'TBD'}`,
+    '',
+    'Bill To Address:',
+    formatPlainAddressBlock_(billTo),
+    '',
+    'Ship To Address:',
+    shipTo.note || formatPlainAddressBlock_(shipTo),
+    '',
+    'Items Needed:',
+    items.length ? items.map(item => `- ${item}`).join('\n') : '- No item details found',
+  ].join('\n');
+}
+
+function buildShippingInfoNeededHtmlDetails_(data) {
+  const sameShipping = getValue_(data, 'Shipping Address Option').toLowerCase().includes('same');
+  const billTo = buildCustomerAddressBlock_(data, 'Bill To', false);
+  const shipTo = sameShipping
+    ? Object.assign({}, billTo, { label: 'Ship To', note: 'Same as Bill To' })
+    : buildCustomerAddressBlock_(data, 'Ship To', true);
+  const items = buildShippingInfoItemLines_(data);
+
+  return (
+    `<table style="border-collapse:collapse;width:100%;max-width:720px;margin:16px 0;font-family:Arial,sans-serif;font-size:13px;color:#333;">` +
+    `<tr>` +
+    `<th colspan="2" style="background:#2f8f2f;color:#fff;text-align:left;padding:8px 10px;">Customer Details</th>` +
+    `</tr>` +
+    buildInfoRowHtml_('Name', billTo.name || 'TBD') +
+    buildInfoRowHtml_('Company', billTo.company || 'TBD') +
+    buildInfoRowHtml_('Phone', billTo.phone || 'TBD') +
+    buildInfoRowHtml_('Email', billTo.email || getValue_(data, 'Customer Email') || 'TBD') +
+    `<tr>` +
+    `<th style="background:#f1f7f1;text-align:left;padding:8px 10px;border:1px solid #d7e5d7;width:140px;">Bill To Address</th>` +
+    `<td style="padding:8px 10px;border:1px solid #d7e5d7;">${formatHtmlAddressBlock_(billTo)}</td>` +
+    `</tr>` +
+    `<tr>` +
+    `<th style="background:#f1f7f1;text-align:left;padding:8px 10px;border:1px solid #d7e5d7;">Ship To Address</th>` +
+    `<td style="padding:8px 10px;border:1px solid #d7e5d7;">${shipTo.note ? escapeHtml_(shipTo.note) : formatHtmlAddressBlock_(shipTo)}</td>` +
+    `</tr>` +
+    `<tr>` +
+    `<th style="background:#f1f7f1;text-align:left;padding:8px 10px;border:1px solid #d7e5d7;">Items Needed</th>` +
+    `<td style="padding:8px 10px;border:1px solid #d7e5d7;">${items.length ? items.map(escapeHtml_).join('<br>') : 'No item details found'}</td>` +
+    `</tr>` +
+    `</table>`
+  );
+}
+
+function buildCustomerAddressBlock_(data, prefix, allowFallbackToBillTo) {
+  const fallbackPrefix = allowFallbackToBillTo ? 'Bill To' : prefix;
+  const name = getValue_(data, `${prefix} Name`) || getValue_(data, `${fallbackPrefix} Name`);
+  const company = getValue_(data, `${prefix} Company`) || getValue_(data, `${fallbackPrefix} Company`);
+  const address = getValue_(data, `${prefix} Address`) || getValue_(data, `${fallbackPrefix} Address`);
+  const city = getAddressPart_(data, prefix, 'City') || getAddressPart_(data, fallbackPrefix, 'City');
+  const state = getAddressPart_(data, prefix, 'State') || getAddressPart_(data, fallbackPrefix, 'State');
+  const zip = getAddressPart_(data, prefix, 'ZIP') || getAddressPart_(data, fallbackPrefix, 'ZIP');
+  const phone = getValue_(data, `${prefix} Phone`) || getValue_(data, `${fallbackPrefix} Phone`);
+  const email = getValue_(data, `${prefix} Email`) || getValue_(data, `${fallbackPrefix} Email`);
+
+  return {
+    label: prefix,
+    name,
+    company,
+    address,
+    cityStateZip: formatCityStateZip_(city, state, zip),
+    phone,
+    email,
+  };
+}
+
+function formatPlainAddressBlock_(block) {
+  return [
+    block.name,
+    block.company,
+    block.address,
+    block.cityStateZip,
+    block.phone ? `Phone: ${block.phone}` : '',
+    block.email ? `Email: ${block.email}` : '',
+  ].filter(Boolean).join('\n') || 'TBD';
+}
+
+function formatHtmlAddressBlock_(block) {
+  return escapeHtml_(formatPlainAddressBlock_(block)).replace(/\n/g, '<br>');
+}
+
+function buildShippingInfoItemLines_(data) {
+  const items = [];
+  for (let i = 1; i <= 6; i++) {
+    const qty = getValue_(data, `Item ${i} Quantity`);
+    const description = getValue_(data, `Item ${i} Description`);
+    const price = getValue_(data, `Item ${i} Unit Price`);
+    if (qty || description || price) {
+      items.push(`${quantity_(qty || 0)} x ${description || 'Item'} @ ${price ? unitPrice_(price) : 'TBD'}`);
+    }
+  }
+  return items;
+}
+
+function buildInfoRowHtml_(label, value) {
+  return `<tr>` +
+    `<th style="background:#f1f7f1;text-align:left;padding:8px 10px;border:1px solid #d7e5d7;width:140px;">${escapeHtml_(label)}</th>` +
+    `<td style="padding:8px 10px;border:1px solid #d7e5d7;">${escapeHtml_(value || 'TBD')}</td>` +
+    `</tr>`;
+}
+
+function formatOptionalMoney_(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  const numericText = text.replace(/[$,\s]/g, '');
+  if (!Number.isFinite(Number(numericText))) return text;
+  return money_(text);
 }
 
 function buildReplacements_(data, row, documentType) {
