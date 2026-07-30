@@ -29,7 +29,7 @@ Open each file in Google Docs and save/convert it as a Google Docs file if neede
 
 Copy each Google Docs template ID.
 
-## 2. Create Form 1
+## 2. Create Order Confirmation Form
 
 Create a Google Form named:
 
@@ -44,16 +44,16 @@ Important:
 - `Workflow Type` must include:
   - `Invoice Only`
   - `Confirmation First`
-- `Payment Method` must include the same options in Form 1 and Form 2:
+- `Payment Method` must include the same options in Order Confirmation Form and Shipping Update Form:
   - `Credit Card`
   - `Prepaid`
   - `Check/Wire Transfer`
-- `Send Confirmation Automatically` controls Form 1 sending for both workflows.
+- `Send Confirmation Automatically` controls Order Confirmation Form sending for both workflows.
 - `Salesperson Email` should be filled accurately because internal reminders are sent there.
 - Address fields should be split into separate City, State, and ZIP questions.
 - `Bill To State` and `Ship To State` should be dropdown questions using U.S. two-letter state abbreviations.
 
-Connect Form 1 to a Google Sheet.
+Connect Order Confirmation Form to a Google Sheet.
 
 Rename the main response tab to:
 
@@ -93,7 +93,7 @@ CUSTOMER_INFO_SHEET_NAME: 'Customer Info',
 
 The script will create the `Customer Info` tab in that separate spreadsheet if it does not already exist. If an older tab named `客户有效信息` exists, the script will rename it to `Customer Info`.
 
-## 3. Create Form 2
+## 3. Create Shipping Update Form
 
 Create a Google Form named:
 
@@ -117,9 +117,9 @@ Send Invoice Automatically
 Internal Notes
 ```
 
-Connect Form 2 to the same Google Sheet as Form 1.
+Connect Shipping Update Form to the same Google Sheet as Order Confirmation Form.
 
-Rename the Form 2 response tab to:
+Rename the Shipping Update Form response tab to:
 
 ```text
 Shipping Updates
@@ -143,9 +143,9 @@ Restrict to organization: Off
 File upload: none
 ```
 
-## 5. Create Form 2 prefilled link
+## 5. Create Shipping Update Form prefilled link
 
-Open Form 2:
+Open Shipping Update Form:
 
 ```text
 More options
@@ -230,6 +230,23 @@ Copy the Web App URL and paste it into:
 WEB_APP_URL
 ```
 
+Current production Web App URL:
+
+```text
+https://script.google.com/macros/s/AKfycbzTCUmG5RLjUoalUT_sM0MV1rkx2kuewbzqrdszYFHlRVkF7BMIUKWK9OjplnrQGJ2n/exec
+```
+
+The script manifest also stores the matching deployment mode:
+
+```json
+"webapp": {
+  "access": "ANYONE_ANONYMOUS",
+  "executeAs": "USER_DEPLOYING"
+}
+```
+
+This is required so customers can click the approval button without logging in to Google.
+
 Save the script.
 
 Then update the deployment:
@@ -265,7 +282,7 @@ Failure notifications: Immediately
 
 ### Test Confirmation First
 
-Submit Form 1:
+Submit Order Confirmation Form:
 
 ```text
 Workflow Type = Confirmation First
@@ -285,9 +302,9 @@ Expected:
 
 - Order status changes to `Customer Approved`.
 - Customer approved timestamp is recorded.
-- Salesperson receives shipping update email with Form 2 prefilled link.
+- Salesperson receives shipping update email with Shipping Update Form prefilled link.
 
-Submit Form 2.
+Submit Shipping Update Form.
 
 Expected:
 
@@ -297,7 +314,7 @@ Expected:
 
 ### Test Invoice Only
 
-Submit Form 1:
+Submit Order Confirmation Form:
 
 ```text
 Workflow Type = Invoice Only

@@ -8,8 +8,9 @@ This folder archives the Apps Script snapshot for the v3 workflow update.
 
 - Adds `Invoice Only - Needs Shipping Info`.
 - Generates an internal invoice first when shipping/tracking is not ready.
-- Sends a Form 3 shipping info update email to the salesperson/internal team.
-- Uses Form 3 to complete Shipped Via, Shipping Charge, Tracking Number, Invoice Date, Due Date, Payment Method, Customer Email, and Send Invoice Automatically.
+- Sends an Invoice Shipping Info Update Form email to the salesperson/internal team.
+- Uses the Invoice Shipping Info Update Form to complete Shipped Via, Shipping Charge, Tracking Number, Invoice Date, Due Date, Payment Method, Customer Email, and Send Invoice Automatically.
+- Uses the deployed Web App approval endpoint for no-login customer approval links.
 - Sends the final invoice to the customer only when `Send Invoice Automatically = Yes`.
 - Blank or `No` sends the final invoice internally/CC only.
 - Replaces the older no-shipping invoice when the final invoice is generated.
@@ -19,8 +20,9 @@ This folder archives the Apps Script snapshot for the v3 workflow update.
 
 - 新增 `Invoice Only - Needs Shipping Info`。
 - 当 shipping / tracking 还没准备好时，先生成内部 invoice。
-- 给 salesperson / 内部团队发送 Form 3 shipping info update 邮件。
-- 通过 Form 3 补齐 Shipped Via、Shipping Charge、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email、Send Invoice Automatically。
+- 给 salesperson / 内部团队发送 Invoice Shipping Info Update Form 邮件。
+- 通过 Invoice Shipping Info Update Form 补齐 Shipped Via、Shipping Charge、Tracking Number、Invoice Date、Due Date、Payment Method、Customer Email、Send Invoice Automatically。
+- 使用已部署的 Web App approval endpoint 支持客户无需登录 Google 点击确认。
 - 只有 `Send Invoice Automatically = Yes` 时才把最终 invoice 发给客户。
 - 空白或 `No` 时只发送内部/抄送。
 - 生成最终 invoice 时会替换旧的无 shipping invoice。
@@ -31,4 +33,5 @@ This folder archives the Apps Script snapshot for the v3 workflow update.
 ## Snapshot / 快照
 
 - Script: `LogFresh_Two_Stage_Order_Invoice_Automation.gs`
+- Manifest: `appsscript.json`
 - Date: 2026-07-27

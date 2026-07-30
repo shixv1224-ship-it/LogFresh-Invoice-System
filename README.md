@@ -46,13 +46,13 @@ Use this when the customer needs to approve the order before invoicing.
 - Generates an Order Confirmation PDF.
 - Sends a no-login approval link to the customer when automatic sending is enabled.
 - After customer approval, sends the salesperson an internal shipping update link.
-- Form 2 updates shipping/tracking data and can generate/send the final invoice.
+- Shipping Update Form updates shipping/tracking data and can generate/send the final invoice.
 - Updates the customer information sheet after confirmation or invoice generation.
 
 - 生成 Order Confirmation PDF。
 - 自动发送开启时，客户会收到无需登录 Google 的确认链接。
 - 客户确认后，对应销售会收到内部 shipping update 链接。
-- Form 2 用于更新 shipping/tracking 信息，并生成/发送最终 invoice。
+- Shipping Update Form 用于更新 shipping/tracking 信息，并生成/发送最终 invoice。
 - Confirmation 或 invoice 生成后自动更新客户信息表。
 
 ## Customer Info Sheet / 客户信息表
@@ -112,7 +112,7 @@ README.zh-CN.md
 
 ## Google Forms / Google 表单
 
-### Form 1: Order Creation / Form 1：订单创建
+### Order Confirmation Form: Order Creation / Order Confirmation Form：订单创建
 
 Expected question titles:
 
@@ -182,9 +182,9 @@ Invoice Only
 Confirmation First
 ```
 
-`Send Confirmation Automatically` is the unified Form 1 send switch.
+`Send Confirmation Automatically` is the unified Order Confirmation Form send switch.
 
-`Send Confirmation Automatically` 是 Form 1 的统一发送开关。
+`Send Confirmation Automatically` 是 Order Confirmation Form 的统一发送开关。
 
 `Payment Method` should use the same choices in both forms:
 
@@ -210,7 +210,7 @@ Yes = 自动发送当前流程生成的文件
 No = 如果是 Invoice Only，会把 invoice 发给 Salesperson Email 并 CC 内部邮箱做存档；如果是 Confirmation First，只生成 PDF
 ```
 
-### Form 2: Shipping / Invoice Update / Form 2：发货与 Invoice 更新
+### Shipping Update Form: Shipping / Invoice Update / Shipping Update Form：发货与 Invoice 更新
 
 Expected question titles:
 
@@ -230,17 +230,17 @@ Send Invoice Automatically
 Internal Notes
 ```
 
-Form 2 updates the original order by matching `Order Number`.
+Shipping Update Form updates the original order by matching `Order Number`.
 
-Form 2 通过 `Order Number` 匹配原订单并回写 shipping / invoice 信息。
+Shipping Update Form 通过 `Order Number` 匹配原订单并回写 shipping / invoice 信息。
 
-When Form 2 regenerates an invoice for the same order, the older matching invoice file is moved to Drive trash after the new invoice is created successfully.
+When Shipping Update Form regenerates an invoice for the same order, the older matching invoice file is moved to Drive trash after the new invoice is created successfully.
 
-当 Form 2 为同一订单重新生成 invoice 时，系统会在新 invoice 成功生成后，把旧的匹配 invoice 文件移到 Drive 垃圾桶。
+当 Shipping Update Form 为同一订单重新生成 invoice 时，系统会在新 invoice 成功生成后，把旧的匹配 invoice 文件移到 Drive 垃圾桶。
 
-Form 2 should use the same `Payment Method` choices as Form 1.
+Shipping Update Form should use the same `Payment Method` choices as Order Confirmation Form.
 
-Form 2 的 `Payment Method` 选项应与 Form 1 保持一致。
+Shipping Update Form 的 `Payment Method` 选项应与 Order Confirmation Form 保持一致。
 
 ## Numbering / 编号规则
 
@@ -367,6 +367,16 @@ Saving the script is enough for most trigger-based updates.
 Redeploy the Web App only when changing approval-link logic such as `doGet()` or Web App URL behavior.
 
 只有修改客户确认链接、`doGet()` 或 Web App URL 相关逻辑时，才需要重新部署 Web App。
+
+Current production Web App URL / 当前正式 Web App URL：
+
+```text
+https://script.google.com/macros/s/AKfycbzTCUmG5RLjUoalUT_sM0MV1rkx2kuewbzqrdszYFHlRVkF7BMIUKWK9OjplnrQGJ2n/exec
+```
+
+The manifest is configured as `USER_DEPLOYING` + `ANYONE_ANONYMOUS` so customers can use approval links without signing in to Google.
+
+manifest 已配置为 `USER_DEPLOYING` + `ANYONE_ANONYMOUS`，因此客户点击确认链接时不需要登录 Google。
 
 See [docs/setup-guide.md](docs/setup-guide.md) for full setup steps.
 

@@ -423,7 +423,7 @@ def cover_story() -> list:
     story.append(Spacer(1, 0.35 * inch))
 
     quick = [
-        ["最常用入口", "Form 1 销售订单表单、Google Sheet 后台、内部提醒邮件按钮"],
+        ["最常用入口", "Order Confirmation Form、Google Sheet 后台、内部提醒邮件按钮"],
         ["常用流程", "Invoice Only、Invoice Only - Needs Shipping Info、Confirmation First"],
         ["重要提醒", "客户确认按钮不需要登录 Google；测试模式只发 mcp@logfresh.net"],
         ["版本日期", date.today().strftime("%m/%d/%Y")],

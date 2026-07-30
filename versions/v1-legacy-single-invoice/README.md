@@ -31,12 +31,12 @@ apps-script/LogFresh_Two_Stage_Order_Invoice_Automation.gs
 
 - No Order Confirmation workflow.
 - No customer approval button.
-- No Form 2 shipping update workflow.
+- No Shipping Update Form workflow.
 - No salesperson-specific shipping reminder.
 - No daily sequence ORD/INV numbering.
 
 - 不包含 Order Confirmation 流程。
 - 不包含客户确认按钮。
-- 不包含 Form 2 shipping update 流程。
+- 不包含 Shipping Update Form 流程。
 - 不包含对应销售的 shipping reminder。
 - 不包含每日序号 ORD/INV 编号。

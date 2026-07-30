@@ -16,17 +16,18 @@
 
 | 工具 | 作用 | 普通使用者需要做什么 |
 |---|---|---|
-| Google Form 1 | 销售创建订单 | 填订单、客户、产品、价格、发送方式 |
-| Google Form 2 | 客户确认订单后，补 shipping / tracking | 从内部邮件按钮打开，填写 tracking 等信息 |
-| Google Form 3 | Invoice 已先生成、但还缺 shipping 信息时补资料 | 从内部邮件按钮打开，补 tracking 后决定是否发最终 invoice |
+| Order Confirmation Form | 销售创建订单 | 填订单、客户、产品、价格、发送方式 |
+| Shipping Update Form | 客户确认订单后，补 shipping / tracking | 从内部邮件按钮打开，填写 tracking 等信息 |
+| Invoice Shipping Info Update Form | Invoice 已先生成、但还缺 shipping 信息时补资料 | 从内部邮件按钮打开，补 tracking 后决定是否发最终 invoice |
 | Google Sheet | 系统后台记录表 | 平时主要查看状态、查链接、必要时手动生成 PDF |
 | Google Docs 模板 | Order Confirmation / Invoice 模板 | 普通使用者一般不用改 |
 | Google Drive | 保存生成的 PDF / Docs 文件 | 找历史 Order Confirmation 和 Invoice |
 | Email | 给客户和内部人员发送文件 / 提醒 | 查看客户邮件、内部提醒、测试邮件 |
+| Web App approval link | 客户确认按钮后台入口 | 客户点 `Approve Order` 时使用，客户不需要登录 Google |
 
 你每天最常用的是：
 
-1. 打开 Form 1；
+1. 打开 Order Confirmation Form；
 2. 填订单；
 3. 根据订单情况选择 workflow；
 4. 查邮箱确认系统有没有发出；
@@ -36,7 +37,7 @@
 
 ## 2. 三种 workflow 怎么选
 
-Form 1 里最重要的问题是 `Workflow Type`。现在有三种：
+Order Confirmation Form 里最重要的问题是 `Workflow Type`。现在有三种：
 
 ```text
 Invoice Only
@@ -84,11 +85,11 @@ Invoice Only + No = 不发客户，只发内部存档
 - 这份 invoice 只保存到 Drive，不会发给客户；
 - 系统给 Salesperson Email / 内部人员发一封 `[Ship Info]` 邮件；
 - 邮件里有一个按钮：`Open Shipping Info Form`；
-- 等 tracking 准备好以后，点击按钮打开 Form 3；
-- Form 3 填完后，系统重新生成最终 invoice；
+- 等 tracking 准备好以后，点击按钮打开 Invoice Shipping Info Update Form；
+- Invoice Shipping Info Update Form 填完后，系统重新生成最终 invoice；
 - 新的最终 invoice 会替换前面那份缺 shipping 的旧 invoice。
 
-Form 3 里最重要的是：
+Invoice Shipping Info Update Form 里最重要的是：
 
 ```text
 Send Invoice Automatically = Yes
@@ -102,7 +103,7 @@ Send Invoice Automatically = Yes
 ```text
 先内部生成 invoice
 等 tracking 好了
-再用 Form 3 决定是否发最终 invoice 给客户
+再用 Invoice Shipping Info Update Form 决定是否发最终 invoice 给客户
 ```
 
 ### 2.3 Confirmation First
@@ -123,9 +124,9 @@ Send Invoice Automatically = Yes
 - 客户点击按钮后，不需要登录 Google；
 - 系统把订单状态改成 `Customer Approved`；
 - 系统给 Salesperson Email / 内部人员发 `[Approved]` 邮件；
-- 内部人员再通过邮件里的 Form 2 链接补 shipping / tracking；
-- Form 2 提交后生成 invoice；
-- 如果 Form 2 的 `Send Invoice Automatically = Yes`，invoice 会发给客户。
+- 内部人员再通过邮件里的 Shipping Update Form 链接补 shipping / tracking；
+- Shipping Update Form 提交后生成 invoice；
+- 如果 Shipping Update Form 的 `Send Invoice Automatically = Yes`，invoice 会发给客户。
 
 简单理解：
 
@@ -138,9 +139,9 @@ Send Invoice Automatically = Yes
 
 ---
 
-## 3. Form 1：销售创建订单怎么填
+## 3. Order Confirmation Form：销售创建订单怎么填
 
-Form 1 是销售最常用的表单。填写前请先准备好：
+Order Confirmation Form 是销售最常用的表单。填写前请先准备好：
 
 - 客户姓名 / 公司名；
 - 客户邮箱；
@@ -410,7 +411,7 @@ Item 6 Unit Price
 
 这个选项控制是否自动发邮件。
 
-虽然名字叫 `Send Confirmation Automatically`，但它是 Form 1 的统一发送开关。
+虽然名字叫 `Send Confirmation Automatically`，但它是 Order Confirmation Form 的统一发送开关。
 
 | Workflow | 选 Yes | 选 No |
 |---|---|---|
@@ -430,7 +431,7 @@ Item 6 Unit Price
 
 ### 4.2 操作步骤
 
-1. 打开 Form 1；
+1. 打开 Order Confirmation Form；
 2. `Workflow Type` 选择 `Invoice Only`；
 3. 填客户信息、地址、产品、价格；
 4. 如果要发客户，`Send Confirmation Automatically` 选 `Yes`；
@@ -470,7 +471,7 @@ Item 6 Unit Price
 
 ### 5.2 第一阶段：销售提交订单
 
-1. 打开 Form 1；
+1. 打开 Order Confirmation Form；
 2. `Workflow Type` 选择 `Invoice Only - Needs Shipping Info`；
 3. 填客户、产品、价格、shipping method；
 4. Tracking Number 可以先不填；
@@ -516,7 +517,7 @@ Open Shipping Info Form
 9400110200881234567890 - USPS small box
 ```
 
-### 5.5 Form 3 提交后会发生什么
+### 5.5 Invoice Shipping Info Update Form 提交后会发生什么
 
 系统会：
 
@@ -535,9 +536,9 @@ Open Shipping Info Form
 
 客户需要先确认订单内容，再开 invoice。
 
-### 6.2 第一阶段：销售提交 Form 1
+### 6.2 第一阶段：销售提交 Order Confirmation Form
 
-1. 打开 Form 1；
+1. 打开 Order Confirmation Form；
 2. `Workflow Type` 选择 `Confirmation First`；
 3. 填完整订单；
 4. `Send Confirmation Automatically` 选 `Yes`；
@@ -558,6 +559,21 @@ Open Shipping Info Form
 
 客户点击按钮后，不需要登录 Google。
 
+这个按钮背后使用的是已经部署好的 Apps Script Web App：
+
+```text
+https://script.google.com/macros/s/AKfycbzTCUmG5RLjUoalUT_sM0MV1rkx2kuewbzqrdszYFHlRVkF7BMIUKWK9OjplnrQGJ2n/exec
+```
+
+系统已经设置为：
+
+```text
+Execute as: USER_DEPLOYING
+Access: ANYONE_ANONYMOUS
+```
+
+普通销售不需要操作这个链接，只要客户邮件里的 `Approve Order` 按钮能打开即可。
+
 ### 6.4 客户点击确认后会发生什么
 
 系统会：
@@ -565,9 +581,9 @@ Open Shipping Info Form
 - 把订单状态改成 `Customer Approved`；
 - 记录 `Customer Approved At` 时间；
 - 给 Salesperson Email / 内部邮箱发送 `[Approved] Order Confirmation needs shipping info` 邮件；
-- 邮件里会带 Form 2 的 update link。
+- 邮件里会带 Shipping Update Form 的 update link。
 
-### 6.5 内部人员提交 Form 2
+### 6.5 内部人员提交 Shipping Update Form
 
 打开 `[Approved]` 邮件里的 update link，填写：
 
@@ -607,8 +623,8 @@ Google Sheet 是系统后台记录。普通使用者不需要手动改太多，�
 
 | Tab | 作用 |
 |---|---|
-| `Order Confirmation` | 主订单记录，Form 1 的回复和系统结果都在这里 |
-| `Shipping Updates` | Form 2 / Form 3 的 shipping update 回复 |
+| `Order Confirmation` | 主订单记录，Order Confirmation Form 的回复和系统结果都在这里 |
+| `Shipping Updates` | Shipping Update Form / Invoice Shipping Info Update Form 的 shipping update 回复 |
 | `Customer Info` | 客户 / 订单汇总，方便导出 Excel |
 
 ### 7.2 常用列
@@ -666,7 +682,7 @@ LogFresh
 适合：
 
 - 自动生成失败后重试；
-- Form 1 已提交，但需要手动再生成一次。
+- Order Confirmation Form 已提交，但需要手动再生成一次。
 
 ### 8.2 Generate & Email Invoice for Selected Row
 
@@ -898,7 +914,7 @@ LogFresh > Test Email Only
 
 看到提示后，说明测试模式开启。
 
-### Step 2：提交一单测试 Form 1
+### Step 2：提交一单测试 Order Confirmation Form
 
 建议先测试：
 
@@ -978,13 +994,13 @@ LogFresh > Back to Normal
 - 是否当时还在 `Test Email Only` 模式；
 - 是否选择了 `Send Confirmation Automatically = No` 或 `Send Invoice Automatically = No`。
 
-### 13.3 Form 2 / Form 3 提交后显示找不到订单
+### 13.3 Shipping Update Form / Invoice Shipping Info Update Form 提交后显示找不到订单
 
 常见原因：
 
 - `Order Number` 没填；
 - `Order Number` 拼错；
-- Form 2 / Form 3 里的 Order Number 和主表不一致；
+- Shipping Update Form / Invoice Shipping Info Update Form 里的 Order Number 和主表不一致；
 - 复制链接时漏掉了一部分；
 - 表单没有通过邮件按钮打开，而是手动打开空白表单后没有填 Order Number。
 
@@ -992,7 +1008,7 @@ LogFresh > Back to Normal
 
 1. 到主表找到正确 `Order Number`；
 2. 复制完整编号；
-3. 重新提交 Form 2 / Form 3；
+3. 重新提交 Shipping Update Form / Invoice Shipping Info Update Form；
 4. 如果还是失败，看 `Shipping Updates` tab 的 `Processing Status`。
 
 ### 13.4 地址为空
@@ -1016,7 +1032,7 @@ LogFresh > Back to Normal
 
 ### 13.6 生成了两个 invoice
 
-正常情况下，Form 2 / Form 3 更新生成的新 invoice 会替换旧 invoice。  
+正常情况下，Shipping Update Form / Invoice Shipping Info Update Form 更新生成的新 invoice 会替换旧 invoice。  
 如果你在 Drive 里仍看到旧文件，可能是：
 
 - 旧文件不是同一命名规则；
@@ -1047,7 +1063,7 @@ LogFresh > Back to Normal
 
 每天主要做：
 
-1. 填 Form 1；
+1. 填 Order Confirmation Form；
 2. 选正确 Workflow Type；
 3. 填 Salesperson Email；
 4. 检查客户邮箱；
@@ -1088,6 +1104,7 @@ LogFresh > Back to Normal
 - Google Docs 模板里的占位符；
 - Apps Script 里的 template ID / folder ID / form ID；
 - Web App deployment；
+- `CONFIG.WEB_APP_URL` 里的客户确认 Web App URL；
 - Apps Script trigger。
 
 如果必须改问题标题，改完需要同步脚本字段名称。

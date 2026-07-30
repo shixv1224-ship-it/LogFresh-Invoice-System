@@ -17,9 +17,9 @@ Invoices
 
 复制两个 Google Docs 模板 ID。
 
-## 2. 创建 Form 1
+## 2. 创建 Order Confirmation Form
 
-Form 1 用于销售创建订单。
+Order Confirmation Form 用于销售创建订单。
 
 关键字段包括：
 
@@ -69,7 +69,7 @@ Invoice Only
 Confirmation First
 ```
 
-`Payment Method` 在 Form 1 和 Form 2 中保持一致，选项为：
+`Payment Method` 在 Order Confirmation Form 和 Shipping Update Form 中保持一致，选项为：
 
 ```text
 Credit Card
@@ -79,9 +79,9 @@ Check/Wire Transfer
 
 `Bill To State` 和 `Ship To State` 建议设为下拉题，选项使用美国两位州缩写。脚本也会尝试自动维护这两个下拉题。
 
-## 3. 创建 Form 2
+## 3. 创建 Shipping Update Form
 
-Form 2 用于更新 shipping / invoice 信息。
+Shipping Update Form 用于更新 shipping / invoice 信息。
 
 字段：
 
@@ -99,11 +99,11 @@ Send Invoice Automatically
 Internal Notes
 ```
 
-Form 2 通过 `Order Number` 匹配原订单。
+Shipping Update Form 通过 `Order Number` 匹配原订单。
 
 ## 4. 连接 Google Sheet
 
-Form 1 连接到新的 Google Sheet。
+Order Confirmation Form 连接到新的 Google Sheet。
 
 主 tab 名称：
 
@@ -111,9 +111,9 @@ Form 1 连接到新的 Google Sheet。
 Order Confirmation
 ```
 
-Form 2 连接到同一个 Google Sheet。
+Shipping Update Form 连接到同一个 Google Sheet。
 
-Form 2 tab 名称：
+Shipping Update Form tab 名称：
 
 ```text
 Shipping Updates
@@ -184,6 +184,23 @@ Who has access: Anyone
 
 复制 Web App URL，填回脚本。
 
+当前正式 Web App URL：
+
+```text
+https://script.google.com/macros/s/AKfycbzTCUmG5RLjUoalUT_sM0MV1rkx2kuewbzqrdszYFHlRVkF7BMIUKWK9OjplnrQGJ2n/exec
+```
+
+脚本 manifest 也已经写入对应 Web App 设置：
+
+```json
+"webapp": {
+  "access": "ANYONE_ANONYMOUS",
+  "executeAs": "USER_DEPLOYING"
+}
+```
+
+这个设置用于保证客户点击确认按钮时不需要登录 Google。
+
 修改 Web App 相关逻辑后，需要重新 New version deploy。
 
 ## 7. 添加触发器
@@ -199,7 +216,7 @@ Event type: On form submit
 
 ## 8. 测试
 
-先测试 `Confirmation First`，再测试 Form 2。
+先测试 `Confirmation First`，再测试 Shipping Update Form。
 
 再测试 `Invoice Only`。
 
@@ -209,4 +226,4 @@ Event type: On form submit
 - `Send Confirmation Automatically = No`：invoice 不发给客户，改发给 `Salesperson Email`，并 CC 固定内部邮箱做存档。
 - Sheet 菜单里的 `Generate Invoice PDF Only for Selected Row` 仍然只生成 PDF，不发送任何邮件。
 
-确认 PDF、邮件、Sheet 回写、Form 2 预填链接都正常。
+确认 PDF、邮件、Sheet 回写、Shipping Update Form 预填链接都正常。

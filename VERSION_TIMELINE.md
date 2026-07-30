@@ -45,6 +45,13 @@ For business-facing feature changes, see [CHANGELOG.md](CHANGELOG.md) and [CHANG
 
 ## GitHub Commit Timeline / GitHub 提交时间线
 
+### 2026-07-29
+
+- `4a5cc3e` — Deploy approval web app endpoint.
+- `b1c94f3` — Support order-form multi-line tracking.
+- `b724619` — Add Apps Script executable setup wrapper.
+- `901d796` — Document and archive v3 shipping workflow updates.
+
 ### 2026-07-27
 
 - `fda6ae9` — Use buttons for shipping update links.

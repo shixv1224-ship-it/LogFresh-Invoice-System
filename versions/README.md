@@ -16,7 +16,7 @@ Main behavior:
 
 - Adds `Invoice Only - Needs Shipping Info`.
 - Generates an internal invoice before tracking information is ready.
-- Uses Form 3 to collect/update shipping and tracking information.
+- Uses Invoice Shipping Info Update Form to collect/update shipping and tracking information.
 - Lets internal users decide whether the final invoice should be sent to the customer.
 - Replaces the earlier no-shipping invoice when the final invoice is generated.
 - Shows shipping update links as email buttons.
@@ -25,7 +25,7 @@ Main behavior:
 
 - 新增 `Invoice Only - Needs Shipping Info`。
 - tracking 信息未准备好时，先生成内部 invoice。
-- 通过 Form 3 补齐 / 更新 shipping 和 tracking 信息。
+- 通过 Invoice Shipping Info Update Form 补齐 / 更新 shipping 和 tracking 信息。
 - 内部人员可决定最终 invoice 是否发送给客户。
 - 最终 invoice 生成后替换旧的无 shipping invoice。
 - shipping update 链接在邮件中显示为按钮。
@@ -41,14 +41,14 @@ Main behavior:
 - Reads one Google Form response row from the response Sheet.
 - Generates one Invoice document/PDF from a Google Docs template.
 - Optionally emails the invoice to the customer.
-- Does not include customer approval, Form 2, or shipping update workflow.
+- Does not include customer approval, Shipping Update Form, or shipping update workflow.
 
 主要功能：
 
 - 从 Google Form 回复表读取一行订单数据。
 - 根据 Google Docs 模板生成 Invoice 文件/PDF。
 - 可选择自动发送 invoice 给客户。
-- 不包含客户确认按钮、Form 2、shipping update 流程。
+- 不包含客户确认按钮、Shipping Update Form、shipping update 流程。
 
 ### v2-current-two-stage
 
@@ -62,8 +62,8 @@ Main behavior:
 - Generates Order Confirmation and Invoice PDFs.
 - Supports no-login customer approval link.
 - Sends internal shipping/tracking reminders.
-- Uses Form 2 to update shipping/invoice information by `Order Number`.
-- Supports prefilled Form 2 links.
+- Uses Shipping Update Form to update shipping/invoice information by `Order Number`.
+- Supports prefilled Shipping Update Form links.
 - Uses daily sequence numbering:
   - `ORD-YYYYMMDD-###`
   - `INV-YYYYMMDD-###`
@@ -74,8 +74,8 @@ Main behavior:
 - 自动生成 Order Confirmation 和 Invoice PDF。
 - 支持客户无需登录 Google 点击确认。
 - 自动发送内部 shipping/tracking 提醒。
-- 通过 Form 2 使用 `Order Number` 回写 shipping/invoice 信息。
-- 支持 Form 2 预填链接。
+- 通过 Shipping Update Form 使用 `Order Number` 回写 shipping/invoice 信息。
+- 支持 Shipping Update Form 预填链接。
 - 使用每日序号编号：
   - `ORD-YYYYMMDD-###`
   - `INV-YYYYMMDD-###`
