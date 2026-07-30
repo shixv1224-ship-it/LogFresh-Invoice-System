@@ -22,6 +22,7 @@ For business-facing feature changes, see [CHANGELOG.md](CHANGELOG.md) and [CHANG
 - Removed daily-visible maintenance actions from the LogFresh Sheet menu.
 - Added Apps Script API executable manifest settings and a CLI-safe form sync wrapper; the setup was run once through Edge/Apps Script authorization.
 - Updated the customer-approved internal shipping follow-up email to use a button-style Shipping Update Form link.
+- Expanded the English beginner guide to match the Chinese guide's full 15-section structure and regenerated the bilingual PDFs.
 - Snapshot folder: [`versions/v3-invoice-needs-shipping-info/`](versions/v3-invoice-needs-shipping-info/)
 
 ### v3 · Invoice Shipping Info Workflow · 2026-07-27
